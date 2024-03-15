@@ -1,0 +1,185 @@
+
+
+//general includes common to most GR problems
+#include "ProcaFieldLevel.hpp"
+#include "AMRReductions.hpp"
+#include "ComputePack.hpp"
+#include "BoxLoops.hpp"
+#include "NanCheck.hpp"
+#include "SetValue.hpp"
+#include "SmallDataIO.hpp"
+
+//Flux Extraction
+#include "FluxExtraction.hpp"
+
+//RHS Update
+#include "MatterEvolution.hpp"
+
+
+//cell tagging
+#include "FixedGridsTaggingCriterion.hpp"
+
+//problem specific includes
+#include "Diagnostics.hpp"
+#include "ExcisionDiagnostics.hpp"
+#include "ExcisionEvolution.hpp"
+
+
+
+//do things at end of advance step, after RK4 calculation
+template <class background_t, class proca_t>
+void ProcaFieldLevel<background_t, proca_t>::specificAdvance()
+{
+    //check for nans
+    if (m_p.nan_check){
+        BoxLoops::loop(NanCheck(), m_state_new, m_state_new,
+                        EXCLUDE_GHOST_CELLS, disable_simd());
+    }
+
+};
+
+
+#ifdef CH_USE_HDF5
+//things to do before outputting a checkpoint file
+template <class background_t, class proca_t>
+void ProcaFieldLevel<background_t, proca_t>::prePlotLevel()
+{
+
+    fillAllGhosts();
+
+};
+#endif //CH_USE_HDF5
+
+
+//RHS routines used at each RK4 step
+template <class background_t, class proca_t>
+void ProcaFieldLevel<background_t, proca_t>::specificEvalRHS(GRLevelData &a_soln, GRLevelData &a_rhs,
+                                const double a_time)
+{
+
+    //Calculate right hand side with matter_t = ProcaField
+    proca_t proca_field(potential, m_p.proca_params);
+    background_t background_init { m_p.background_params, m_dx };
+    
+    MatterEvolution<proca_t, background_t> matter_class(proca_field, background_init, m_p.sigma, m_dx, m_p.center);
+    ExcisionEvolution<proca_t, background_t> excisor(m_dx, m_p.center, background_init);
+
+    BoxLoops::loop(matter_class, a_soln, a_rhs, SKIP_GHOST_CELLS);
+    BoxLoops::loop(excisor,a_soln, a_rhs, SKIP_GHOST_CELLS, disable_simd());
+
+};
+
+
+//compute tagging criteria for grid
+template <class background_t, class proca_t>
+void ProcaFieldLevel<background_t, proca_t>::computeTaggingCriterion(FArrayBox &tagging_criterion,
+                                             const FArrayBox &current_state,
+                                             const FArrayBox &current_state_diagnostics)
+{
+    CH_TIME("ProcaFieldLevel::computeTaggingCriterion");
+
+    BoxLoops::loop(FixedGridsTaggingCriterion(m_dx, m_level,
+                                                    m_p.grid_scaling*m_p.L, m_p.center),
+                       current_state, tagging_criterion, disable_simd());
+}
+
+
+template <class background_t, class proca_t>
+void ProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
+{
+    CH_TIME("ProcaFieldLevel::specificPostTimeStep");
+
+    bool first_step = (m_time == 0.); //is this the first call of posttimestep? Recall, we're calling PostTimeStep in the main function, so m_time==0 is first step
+
+    int min_level = 0;
+    bool at_course_timestep_on_any_level = at_level_timestep_multiple(min_level);
+
+    //extract fluxes at specified radii
+    if (m_p.activate_extraction)
+    {
+
+        int min_level = m_p.extraction_params.min_extraction_level();
+        if (at_course_timestep_on_any_level)
+        {
+            fillAllGhosts();
+            
+            proca_t proca_field(m_p.proca_params);
+            background_t kerr_init { m_p.kerrSchild_params, m_dx };
+            ChargesFluxes<proca_t, background_t> EM(kerr_init,m_dx, proca_field, m_p.center);
+            ExcisionDiagnostics<proca_t,background_t> excisor(kerr_init, m_dx, m_p.center);
+
+            BoxLoops::loop(
+                EM,
+                m_state_diagnostics, m_state_diagnostics, SKIP_GHOST_CELLS
+            );
+            BoxLoops::loop(
+                excisor,
+                m_state_diagnostics, m_state_diagnostics, SKIP_GHOST_CELLS, disable_simd()
+            );
+
+            //do extraction
+            if (m_level == min_level)
+            {
+                CH_TIME("WeylExtraction");
+                //refresh interpolator
+                //fill ghosts manually
+                bool fill_ghosts = false;
+                m_gr_amr.m_interpolator->refresh(fill_ghosts);
+                m_gr_amr.fill_multilevel_ghosts(
+                    VariableType::diagnostic, Interval(c_Edot, c_Jdot),
+                    min_level);
+                FluxExtraction my_extraction(m_p.extraction_params, m_dt, m_time, first_step, m_restart_time);
+                my_extraction.execute_query(m_gr_amr.m_interpolator);
+            }
+        }
+    } //end of flux block
+
+    //integrate charges
+    if (m_p.activate_integration && at_course_timestep_on_any_level)
+    {
+        fillAllGhosts();
+        
+        //calculate densities on grid
+        if ( !m_p.activate_extraction ) //did we already calculate diagnostics during extraction?
+        {
+            ProcaPotential potential(m_p.potential_params);
+            proca_t proca_field(potential, m_p.proca_params);
+
+            background_t kerr_init { m_p.kerrSchild_params, m_dx };
+            ChargesFluxes<proca_t, background_t> EM(kerr_init,m_dx, proca_field, m_p.center);
+            ExcisionDiagnostics<proca_t,background_t> excisor(kerr_init, m_dx, m_p.center);
+
+            BoxLoops::loop(EM,m_state_new, m_state_diagnostics, EXCLUDE_GHOST_CELLS);
+            BoxLoops::loop(excisor, m_state_diagnostics, m_state_diagnostics, EXCLUDE_GHOST_CELLS, disable_simd());
+        }
+
+
+        if (m_level == min_level)
+        {
+            //setup integrator
+            AMRReductions<VariableType::diagnostic> amr_reductions(m_gr_amr);
+
+            //integrate densities
+            double SUM_rho = amr_reductions.sum(c_rho);
+            double SUM_rhoE = amr_reductions.sum(c_rhoE);
+            double SUM_rhoJ = amr_reductions.sum(c_rhoJ);
+
+            //setup output file
+            SmallDataIO constraint_file(m_p.data_path + m_p.integrals_filename,
+                                        m_dt, m_time, m_restart_time, SmallDataIO::APPEND, first_step
+            );
+
+            //remove duplicates
+            constraint_file.remove_duplicate_time_data();
+
+            //save to disk
+            if (first_step)
+            {
+                constraint_file.write_header_line({"SUM_rho", "SUM_rhoE", "SUM_rhoJ"});
+            }
+            constraint_file.write_time_data_line({ SUM_rho, SUM_rhoE, SUM_rhoJ});
+        }
+         
+    } //end of integration block
+
+}
