@@ -7,7 +7,7 @@
 verbosity = 3
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/GRMilijun_EMField/"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_EMField_23259782"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
