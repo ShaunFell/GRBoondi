@@ -14,6 +14,8 @@
 #include "VarsTools.hpp"
 #include "simd.hpp"
 
+#include "DiagnosticVariables.hpp"
+
 //! Does excision for fixed BG BH solutions
 //! Note that it is does not using simd so one must set disable_simd()
 template <class matter_t, class background_t>

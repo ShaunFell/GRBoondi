@@ -1,34 +1,16 @@
 
+#if !defined(PROCAFIELDLEVEL_H_INCLUDED)
+#error "This file should only be included through BaseProcaFieldLevel.hpp"
+#endif
 
-//general includes common to most GR problems
-#include "ProcaFieldLevel.hpp"
-#include "AMRReductions.hpp"
-#include "ComputePack.hpp"
-#include "BoxLoops.hpp"
-#include "NanCheck.hpp"
-#include "SetValue.hpp"
-#include "SmallDataIO.hpp"
-
-//Flux Extraction
-#include "FluxExtraction.hpp"
-
-//RHS Update
-#include "MatterEvolution.hpp"
-
-
-//cell tagging
-#include "FixedGridsTaggingCriterion.hpp"
-
-//problem specific includes
-#include "Diagnostics.hpp"
-#include "ExcisionDiagnostics.hpp"
-#include "ExcisionEvolution.hpp"
+#ifndef PROCAFIELDLEVEL_IMPL_H_INCLUDED
+#define PROCAFIELDLEVEL_IMPL_H_INCLUDED
 
 
 
 //do things at end of advance step, after RK4 calculation
 template <class background_t, class proca_t>
-void ProcaFieldLevel<background_t, proca_t>::specificAdvance()
+void BaseProcaFieldLevel<background_t, proca_t>::specificAdvance()
 {
     //check for nans
     if (m_p.nan_check){
@@ -42,7 +24,7 @@ void ProcaFieldLevel<background_t, proca_t>::specificAdvance()
 #ifdef CH_USE_HDF5
 //things to do before outputting a checkpoint file
 template <class background_t, class proca_t>
-void ProcaFieldLevel<background_t, proca_t>::prePlotLevel()
+void BaseProcaFieldLevel<background_t, proca_t>::prePlotLevel()
 {
 
     fillAllGhosts();
@@ -50,16 +32,22 @@ void ProcaFieldLevel<background_t, proca_t>::prePlotLevel()
 };
 #endif //CH_USE_HDF5
 
+template <class background_t, class proca_t>
+void BaseProcaFieldLevel<background_t, proca_t>::preTagCells()
+{
+
+}
+
 
 //RHS routines used at each RK4 step
 template <class background_t, class proca_t>
-void ProcaFieldLevel<background_t, proca_t>::specificEvalRHS(GRLevelData &a_soln, GRLevelData &a_rhs,
+void BaseProcaFieldLevel<background_t, proca_t>::specificEvalRHS(GRLevelData &a_soln, GRLevelData &a_rhs,
                                 const double a_time)
 {
 
     //Calculate right hand side with matter_t = ProcaField
-    proca_t proca_field(potential, m_p.proca_params);
     background_t background_init { m_p.background_params, m_dx };
+    proca_t proca_field(background_init);
     
     MatterEvolution<proca_t, background_t> matter_class(proca_field, background_init, m_p.sigma, m_dx, m_p.center);
     ExcisionEvolution<proca_t, background_t> excisor(m_dx, m_p.center, background_init);
@@ -70,24 +58,26 @@ void ProcaFieldLevel<background_t, proca_t>::specificEvalRHS(GRLevelData &a_soln
 };
 
 
+
+
 //compute tagging criteria for grid
 template <class background_t, class proca_t>
-void ProcaFieldLevel<background_t, proca_t>::computeTaggingCriterion(FArrayBox &tagging_criterion,
+void BaseProcaFieldLevel<background_t, proca_t>::computeTaggingCriterion(FArrayBox &tagging_criterion,
                                              const FArrayBox &current_state,
                                              const FArrayBox &current_state_diagnostics)
 {
-    CH_TIME("ProcaFieldLevel::computeTaggingCriterion");
+    CH_TIME("BaseProcaFieldLevel::computeTaggingCriterion");
 
-    BoxLoops::loop(FixedGridsTaggingCriterion(m_dx, m_level,
-                                                    m_p.grid_scaling*m_p.L, m_p.center),
-                       current_state, tagging_criterion, disable_simd());
+    CustomTaggingCriterion tagger(m_dx, m_level, m_p.grid_scaling*m_p.L, m_p.initial_ratio, m_p.center, m_p.extraction_params, m_p.activate_extraction, m_p.activate_ham_tagging);
+
+    BoxLoops::loop(tagger, current_state_diagnostics, tagging_criterion, disable_simd());
 }
 
 
 template <class background_t, class proca_t>
-void ProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
+void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
 {
-    CH_TIME("ProcaFieldLevel::specificPostTimeStep");
+    CH_TIME("BaseProcaFieldLevel::specificPostTimeStep");
 
     bool first_step = (m_time == 0.); //is this the first call of posttimestep? Recall, we're calling PostTimeStep in the main function, so m_time==0 is first step
 
@@ -103,10 +93,10 @@ void ProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
         {
             fillAllGhosts();
             
-            proca_t proca_field(m_p.proca_params);
-            background_t kerr_init { m_p.kerrSchild_params, m_dx };
-            ChargesFluxes<proca_t, background_t> EM(kerr_init,m_dx, proca_field, m_p.center);
-            ExcisionDiagnostics<proca_t,background_t> excisor(kerr_init, m_dx, m_p.center);
+            background_t background_init { m_p.background_params, m_dx };
+            proca_t proca_field(background_init);
+            ChargesFluxes<proca_t, background_t> EM(background_init,m_dx, proca_field, m_p.center);
+            ExcisionDiagnostics<proca_t,background_t> excisor(background_init, m_dx, m_p.center);
 
             BoxLoops::loop(
                 EM,
@@ -142,12 +132,11 @@ void ProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
         //calculate densities on grid
         if ( !m_p.activate_extraction ) //did we already calculate diagnostics during extraction?
         {
-            ProcaPotential potential(m_p.potential_params);
-            proca_t proca_field(potential, m_p.proca_params);
+            background_t background_init { m_p.background_params, m_dx };
+            proca_t proca_field(background_init);
 
-            background_t kerr_init { m_p.kerrSchild_params, m_dx };
-            ChargesFluxes<proca_t, background_t> EM(kerr_init,m_dx, proca_field, m_p.center);
-            ExcisionDiagnostics<proca_t,background_t> excisor(kerr_init, m_dx, m_p.center);
+            ChargesFluxes<proca_t, background_t> EM(background_init,m_dx, proca_field, m_p.center);
+            ExcisionDiagnostics<proca_t,background_t> excisor(background_init, m_dx, m_p.center);
 
             BoxLoops::loop(EM,m_state_new, m_state_diagnostics, EXCLUDE_GHOST_CELLS);
             BoxLoops::loop(excisor, m_state_diagnostics, m_state_diagnostics, EXCLUDE_GHOST_CELLS, disable_simd());
@@ -183,3 +172,5 @@ void ProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
     } //end of integration block
 
 }
+
+#endif //PROCAFIELDLEVEL_IMPL_H_INCLUDED

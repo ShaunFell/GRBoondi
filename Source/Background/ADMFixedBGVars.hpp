@@ -38,6 +38,6 @@ template <class data_t> struct Vars
     Tensor<2, data_t> d1_shift;
 };
 
-} // namespace ADMFixedBGVars
+}; // namespace ADMFixedBGVars
 
 #endif /* ADMFIXEDBGVARS_HPP_ */

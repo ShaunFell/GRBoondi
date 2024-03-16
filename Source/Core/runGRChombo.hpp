@@ -16,11 +16,16 @@
 #include "GRParmParse.hpp"
 #include "MultiLevelTask.hpp"
 #include "SetupFunctions.hpp"
+
+//defaults
+#include "DefaultBackground.hpp"
+#include "BaseProcaField.hpp"
+
+// Problem specific includes. These must be defined in the problems root directory. E.g. EMKerrBH defines these
+#include "BaseProcaFieldLevel.hpp" 
 #include "SimulationParameters.hpp"
 
-// Problem specific includes:
-#include "BaseProcaFieldLevel.hpp"
-
+// Main run function templated over level class
 
 template <class level_t>
 int runGRChombo(int argc, char *argv[])
@@ -38,8 +43,8 @@ int runGRChombo(int argc, char *argv[])
     // (To simulate a different problem, define a new child of AMRLevel
     // and an associated LevelFactory)
     GRAMR bh_amr;
-    DefaultLevelFactory<level_t> proca_field_level_fact(bh_amr, sim_params);
-    setupAMRObject(bh_amr, proca_field_level_fact);
+    DefaultLevelFactory<level_t> problem_level_factory(bh_amr, sim_params);
+    setupAMRObject(bh_amr, problem_level_factory);
 
     //setup interpolating object
     AMRInterpolator<Lagrange<4>> interpolator(

@@ -8,12 +8,16 @@
 class DefaultBackground
 {
 public:
-    DefaultBackground::DefaultBackground() = default;
+    DefaultBackground() {};
+
+    template <class data_t>
+    using MetricVars = ADMFixedBGVars::Vars<data_t>;
 
     template <class data_t>
     void compute(Cell<data_t> current_cell) const
     {
         //Set spacetime background to Minkowski in Cartesian coordinates
+        MetricVars<data_t> vars;
 
         vars.lapse = 1.;
         vars.K = 0.;
@@ -40,6 +44,8 @@ public:
                 }
             }
         }
+
+        current_cell.store_vars(vars);
     }
 
     bool check_if_excised(const Coordinates<double> &coords) const
@@ -47,8 +53,7 @@ public:
         return false; //Dont ever excise 
     }
 
-
-}
+};
 
 
 #endif /* DEFAULTBACKGROUND_HPP_ */

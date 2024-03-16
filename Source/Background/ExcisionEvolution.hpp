@@ -13,8 +13,9 @@
 #include "UserVariables.hpp" //This files needs NUM_VARS - total number of components
 #include "VarsTools.hpp"
 
-//! Does excision for fixed BG BH solutions
-template <class matter_t, class background_t> class ExcisionEvolution
+//! Does excision for fixed BG solutions
+template <class matter_t, class background_t> 
+class ExcisionEvolution
 {
     // Use matter_t class
     using Vars = typename matter_t::template Vars<double>;

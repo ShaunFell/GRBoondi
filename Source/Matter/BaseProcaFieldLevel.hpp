@@ -1,20 +1,45 @@
 #ifndef PROCAFIELDLEVEL_H_INCLUDED
 #define PROCAFIELDLEVEL_H_INCLUDED
 
+
+//general includes common to most GR problems
 #include "DefaultLevelFactory.hpp"
 #include "GRAMRLevel.hpp"
-#include "Potential.hpp"
-#include "GeneralizedProcaField.hpp"
-#include "DefaultLevelAdditions.hpp"
+#include "GRAMR.hpp"
+#include "BaseProcaFieldLevel.hpp"
+#include "AMRReductions.hpp"
+#include "ComputePack.hpp"
+#include "BoxLoops.hpp"
+#include "NanCheck.hpp"
+#include "SetValue.hpp"
+#include "SmallDataIO.hpp"
 
-/* #include "GRAMR.hpp"
- */
+//Flux Extraction
+#include "FluxExtraction.hpp"
+#include "ChargesFluxes.hpp"
+
+//RHS Update
+#include "MatterEvolution.hpp"
+
+//cell tagging
+#include "TaggingCriterion.hpp"
+
+//problem specific includes
+#include "DiagnosticVariables.hpp"
+#include "ExcisionEvolution.hpp"
+#include "BaseProcaField.hpp"
+
+//Excision
+#include "ExcisionDiagnostics.hpp"
+
+
+ 
 
 template <class background_t, class proca_t>
-class ProcaFieldLevel : public GRAMRLevel
+class BaseProcaFieldLevel : public GRAMRLevel
 {
 
-    friend class DefaultLevelFactory<ProcaFieldLevel<background_t, proca_t>>;
+    friend class DefaultLevelFactory<BaseProcaFieldLevel<background_t, proca_t>>;
     //inherit constructors from GRAMRLevel;
     using GRAMRLevel::GRAMRLevel;
     
@@ -41,5 +66,8 @@ class ProcaFieldLevel : public GRAMRLevel
 
     
 };
+
+
+#include "BaseProcaFieldLevel.impl.hpp"
 
 #endif //PROCAFIELDLEVEL_H_INCLUDED

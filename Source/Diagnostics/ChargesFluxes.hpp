@@ -1,17 +1,19 @@
 #ifndef DIAGNOSTIC_H_INCLUDED
 #define DIAGNOSTIC_H_INCLUDED
 
+#include "CoordinateTransformations.hpp"
+
 template <class matter_t, class background_t>
 class ChargesFluxes
 {
     protected:
 
-        // Use the variable definition in ADMVars
+        // Use the variable definition in ADMFixedBGVars
         template <class data_t> 
         using MetricVars = ADMFixedBGVars::Vars<data_t>;
 
         template <class data_t>
-        using MatterVars = typename ProcaField<ProcaPotential>::template Vars<data_t>;
+        using MatterVars = typename matter_t::template Vars<data_t>;
 
         const matter_t m_matter;
         const double m_dx;
