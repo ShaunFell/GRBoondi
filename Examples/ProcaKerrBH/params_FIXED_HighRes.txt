@@ -1,0 +1,178 @@
+
+
+
+### GeneralizedProca_FixedBH
+### params_FIXED_HighRes.txt
+
+
+
+################################################## Filesystem parameters
+
+
+verbosity = 0
+
+# location / naming of output files
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_Proca_GRChombo_23249002"
+chk_prefix = "GeneralizedProcaFixed_"
+plot_prefix = "GeneralizedProcaFixedp_"
+#restart_file = GeneralizedProca_000003.3d.hdf5
+integrals_filename = "integrals"
+
+# HDF5files are written every dt = L/N*dt_multiplier*checkpoint_interval
+checkpoint_interval = 1
+# set to 0 to turn off plot files (except at t=0 and t=stop_time)
+# set to -1 to never ever print plotfiles
+plot_interval = 1
+num_plot_vars = 7
+plot_vars = chi Gauss Asquared Z rho rhoJ rhoE
+
+# subpaths - specific directories for hdf5, pout, extraction data
+# (these are created at runtime)
+hdf5_subpath = "hdf5"
+pout_subpath = "pout"
+data_subpath = "data"
+
+# change the name of output files
+# pout_prefix = "pout"
+print_progress_only_to_rank_0 = 0
+
+# ignore_checkpoint_name_mismatch = 0
+# write_plot_ghosts = 0
+
+################################################# constraint tagging
+##################################################
+activate_ham_tagging = 0
+activate_gauss_tagging = 0
+
+max_level = 6
+# using fixed grid right now. Uncomment when using Constraint tagging!!
+regrid_interval   =  0 0 0 0 0 0
+#regrid_threshold = 0.005
+
+
+################################################## Physical constants
+##################################################
+G_Newton = 0
+
+################################################## Initial Data parameters
+##################################################
+
+# Kerr parameters
+kerr_mass = 1.0
+kerr_spin = 0.99
+#kerr_center = 64 64 64 # defauts to center
+kerr_spindir = 0 0 1 #along z-axis
+
+
+# Proca parameters
+proca_damping = 1.0
+
+# Potential parameters
+proca_mass = 0.40
+proca_self_interaction = 0.
+
+#Initial condition parameters
+initial_proca_amplitude = 0.1
+
+################################################## Grid parameters
+##################################################
+
+N_full = 128
+L_full = 64
+
+# Max and min box sizes
+max_box_size = 16
+min_box_size = 16
+
+#for fixed grid tagging
+tag_buffer_size = 0
+
+#grid spacing between refinement levels
+#grid_buffer_size = 32
+# fill_ratio = 0.7
+# num_ghosts = 3
+# center = 256.0 256.0 256.0 # defaults to center of the grid
+
+#global scaling of refinement levels. Larger value equals larger refinement levels
+grid_scaling = 1.0
+
+################################################## Boundary Conditions parameters
+##################################################
+
+# Periodic directions - 0 = false, 1 = true
+isPeriodic = 0 0 0
+# if not periodic, then specify the boundary type
+# 0 = static, 1 = sommerfeld, 2 = reflective
+# (see BoundaryConditions.hpp for details)
+
+#sommerfeld outgoing-radiation condition
+hi_boundary = 1 1 1
+lo_boundary = 1 1 2
+
+# if reflective boundaries selected, must set
+# parity of all vars (in order given by UserVariables.hpp)
+# 0 = even
+# 1,2,3 = odd x, y, z
+# 4,5,6 = odd xy, yz, xz
+# 7     = odd xyz
+vars_parity            =  0 1 2 3 #phi Avec
+                                1 2 3 0 # Evec Z
+vars_parity_diagnostic =  0 0 0 0 1 2 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0      #Ham, Ham abs sum,  Mom, and the rest scalars
+
+# if sommerfeld boundaries selected, must select
+# non zero asymptotic values
+num_nonzero_asymptotic_vars = 0
+nonzero_asymptotic_vars = chi h11 h22 h33 lapse
+nonzero_asymptotic_values = 1.0 1.0 1.0 1.0 1.0
+
+# if you are using extrapolatin BC:
+extrapolation_order = 0
+num_extrapolating_vars = 0
+extrapolating_vars = phi
+
+################################################## Evolution parameters
+##################################################
+
+# dt will be dx*dt_multiplier on each grid level
+dt_multiplier = 0.2 #CFL factor
+stop_time = 20000
+# max_steps = 100
+
+nan_check = 1
+
+# coefficient for KO numerical dissipation
+#sigma = 0.3 #default
+sigma = 0.4
+
+min_chi = 1.e-4
+min_lapse = 1.e-4
+
+
+################################################## Excision parameters
+##################################################
+
+excision_width = 0.97
+
+################################################## Extraction parameters
+##################################################
+
+activate_extraction = 0
+activate_integration = 1
+
+
+
+num_extraction_radii = 2
+extraction_radii = 50.0 100.0
+inner_r = 1.141067359796659 #minimal horizon size in Kerr-Schild coords with initial mass = 1
+outer_r = 30
+extraction_levels = 1 1
+num_points_phi = 24
+num_points_theta = 37
+
+
+integrals_filename = "Integrals"
+
+write_extraction = 0
+extraction_subpath = "/extraction" # directory for 'write_extraction = 1'
+extraction_file_prefix = "Weyl4_extraction_"
+
