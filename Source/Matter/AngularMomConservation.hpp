@@ -7,6 +7,7 @@
 #define ANGULARMOMCONSERVATION_HPP_
 
 #include "ADMFixedBGVars.hpp"
+#include "ADMProcaVars.hpp"
 #include "Cell.hpp"
 #include "Coordinates.hpp"
 #include "FourthOrderDerivatives.hpp"
@@ -25,7 +26,7 @@ template <class matter_t, class background_t> class AngularMomConservation
 {
     // Use the variable definition in the matter class
     template <class data_t>
-    using MatterVars = typename matter_t::template Vars<data_t>;
+        using MatterVars = ADMProcaVars::MatterVars<data_t>;
 
     // Now the non grid ADM vars
     template <class data_t> using MetricVars = ADMFixedBGVars::Vars<data_t>;

@@ -7,6 +7,7 @@
 #define MATTEREVOLUTION_HPP_
 
 #include "ADMFixedBGVars.hpp"
+#include "ADMProcaVars.hpp"
 #include "Cell.hpp"
 #include "Coordinates.hpp"
 #include "FourthOrderDerivatives.hpp"
@@ -32,7 +33,7 @@ template <class matter_t, class background_t> class MatterEvolution
   public:
     //! Inherit the variable definitions from the Matter vars
     template <class data_t>
-    using MatterVars = typename matter_t::template Vars<data_t>;
+    using MatterVars = ADMProcaVars::MatterVars<data_t>;
 
     //  Need d2 of certain matter vars
     template <class data_t>

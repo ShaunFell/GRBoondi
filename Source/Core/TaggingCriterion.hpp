@@ -83,19 +83,6 @@ class CustomTaggingCriterion
         return criterion;
     }
 
-    template <class data_t>
-    data_t ConstraintTagging(Cell<data_t> current_cell) const
-    {
-        data_t criterion { 0. };
-        if (m_activate_ham_tagging)
-        {
-            //Hamiltonian tagging
-            auto Ham_abs_sum = current_cell.load_vars(c_Ham_abs_sum);
-            criterion += sqrt(Ham_abs_sum) * m_dx;
-        }
-
-        return criterion;
-    }
 
 
     template <class data_t> 
@@ -106,14 +93,10 @@ class CustomTaggingCriterion
         //first run fixed grid
         data_t FixedGridsTaggingCriterion { FixedGridTagging(current_cell) };
 
-        //then run Constraint tagging
-        data_t ConstraintTaggingCriterion { ConstraintTagging(current_cell) };
-
         //then run Extraction tagging
         data_t ExtractionTaggingCriterion { ExtractionTagging(current_cell) };
 
-        data_t maxFixedGridExtraction { simd_max(FixedGridsTaggingCriterion, ExtractionTaggingCriterion) };
-        data_t criterion { simd_max(maxFixedGridExtraction, ConstraintTaggingCriterion) };
+        data_t criterion { simd_max(FixedGridsTaggingCriterion, ExtractionTaggingCriterion) };
 
         // Write back into the flattened Chombo box
         current_cell.store_vars(criterion, 0);

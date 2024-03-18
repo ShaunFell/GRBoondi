@@ -1,6 +1,11 @@
+/*
+This diagnostic class calculates the square of the Proca field
+*/
+
 #include "Tensor.hpp"
 #include "TensorAlgebra.hpp"
 #include "ADMFixedBGVars.hpp"
+#include "ADMProcaVars.hpp"
 #include "FourthOrderDerivatives.hpp"
 #include "BaseProcaField.hpp"
 
@@ -21,7 +26,7 @@ class ProcaSquared
         using MetricVars = ADMFixedBGVars::Vars<data_t>;
 
         template <class data_t>
-        using MatterVars = typename ProcaField<ProcaPotential>::template Vars<data_t>;
+        using MatterVars = ADMProcaVars::MatterVars<data_t>;
 
     public:
         ProcaSquared(double a_dx, const std::array<double, CH_SPACEDIM> a_center, const background_t a_background): m_dx(a_dx),m_deriv{m_dx}, m_center{a_center}, m_background{a_background} {};

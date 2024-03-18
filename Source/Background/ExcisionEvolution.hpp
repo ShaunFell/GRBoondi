@@ -12,13 +12,14 @@
 #include "Tensor.hpp"
 #include "UserVariables.hpp" //This files needs NUM_VARS - total number of components
 #include "VarsTools.hpp"
+#include "ADMProcaVars.hpp"
 
 //! Does excision for fixed BG solutions
 template <class matter_t, class background_t> 
 class ExcisionEvolution
 {
     // Use matter_t class
-    using Vars = typename matter_t::template Vars<double>;
+    using Vars = typename ADMProcaVars::MatterVars<double>;
 
   protected:
     const double m_dx;                              //!< The grid spacing
