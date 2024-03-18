@@ -53,7 +53,7 @@ class FluxExtraction : public SphericalExtraction
         // this would write out the values at every point on the sphere
         if (m_params.write_extraction)
         {
-            write_extraction("Flux4ExtractionOut_");
+            write_extraction("FluxExtraction");
         }
 
         // Setup to integrate Edot and Jdot

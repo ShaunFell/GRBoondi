@@ -1,10 +1,10 @@
 
-#if !defined(PROCAFIELDLEVEL_H_INCLUDED)
+#if !defined(BASEPROCAFIELDLEVEL_H_INCLUDED)
 #error "This file should only be included through BaseProcaFieldLevel.hpp"
 #endif
 
-#ifndef PROCAFIELDLEVEL_IMPL_H_INCLUDED
-#define PROCAFIELDLEVEL_IMPL_H_INCLUDED
+#ifndef BASEPROCAFIELDLEVEL_H_INCLUDED
+#define BASEPROCAFIELDLEVEL_H_INCLUDED
 
 
 
@@ -26,8 +26,21 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificAdvance()
 template <class background_t, class proca_t>
 void BaseProcaFieldLevel<background_t, proca_t>::prePlotLevel()
 {
+   
+    fillAllGhosts(); 
+    background_t background_init { m_p.background_params, m_dx };
+    proca_t proca_field(background_init, m_p.matter_params);
+    ProcaSquared<background_t> Asquared(m_dx, m_p.center, background_init);
+    ChargesFluxes<proca_t, background_t> EM(background_init,m_dx, proca_field, m_p.center);
 
-    fillAllGhosts();
+    //compute diagnostics on each cell of current level
+    BoxLoops::loop(
+        make_compute_pack(
+            Asquared,
+            EM
+            ),
+        m_state_new, m_state_diagnostics, EXCLUDE_GHOST_CELLS
+        );
 
 };
 #endif //CH_USE_HDF5
@@ -47,7 +60,7 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificEvalRHS(GRLevelData &a_
 
     //Calculate right hand side with matter_t = ProcaField
     background_t background_init { m_p.background_params, m_dx };
-    proca_t proca_field(background_init);
+    proca_t proca_field(background_init, m_p.matter_params);
     
     MatterEvolution<proca_t, background_t> matter_class(proca_field, background_init, m_p.sigma, m_dx, m_p.center);
     ExcisionEvolution<proca_t, background_t> excisor(m_dx, m_p.center, background_init);
@@ -81,27 +94,35 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
 
     bool first_step = (m_time == 0.); //is this the first call of posttimestep? Recall, we're calling PostTimeStep in the main function, so m_time==0 is first step
 
+    pout() << "BaseProcaFieldLevel::specificPostTimeStep" << endl;
     int min_level = 0;
     bool at_course_timestep_on_any_level = at_level_timestep_multiple(min_level);
 
     //extract fluxes at specified radii
     if (m_p.activate_extraction)
     {
-
+        
+        pout() << "Extracting fluxes" << endl;
         int min_level = m_p.extraction_params.min_extraction_level();
+        pout() << "min_level = " << min_level << endl;
         if (at_course_timestep_on_any_level)
         {
+            pout() << "Filling ghosts" << endl;
             fillAllGhosts();
             
+            pout() << "Class instantiations" << endl;
             background_t background_init { m_p.background_params, m_dx };
-            proca_t proca_field(background_init);
+            proca_t proca_field(background_init, m_p.matter_params);
             ChargesFluxes<proca_t, background_t> EM(background_init,m_dx, proca_field, m_p.center);
             ExcisionDiagnostics<proca_t,background_t> excisor(background_init, m_dx, m_p.center);
 
+            pout() << "Looping EM" << endl;
             BoxLoops::loop(
                 EM,
                 m_state_diagnostics, m_state_diagnostics, SKIP_GHOST_CELLS
             );
+
+            pout() << "Looping excisor" << endl;
             BoxLoops::loop(
                 excisor,
                 m_state_diagnostics, m_state_diagnostics, SKIP_GHOST_CELLS, disable_simd()
@@ -113,12 +134,14 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
                 CH_TIME("WeylExtraction");
                 //refresh interpolator
                 //fill ghosts manually
+                pout() << "Refreshing interpolator" << endl;
                 bool fill_ghosts = false;
                 m_gr_amr.m_interpolator->refresh(fill_ghosts);
                 m_gr_amr.fill_multilevel_ghosts(
                     VariableType::diagnostic, Interval(c_Edot, c_Jdot),
                     min_level);
                 FluxExtraction my_extraction(m_p.extraction_params, m_dt, m_time, first_step, m_restart_time);
+                pout() << "Executing query" << endl;
                 my_extraction.execute_query(m_gr_amr.m_interpolator);
             }
         }
@@ -133,7 +156,7 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
         if ( !m_p.activate_extraction ) //did we already calculate diagnostics during extraction?
         {
             background_t background_init { m_p.background_params, m_dx };
-            proca_t proca_field(background_init);
+            proca_t proca_field(background_init, m_p.matter_params);
 
             ChargesFluxes<proca_t, background_t> EM(background_init,m_dx, proca_field, m_p.center);
             ExcisionDiagnostics<proca_t,background_t> excisor(background_init, m_dx, m_p.center);
@@ -173,4 +196,4 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
 
 }
 
-#endif //PROCAFIELDLEVEL_IMPL_H_INCLUDED
+#endif //BASEPROCAFIELDLEVEL_H_INCLUDED

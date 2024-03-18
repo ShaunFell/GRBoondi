@@ -1,5 +1,5 @@
-#ifndef PROCAFIELDLEVEL_H_INCLUDED
-#define PROCAFIELDLEVEL_H_INCLUDED
+#ifndef BASEPROCAFIELDLEVEL_H_INCLUDED
+#define BASEPROCAFIELDLEVEL_H_INCLUDED
 
 
 //general includes common to most GR problems
@@ -17,6 +17,9 @@
 //Flux Extraction
 #include "FluxExtraction.hpp"
 #include "ChargesFluxes.hpp"
+
+//Diagnostics
+#include "ProcaSquared.hpp"
 
 //RHS Update
 #include "MatterEvolution.hpp"
@@ -70,4 +73,4 @@ class BaseProcaFieldLevel : public GRAMRLevel
 
 #include "BaseProcaFieldLevel.impl.hpp"
 
-#endif //PROCAFIELDLEVEL_H_INCLUDED
+#endif //BASEPROCAFIELDLEVEL_H_INCLUDED

@@ -15,6 +15,7 @@
 #include "simd.hpp"
 
 #include "DiagnosticVariables.hpp"
+#include "ADMProcaVars.hpp"
 
 //! Does excision for fixed BG BH solutions
 //! Note that it is does not using simd so one must set disable_simd()
@@ -27,7 +28,7 @@ class ExcisionDiagnostics
         
         background_t m_background;
 
-      using Vars = typename matter_t::template Vars<double>;
+      using Vars = typename ADMProcaVars::MatterVars<double>;
 
   public:
 

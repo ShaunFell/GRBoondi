@@ -7,7 +7,7 @@
 verbosity = 3
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_EMField_23259782"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_EMField_23262292"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -148,3 +148,23 @@ sigma = 0.3 #the default
 
 inner_r = 1.1
 outer_r = 30
+
+## percentage to excise within horizon
+# 1 = excise the entire region within r<r_s
+# 0.97 = excise r < 0.97*r_s
+excision_width=1 
+
+################################################## Extraction
+##################################################
+
+activate_extraction = 1 # extraction of fluxes
+activate_integration = 1 # integration of densities
+
+num_extraction_radii = 2
+extraction_radii = 1.2 30
+extraction_levels = 0 0
+num_points_phi = 24
+num_points_theta = 37
+
+write_extraction = 0
+extraction_subpath = "extraction"

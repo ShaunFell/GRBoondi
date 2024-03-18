@@ -2,12 +2,12 @@
 implementation file for ProcaField.hpp
 */
 
-#if !defined(PROCAFIELD_H_INCLUDED)
+#if !defined(BASEPROCAFIELD_H_INCLUDED)
 #error "This file should only be included through GeneralizedProcaField.hpp"
 #endif
 
-#ifndef PROCAFIELD_IMPL_H_INCLUDED
-#define PROCAFIELD_IMPL_H_INCLUDED
+#ifndef BASEPROCAFIELD_IMPL_H_INCLUDED
+#define BASEPROCAFIELD_IMPL_H_INCLUDED
 
 /* //SIMD vectorization
  template <class background_t>
@@ -318,4 +318,4 @@ void BaseProcaField<background_t>::matter_rhs(
     matter_rhs_modification(total_rhs, matter_vars, metric_vars, d1, d2, advec);
 } */
 
-#endif // PROCAFIELD_IMPL_H_INCLUDED
+#endif // BASEPROCAFIELD_IMPL_H_INCLUDED

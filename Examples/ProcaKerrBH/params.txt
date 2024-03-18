@@ -1,36 +1,37 @@
-
-
-
-### GeneralizedProca_FixedBH
-### params_FIXED_HighRes.txt
-
-
+### EMKerrBH
+###  params.txt
 
 ################################################## Filesystem parameters
 
 
-verbosity = 0
+verbosity = 3
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_Proca_GRChombo_23249002"
-chk_prefix = "GeneralizedProcaFixed_"
-plot_prefix = "GeneralizedProcaFixedp_"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_EMField_23262292"
+
+#filename prefixes for checkpoint files and plot files
+chk_prefix = "GeneralizedProca_"
+plot_prefix = "GeneralizedProcap_"
+
+#file to restart the simulation from
 #restart_file = GeneralizedProca_000003.3d.hdf5
-integrals_filename = "integrals"
 
 # HDF5files are written every dt = L/N*dt_multiplier*checkpoint_interval
-checkpoint_interval = 1
+checkpoint_interval = 100
 # set to 0 to turn off plot files (except at t=0 and t=stop_time)
 # set to -1 to never ever print plotfiles
 plot_interval = 1
+
+#plot variable names must match those in the DiagnosticVariables::DiagnosticVariables namespace
 num_plot_vars = 7
-plot_vars = chi Gauss Asquared Z rho rhoJ rhoE
+plot_vars = Ham Asquared  rho rhoJ rhoE Edot Jdot
 
 # subpaths - specific directories for hdf5, pout, extraction data
 # (these are created at runtime)
 hdf5_subpath = "hdf5"
 pout_subpath = "pout"
 data_subpath = "data"
+integrals_filename = "Integrals"
 
 # change the name of output files
 # pout_prefix = "pout"
@@ -42,42 +43,37 @@ print_progress_only_to_rank_0 = 0
 ################################################# constraint tagging
 ##################################################
 activate_ham_tagging = 0
-activate_gauss_tagging = 0
-
-max_level = 6
-# using fixed grid right now. Uncomment when using Constraint tagging!!
-regrid_interval   =  0 0 0 0 0 0
-#regrid_threshold = 0.005
 
 
-################################################## Physical constants
+################################################# AMR levels
 ##################################################
-G_Newton = 0
+
+max_level = 5
+
+#Since we use fixed grid tagging, we dont ever need to regrid
+regrid_interval = 0 0 0 0 0
 
 ################################################## Initial Data parameters
 ##################################################
 
-# Kerr parameters
+# kerr params
 kerr_mass = 1.0
-kerr_spin = 0.99
-#kerr_center = 64 64 64 # defauts to center
-kerr_spindir = 0 0 1 #along z-axis
+kerr_spin = 0.9
+kerr_spindir = 0 0 1
 
+# EM parameters
+initial_amplitude = 0.1
 
-# Proca parameters
-proca_damping = 1.0
+#L2 lagrangian parameters
+L2_alpha = 1
 
-# Potential parameters
-proca_mass = 0.40
-proca_self_interaction = 0.
-
-#Initial condition parameters
-initial_proca_amplitude = 0.1
+#proca parameters
+proca_mass = 0.3
 
 ################################################## Grid parameters
 ##################################################
 
-N_full = 128
+N_full = 64
 L_full = 64
 
 # Max and min box sizes
@@ -88,13 +84,14 @@ min_box_size = 16
 tag_buffer_size = 0
 
 #grid spacing between refinement levels
-#grid_buffer_size = 32
+# grid_buffer_size = 16
 # fill_ratio = 0.7
 # num_ghosts = 3
 # center = 256.0 256.0 256.0 # defaults to center of the grid
 
 #global scaling of refinement levels. Larger value equals larger refinement levels
-grid_scaling = 1.0
+grid_scaling = 4
+initial_ratio =0.25
 
 ################################################## Boundary Conditions parameters
 ##################################################
@@ -105,9 +102,10 @@ isPeriodic = 0 0 0
 # 0 = static, 1 = sommerfeld, 2 = reflective
 # (see BoundaryConditions.hpp for details)
 
-#sommerfeld outgoing-radiation condition
-hi_boundary = 1 1 1
-lo_boundary = 1 1 2
+#sommerfeld outgoing-radiation condition and use z-symmetry of kerr background
+# see read_me for definition of hi and lo boundary
+hi_boundary = 3 3 3
+lo_boundary = 3 3 2
 
 # if reflective boundaries selected, must set
 # parity of all vars (in order given by UserVariables.hpp)
@@ -115,64 +113,64 @@ lo_boundary = 1 1 2
 # 1,2,3 = odd x, y, z
 # 4,5,6 = odd xy, yz, xz
 # 7     = odd xyz
-vars_parity            =  0 1 2 3 #phi Avec
-                                1 2 3 0 # Evec Z
-vars_parity_diagnostic =  0 0 0 0 1 2 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0      #Ham, Ham abs sum,  Mom, and the rest scalars
+vars_parity            = 0 0 4 6 0 5 0    #chi and hij
+                         0 0 4 6 0 5 0    #K and Aij
+                         0 1 2 3          #Theta and Gamma
+                         0 1 2 3 1 2 3    #lapse shift and B
+                         0 1 2 3 1 2 3 0  # phi, Ai, Ei, Z 
+vars_parity_diagnostic = 0 0 1 2 3 0 0 0    #Ham and Mom
+                         0 0 0 0 0 0 0 0 0 0   # Other vars all scalars
+                         0 7                # Weyl scalars
 
 # if sommerfeld boundaries selected, must select
 # non zero asymptotic values
-num_nonzero_asymptotic_vars = 0
+num_nonzero_asymptotic_vars = 5
 nonzero_asymptotic_vars = chi h11 h22 h33 lapse
 nonzero_asymptotic_values = 1.0 1.0 1.0 1.0 1.0
 
 # if you are using extrapolatin BC:
-extrapolation_order = 0
-num_extrapolating_vars = 0
-extrapolating_vars = phi
+extrapolation_order = 1
+num_extrapolating_vars = 7
+extrapolating_vars = phi Evec1 Evec2 Evec3 Avec1 Avec2 Avec3
+
+
 
 ################################################## Evolution parameters
-##################################################
+#################################################
 
 # dt will be dx*dt_multiplier on each grid level
-dt_multiplier = 0.2 #CFL factor
-stop_time = 20000
-# max_steps = 100
+dt_multiplier = 0.2
+stop_time = 10000.0
+# max_steps = 4
 
 nan_check = 1
 
 # coefficient for KO numerical dissipation
-#sigma = 0.3 #default
-sigma = 0.4
-
-min_chi = 1.e-4
-min_lapse = 1.e-4
+sigma = 0.3 #the default
 
 
-################################################## Excision parameters
+################################################## Excision
 ##################################################
 
-excision_width = 0.97
+inner_r = 1.1
+outer_r = 30
 
-################################################## Extraction parameters
+## percentage to excise within horizon
+# 1 = excise the entire region within r<r_s
+# 0.97 = excise r < 0.97*r_s
+excision_width=1 
+
+################################################## Extraction
 ##################################################
 
-activate_extraction = 0
-activate_integration = 1
-
-
+activate_extraction = 1 # extraction of fluxes
+activate_integration = 1 # integration of densities
 
 num_extraction_radii = 2
-extraction_radii = 50.0 100.0
-inner_r = 1.141067359796659 #minimal horizon size in Kerr-Schild coords with initial mass = 1
-outer_r = 30
-extraction_levels = 1 1
+extraction_radii = 1.2 30
+extraction_levels = 0 0
 num_points_phi = 24
 num_points_theta = 37
 
-
-integrals_filename = "Integrals"
-
 write_extraction = 0
-extraction_subpath = "/extraction" # directory for 'write_extraction = 1'
-extraction_file_prefix = "Weyl4_extraction_"
-
+extraction_subpath = "extraction"
