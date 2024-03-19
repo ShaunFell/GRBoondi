@@ -17,6 +17,9 @@ class ChargesFluxes
         template <class data_t>
         using MatterVars = ADMProcaVars::MatterVars<data_t>;
 
+        template <class data_t>
+        using MatterDiff2Vars = ADMProcaVars::Diff2MatterVars<data_t>;
+
         const matter_t m_matter;
         const double m_dx;
         const std::array<double, CH_SPACEDIM> m_center;

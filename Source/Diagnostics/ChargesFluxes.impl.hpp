@@ -17,18 +17,19 @@ void ChargesFluxes<matter_t, background_t>::compute(Cell<data_t> current_cell) c
         See https://arxiv.org/pdf/2104.13420.pdf for conservation equations
     */
 
-
     Coordinates<data_t> coords(current_cell, m_dx, m_center);
-
-    //load variables from Chombo grid and compute derivatives
-    MatterVars<data_t> matter_vars { current_cell.template load_vars<MatterVars>() };
-    auto matter_vars_d1 = m_deriv.template diff1<MatterVars>(current_cell);
 
     //load background variables
     MetricVars<data_t> metric_vars;
 
     //compute background
     m_background.compute_metric_background(metric_vars, coords);
+
+    //load variables from Chombo grid and compute derivatives
+    const MatterVars<data_t> matter_vars { current_cell.template load_vars<MatterVars>() };
+    const MatterVars<Tensor<1,data_t>> matter_vars_d1 { m_deriv.template diff1<MatterVars>(current_cell) };
+    const MatterDiff2Vars<Tensor<2,data_t>> matter_vars_d2 { m_deriv.template diff2<MatterDiff2Vars>(current_cell) };
+    const MatterVars<data_t> advec { m_deriv.template advection<MatterVars>(current_cell, metric_vars.shift) };
     
     //calculate contravariant spatial metric
     const auto gamma_UU = TensorAlgebra::compute_inverse_sym(metric_vars.gamma);
@@ -38,7 +39,7 @@ void ChargesFluxes<matter_t, background_t>::compute(Cell<data_t> current_cell) c
     const auto det_gamma = TensorAlgebra::compute_determinant_sym(metric_vars.gamma);
    
     //compute EM tensor
-    const auto emtensor = m_matter.compute_emtensor(matter_vars, metric_vars, matter_vars_d1, gamma_UU, chris_phys);
+    const auto emtensor = m_matter.compute_emtensor(matter_vars, metric_vars, matter_vars_d1, matter_vars_d2, advec);
     
     /*
             compute conserved charges related to killing vectors in Kerr-Schild spacetime
@@ -132,7 +133,6 @@ void ChargesFluxes<matter_t, background_t>::compute(Cell<data_t> current_cell) c
         }
     }
     Jdot *= sqrt_det_Sigma / r2sintheta;
-
 
 
     //assign to grid cell

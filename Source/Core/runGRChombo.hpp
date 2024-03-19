@@ -58,7 +58,7 @@ int runGRChombo(int argc, char *argv[])
     std::chrono::time_point<Clock> start_time = Clock::now();
 
     //call the PostTimeStep right now!!!!
-    pout() << "Running initial PostTimeStep" << endl;
+/*     pout() << "Running initial PostTimeStep" << endl;
     auto task = [](GRAMRLevel *level)
     {
         if (level->time() == 0.)
@@ -69,7 +69,7 @@ int runGRChombo(int argc, char *argv[])
 
     // call 'now' really now
     MultiLevelTaskPtr<> call_task(task);
-    call_task.execute(bh_amr); 
+    call_task.execute(bh_amr);  */
 
 
     //go go go !!!!!! Run simulation

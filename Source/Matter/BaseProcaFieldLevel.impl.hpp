@@ -3,8 +3,8 @@
 #error "This file should only be included through BaseProcaFieldLevel.hpp"
 #endif
 
-#ifndef BASEPROCAFIELDLEVEL_H_INCLUDED
-#define BASEPROCAFIELDLEVEL_H_INCLUDED
+#ifndef BASEPROCAFIELDLEVEL_IMPL_H_INCLUDED
+#define BASEPROCAFIELDLEVEL_IMPL_H_INCLUDED
 
 
 
@@ -119,8 +119,7 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
             pout() << "Looping EM" << endl;
             BoxLoops::loop(
                 EM,
-                m_state_diagnostics, m_state_diagnostics, SKIP_GHOST_CELLS
-            );
+                m_state_new, m_state_diagnostics, SKIP_GHOST_CELLS);
 
             pout() << "Looping excisor" << endl;
             BoxLoops::loop(
@@ -146,15 +145,18 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
             }
         }
     } //end of flux block
+    pout() << "Done with extraction" << endl;
 
     //integrate charges
     if (m_p.activate_integration && at_course_timestep_on_any_level)
     {
-        fillAllGhosts();
+        pout() << "Integrating charges" << endl;
         
         //calculate densities on grid
         if ( !m_p.activate_extraction ) //did we already calculate diagnostics during extraction?
         {
+            fillAllGhosts();
+            pout() << "extraction not activated, so calculating charges" << endl;
             background_t background_init { m_p.background_params, m_dx };
             proca_t proca_field(background_init, m_p.matter_params);
 
@@ -168,6 +170,7 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
 
         if (m_level == min_level)
         {
+            pout() << "We're in min_level, so perform integration" << endl;
             //setup integrator
             AMRReductions<VariableType::diagnostic> amr_reductions(m_gr_amr);
 
@@ -193,7 +196,8 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
         }
          
     } //end of integration block
+    pout() << "postTimeStep done" << endl;
 
 }
 
-#endif //BASEPROCAFIELDLEVEL_H_INCLUDED
+#endif //BASEPROCAFIELDLEVEL_IMPL_H_INCLUDED
