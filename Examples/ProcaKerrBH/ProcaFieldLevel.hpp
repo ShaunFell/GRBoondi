@@ -19,7 +19,7 @@ Example of defining a level class that sets initial conditions
 class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
 {
 public:
-    //inherit constructor from base class
+    //inherit constructor from base class (note: BaseProcaFieldLevel itself inherits from GRAMRLevel)
     using BaseProcaFieldLevel::BaseProcaFieldLevel;
 
 

@@ -10,8 +10,8 @@ This class adds the simplest L2 lagrangian to the base equations of motion
 #include "ADMFixedBGVars.hpp"
 #include "ADMProcaVars.hpp"
 
-
-class ProcaField: public BaseProcaField<KerrSchild>
+// Note: base class BaseProcaField uses CRTP, so pass ProcaField itself as template argument
+class ProcaField: public BaseProcaField<KerrSchild, ProcaField>
 {
 
     protected:
@@ -34,23 +34,26 @@ class ProcaField: public BaseProcaField<KerrSchild>
         {
             double mass;
             double alpha2;
+            double vector_damping;
         };
 
         KerrSchild m_background;
         params_t m_params;
         L2_t m_L2;
+        DefaultG2 m_G2;
 
 
 
-        ProcaField(KerrSchild a_background, params_t a_params): BaseProcaField<KerrSchild>(a_background),  m_background(a_background), m_params(a_params)
+        ProcaField(KerrSchild a_background, params_t a_params): BaseProcaField<KerrSchild, ProcaField>(a_background),  m_background(a_background), m_params(a_params)
         {
             //set up the L2 lagrangian
 
             DefaultG2::params_t G2_params{m_params.mass}; //Initialize G2 function parameters
             L2_t::params_t L2_params{m_params.alpha2}; //Initialize L2 Lagrangian parameters
 
-            DefaultG2 m_G2(G2_params);
-            this -> m_L2 = L2_t(m_G2, L2_params);
+            DefaultG2 a_G2(G2_params);
+            this -> m_L2 = L2_t(a_G2, L2_params);
+            this -> m_G2 = a_G2;
         };
 
         template <class data_t>
@@ -61,7 +64,7 @@ class ProcaField: public BaseProcaField<KerrSchild>
             const MatterVars<Tensor<1, data_t>> &d1,
             const MatterVarsD2<Tensor<2, data_t>> &d2, //2nd derivs
             const MatterVars<data_t> &advec //value of the beta^i d_i(var) terms
-        ) const override 
+        ) const 
         {
             m_L2.compute_emtensor_modification(base_emtensor, matter_vars, metric_vars, d1,  d2, advec);
         }; 
@@ -74,9 +77,40 @@ class ProcaField: public BaseProcaField<KerrSchild>
             const MatterVars<Tensor<1, data_t>> &d1, //value of 1st derivs
             const MatterVarsD2<Tensor<2, data_t>> &d2, //2nd derivs
             const MatterVars<data_t> &advec //value of the beta^i d_i(var) terms
-        ) const override
+        ) const
         {
+            //add modification due to L2 lagrangian
             m_L2.matter_rhs_modification(total_rhs, vars, metric_vars, d1, d2, advec);
+
+            //add auxiliary field damping to minimize violation of gauss constraint
+
+            Tensor<2, data_t> gamma_UU { TensorAlgebra::compute_inverse_sym(metric_vars.gamma) };
+            auto chris_phys { TensorAlgebra::compute_christoffel(metric_vars.d1_gamma, gamma_UU).ULL };
+
+            data_t g_func { 0 };
+            data_t g_func_prime { 0 };
+            data_t g_func_prime2 { 0 };
+            m_G2.compute_function(g_func, g_func_prime, g_func_prime2, vars, metric_vars, d1, d2);
+
+            //Modify scalar part
+            total_rhs.phi -= metric_vars.lapse * vars.Z;
+
+            //modify electric field part
+            FOR2(i,j)
+            {
+                total_rhs.Evec[i] += metric_vars.lapse * gamma_UU[i][j] * d1.Z[j];
+            }
+
+            //add evolution for auxiliary Z field
+            total_rhs.Z = 2 * metric_vars.lapse * g_func_prime * vars.phi - m_params.vector_damping * metric_vars.lapse * vars.Z + advec.Z;
+            FOR1(i)
+            {
+                total_rhs.Z += metric_vars.lapse * d1.Evec[i][i];
+                FOR1(j)
+                {
+                    total_rhs.Z += metric_vars.lapse * chris_phys[i][i][j] * vars.Evec[j];
+                }
+            }
         };
 
     

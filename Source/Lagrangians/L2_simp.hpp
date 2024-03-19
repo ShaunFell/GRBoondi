@@ -54,8 +54,8 @@ class DefaultG2
 
         DefaultG2(params_t a_params): m_params{a_params} {};
 
-        template <class data_t, template <typename> class vars_t>
-        void compute_function(data_t &g_fun, data_t &g_prime, data_t &g_prime2, const vars_t<data_t> &vars, const MetricVars<data_t> &metric_vars, const vars_t<Tensor<1,data_t>> &d1, const vars_t<Tensor<1,data_t>> &d2) const
+        template <class data_t, template <typename> class vars_t, template <typename> class diff2_vars_t>
+        void compute_function(data_t &g_fun, data_t &g_prime, data_t &g_prime2, const vars_t<data_t> &vars, const MetricVars<data_t> &metric_vars, const vars_t<Tensor<1,data_t>> &d1, const diff2_vars_t<Tensor<2,data_t>> &d2) const
         {
             auto gamma_UU { TensorAlgebra::compute_inverse_sym(metric_vars.gamma) };
             data_t A_squared { - vars.phi * vars.phi };
@@ -64,8 +64,8 @@ class DefaultG2
                 A_squared += vars.Avec[i] * vars.Avec[i] * gamma_UU[i][j];
             }
 
-            g_fun = - 0.5 * m_params.mass * A_squared;
-            g_prime = -0.5 * m_params.mass; 
+            g_fun = - 0.5 * m_params.mass * m_params.mass * A_squared;
+            g_prime = -0.5 * m_params.mass * m_params.mass; 
             g_prime2 = 0.;
         }
 
@@ -99,13 +99,13 @@ class L2
         L2(G2 a_G2_function, params_t a_params) : m_g2_function(a_G2_function), m_params{a_params} {};
 
     
-        template <class data_t, template <typename> class vars_t, template <typename> class diff2_vars_t, template <typename> class rhs_vars_t>
+        template <class data_t, template <typename> class vars_t, template <typename> class diff2_vars_t>
         void compute_emtensor_modification(
             emtensor_t<data_t> &base_emtensor,
             const vars_t<data_t> &matter_vars,
             const MetricVars<data_t> &metric_vars,
             const vars_t<Tensor<1,data_t>> &d1,
-            const diff2_vars_t<Tensor<1,data_t>> &d2,
+            const diff2_vars_t<Tensor<2,data_t>> &d2,
             const vars_t<data_t> &advec
         ) const;
 
@@ -116,7 +116,7 @@ class L2
             const vars_t<data_t> &vars,
             const MetricVars<data_t> &metric_vars,
             const vars_t<Tensor<1,data_t>> &d1,
-            const diff2_vars_t<Tensor<1,data_t>> &d2,
+            const diff2_vars_t<Tensor<2,data_t>> &d2,
             const vars_t<data_t> &advec
         ) const ;
 

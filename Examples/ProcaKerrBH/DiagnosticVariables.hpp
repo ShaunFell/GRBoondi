@@ -17,6 +17,8 @@ enum
 
     c_chi,
 
+    c_gauss,
+
     NUM_DIAGNOSTIC_VARS
 };
 
@@ -33,7 +35,9 @@ namespace DiagnosticVariables
         "Edot",
         "Jdot",
 
-        "chi"
+        "chi",
+
+        "gauss"
     };
 }
 

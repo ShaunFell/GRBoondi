@@ -37,7 +37,7 @@ template <class matter_t, class background_t> class MatterEvolution
 
     //  Need d2 of certain matter vars
     template <class data_t>
-    using MatterDiff2Vars = typename matter_t::template Diff2Vars<data_t>;
+    using MatterDiff2Vars = ADMProcaVars::Diff2MatterVars<data_t>;
 
     // This is used for the non evolved ADM vars
     template <class data_t> using MetricVars = ADMFixedBGVars::Vars<data_t>;

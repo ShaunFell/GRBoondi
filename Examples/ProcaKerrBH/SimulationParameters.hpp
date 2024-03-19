@@ -34,6 +34,9 @@ class SimulationParameters : public ProcaSimulationParameters
             //G2 function params
             pp.load("proca_mass", matter_params.mass);
 
+            //constraint violation damping
+            pp.load("z_damping", matter_params.vector_damping);
+
         }
 
         //parameters of kerr bh

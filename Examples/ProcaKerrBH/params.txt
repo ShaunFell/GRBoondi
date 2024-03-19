@@ -7,7 +7,7 @@
 verbosity = 3
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_EMField_23262292"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23266799"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -69,6 +69,9 @@ L2_alpha = 1
 
 #proca parameters
 proca_mass = 0.3
+
+#constraint violation damping
+z_damping = 1.0
 
 ################################################## Grid parameters
 ##################################################
@@ -163,8 +166,8 @@ excision_width=1
 ################################################## Extraction
 ##################################################
 
-activate_extraction = 1 # extraction of fluxes
-activate_integration = 1 # integration of densities
+activate_extraction = 0 # extraction of fluxes
+activate_integration = 0 # integration of densities
 
 num_extraction_radii = 2
 extraction_radii = 1.2 30
