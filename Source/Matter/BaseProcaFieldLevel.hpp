@@ -20,6 +20,7 @@
 
 //Diagnostics
 #include "ProcaSquared.hpp"
+#include "DampingField.hpp"
 
 //RHS Update
 #include "MatterEvolution.hpp"

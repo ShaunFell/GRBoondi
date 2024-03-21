@@ -42,12 +42,17 @@ class ExcisionDiagnostics
             const Coordinates<double> coords(current_cell, m_dx, m_center);
             Vars matter_vars;
 
-            if (m_background.check_if_excised(coords) )
+            if (m_background.check_if_excised(coords, 0.97) )
             {
                   VarsTools::assign(matter_vars, 0.0);
 
                   //assign values of variables to cell
                   current_cell.store_vars(matter_vars);
+            }
+
+            if (m_background.check_if_excised(coords, 1)) //Excise the auxiliary Z field right at the horizon, since it can substantially drive errors
+            {
+                  current_cell.store_vars(0.0, c_Z);
             }
 
         }//end of method def

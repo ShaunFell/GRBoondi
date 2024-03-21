@@ -17,7 +17,9 @@ enum
 
     c_chi,
 
-    c_gauss,
+    c_Z_out,
+
+    c_Tagging_Diagnostic,
 
     NUM_DIAGNOSTIC_VARS
 };
@@ -37,7 +39,11 @@ namespace DiagnosticVariables
 
         "chi",
 
-        "gauss"
+        "Z",
+
+        "Tagging_Diagnostic"
+        
+
     };
 }
 

@@ -7,6 +7,7 @@ This class adds the simplest L2 lagrangian to the base equations of motion
 #include "BaseProcaField.hpp"
 #include "KerrSchild.hpp"
 #include "L2_simp.hpp"
+#include "DefaultG.hpp"
 #include "ADMFixedBGVars.hpp"
 #include "ADMProcaVars.hpp"
 
@@ -25,7 +26,7 @@ class ProcaField: public BaseProcaField<KerrSchild, ProcaField>
         template <class data_t>
         using MetricVars = typename ADMFixedBGVars::template Vars<data_t>;
 
-        using L2_t = L2<DefaultG2>;
+        using L2_t = L2<DefaultG>;
 
 
     public:
@@ -40,7 +41,7 @@ class ProcaField: public BaseProcaField<KerrSchild, ProcaField>
         KerrSchild m_background;
         params_t m_params;
         L2_t m_L2;
-        DefaultG2 m_G2;
+        DefaultG m_G2;
 
 
 
@@ -48,10 +49,10 @@ class ProcaField: public BaseProcaField<KerrSchild, ProcaField>
         {
             //set up the L2 lagrangian
 
-            DefaultG2::params_t G2_params{m_params.mass}; //Initialize G2 function parameters
+            DefaultG::params_t G2_params{m_params.mass}; //Initialize G2 function parameters
             L2_t::params_t L2_params{m_params.alpha2}; //Initialize L2 Lagrangian parameters
 
-            DefaultG2 a_G2(G2_params);
+            DefaultG a_G2(G2_params);
             this -> m_L2 = L2_t(a_G2, L2_params);
             this -> m_G2 = a_G2;
         };
@@ -92,8 +93,10 @@ class ProcaField: public BaseProcaField<KerrSchild, ProcaField>
             data_t g_func_prime2 { 0 };
             m_G2.compute_function(g_func, g_func_prime, g_func_prime2, vars, metric_vars, d1, d2);
 
+            data_t gnn {  m_params.alpha2 * (g_func_prime - 2 * vars.phi * vars.phi * g_func_prime2) };
+
             //Modify scalar part
-            total_rhs.phi -= metric_vars.lapse * vars.Z;
+            total_rhs.phi += metric_vars.lapse * vars.Z * m_params.mass * m_params.mass / (2 * gnn);
 
             //modify electric field part
             FOR2(i,j)
@@ -102,7 +105,9 @@ class ProcaField: public BaseProcaField<KerrSchild, ProcaField>
             }
 
             //add evolution for auxiliary Z field
-            total_rhs.Z = 2 * metric_vars.lapse * g_func_prime * vars.phi - m_params.vector_damping * metric_vars.lapse * vars.Z + advec.Z;
+            // total_rhs.Z = 2 * m_params.alpha2 * metric_vars.lapse * g_func_prime * vars.phi - m_params.vector_damping * metric_vars.lapse * vars.Z + advec.Z;
+            total_rhs.Z =  - 2 * m_params.alpha2 * metric_vars.lapse * g_func_prime * vars.phi - m_params.vector_damping * metric_vars.lapse * vars.Z + advec.Z;
+
             FOR1(i)
             {
                 total_rhs.Z += metric_vars.lapse * d1.Evec[i][i];

@@ -72,7 +72,7 @@ emtensor_t<data_t> BaseProcaField<background_t, modification_t>::compute_emtenso
 
             FOR2(m, n)
             {
-                out.Sij[i][j] += -metric_vars.gamma[i][j] * gamma_UU[m][l] *
+                out.Sij[i][j] += - 0.5 * metric_vars.gamma[i][j] * gamma_UU[m][l] *
                                 gamma_UU[n][k] * DA[m][n] * DA_antisym[l][k];
             };
         };
@@ -160,12 +160,8 @@ void BaseProcaField<background_t, modification_t>::matter_rhs(
     total_rhs.Z = 0.;
 
     //Evolution equation for phi could be determined from constraint equation
-    //for base Proca, covariant divergence of Proca field vanishes.
-    total_rhs.phi = metric_vars.lapse * matter_vars.phi * metric_vars.K + advec.phi;
-    FOR2(i,j)
-    {
-        total_rhs.phi += -  gamma_UU[i][j] * ( matter_vars.Avec[j] * metric_vars.d1_lapse[i] + metric_vars.lapse * DA[i][j] );
-    }
+    //phi could also be solved for directly using constraint. So we set its evolution to
+    total_rhs.phi = 0.;
 
     //add modifications ala CRTP
     static_cast<const modification_t*>(this)->matter_rhs_modification(total_rhs, matter_vars, metric_vars, d1, d2, advec);
