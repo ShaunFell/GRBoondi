@@ -19,6 +19,7 @@ L   =  ── ⋅ F  + α  ⋅ L
 #include "ADMProcaVars.hpp"
 #include "BaseProcaField.hpp"
 #include "TensorAlgebra.hpp"
+#include "DefaultG.hpp"
 
 /*
 This class calculates to the modifications to the equations of motion and energy momentum tensor coming from the second generalized Proca lagrangian, 
@@ -31,48 +32,8 @@ tensor, the user can freely specify any modifications they want.
 NOTE: This assumes the theory is L = -1/4 F^2 + alpha2 * L_2 with no other modifications due to higher lagrangians
 */
 
-class DefaultG2
-{
-    public:
-        struct params_t
-        {
-            double mass;
-        };
 
-    
-    protected:
-        params_t m_params;
-
-        template <class data_t>
-        using MatterVars = ADMProcaVars::MatterVars<data_t>;
-
-        template <class data_t>
-        using MetricVars = typename ADMFixedBGVars::template Vars<data_t>;
-    
-    public:
-        DefaultG2(){}; //Default constructor for default initialization in matter class
-
-        DefaultG2(params_t a_params): m_params{a_params} {};
-
-        template <class data_t, template <typename> class vars_t, template <typename> class diff2_vars_t>
-        void compute_function(data_t &g_fun, data_t &g_prime, data_t &g_prime2, const vars_t<data_t> &vars, const MetricVars<data_t> &metric_vars, const vars_t<Tensor<1,data_t>> &d1, const diff2_vars_t<Tensor<2,data_t>> &d2) const
-        {
-            auto gamma_UU { TensorAlgebra::compute_inverse_sym(metric_vars.gamma) };
-            data_t A_squared { - vars.phi * vars.phi };
-            FOR2(i,j)
-            {
-                A_squared += vars.Avec[i] * vars.Avec[i] * gamma_UU[i][j];
-            }
-
-            g_fun = - 0.5 * m_params.mass * m_params.mass * A_squared;
-            g_prime = -0.5 * m_params.mass * m_params.mass; 
-            g_prime2 = 0.;
-        }
-
-};
-
-
-template <class G2 = DefaultG2>
+template <class G2 = DefaultG>
 class L2
 {
     public:

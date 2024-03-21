@@ -26,11 +26,11 @@ void L2<G2>::compute_emtensor_modification(
     data_t g_prime2 { 0 };
     m_g2_function.compute_function(g_func, g_prime, g_prime2, matter_vars, metric_vars, d1, d2);
 
-    base_emtensor.rho -= m_params.alpha2 * (  g_func + 2 * matter_vars.phi * matter_vars.phi * g_prime );
+    base_emtensor.rho += - m_params.alpha2 * (  g_func + 2 * matter_vars.phi * matter_vars.phi * g_prime );
 
     FOR1(i)
     {
-        base_emtensor.Si[i] +=  m_params.alpha2 * (  2 * matter_vars.Avec[i] * matter_vars.phi * g_prime );
+        base_emtensor.Si[i] +=  - m_params.alpha2 * (  2 * matter_vars.Avec[i] * matter_vars.phi * g_prime );
 
         FOR1(j)
         {
@@ -76,32 +76,35 @@ void L2<G2>::matter_rhs_modification(
     //Modify electric part
     FOR2(i,j)
     {
-        total_rhs.Evec[i] +=  m_params.alpha2 * (  2 * metric_vars.lapse * g_prime * gamma_UU[i][j] * vars.Avec[j] );
+        total_rhs.Evec[i] += - m_params.alpha2 * (  2 * metric_vars.lapse * g_prime * gamma_UU[i][j] * vars.Avec[j] );
     }
 
     //Spatial part remains unchanged
 
     //Modify scalar part
-    total_rhs.phi +=  m_params.alpha2 * (  metric_vars.lapse * (g_prime/(gnn) - 1) * vars.phi * metric_vars.K  );
+
+    total_rhs.phi +=  m_params.alpha2 * (  metric_vars.lapse * (g_prime/(gnn) ) * vars.phi * metric_vars.K  ) + advec.phi;
     FOR1(i)
     {
-        total_rhs.phi +=  m_params.alpha2 * (  2 * metric_vars.lapse * g_prime2 * vars.phi * vars.Avec[i] * vars.Evec[i] / gnn );
+        total_rhs.phi += 2 * metric_vars.lapse * m_params.alpha2 * g_prime2 * vars.phi * vars.Avec[i] *
+                         vars.Evec[i] / gnn;
 
         FOR1(j)
         {
             total_rhs.phi +=
-                 m_params.alpha2 * (  metric_vars.lapse * gamma_UU[i][j] * ( - (g_prime/gnn - 1)  * DA[i][j] +
-                                2 *  g_prime2 / gnn * 2 * vars.phi *
-                                    vars.Avec[i] * d1.phi[j]) );
+                gamma_UU[i][j] * ( - metric_vars.lapse * m_params.alpha2 * g_prime / gnn * DA[i][j] -
+                                  vars.Avec[i] * metric_vars.d1_lapse[j] +
+                                  2 *  metric_vars.lapse * m_params.alpha2 * g_prime2 / gnn * 2 * vars.phi *
+                                      vars.Avec[i] * d1.phi[j]);
 
             FOR2(k, l)
             {
                 total_rhs.phi -=
-                     m_params.alpha2 * (  2 * metric_vars.lapse * g_prime2 / gnn * gamma_UU[i][k] * gamma_UU[j][l] *
+                    2 * metric_vars.lapse * m_params.alpha2 * g_prime2 / gnn * gamma_UU[i][k] * gamma_UU[j][l] *
                     ( 
                         vars.phi * vars.Avec[i] * vars.Avec[j] * metric_vars.K_tensor[k][l]
-                    + vars.Avec[i] * vars.Avec[j] * DA[k][l]
-                    ) );
+                      + vars.Avec[i] * vars.Avec[j] * DA[k][l]
+                      );
             }
         }
     }

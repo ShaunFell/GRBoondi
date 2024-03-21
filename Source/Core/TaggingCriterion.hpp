@@ -30,6 +30,8 @@ class CustomTaggingCriterion
     const int m_level;
     const bool m_activate_extraction;
     const bool m_activate_ham_tagging;
+    const bool m_activate_extraction_tagging;
+    const bool m_DIAGNOSTIC;
 
 
   public:
@@ -37,7 +39,9 @@ class CustomTaggingCriterion
                                   const std::array<double, CH_SPACEDIM> a_center,
                                   const spherical_extraction_params_t a_params,
                                   const bool a_activate_extraction = false,
-                                  const bool a_activate_ham_tagging = false) : m_center{a_center}, m_dx(dx), m_L{a_L}, m_init_ratio{a_rat},m_params{a_params}, m_level{a_level}, m_activate_extraction{a_activate_extraction}, m_activate_ham_tagging{a_activate_ham_tagging}
+                                  const bool a_activate_ham_tagging = false,
+                                  const bool a_activate_extraction_tagging = false,
+                                  const bool DIAGNOSTIC = false) : m_center{a_center}, m_dx(dx), m_L{a_L}, m_init_ratio{a_rat},m_params{a_params}, m_level{a_level}, m_activate_extraction{a_activate_extraction}, m_activate_ham_tagging{a_activate_ham_tagging}, m_activate_extraction_tagging{a_activate_extraction_tagging}, m_DIAGNOSTIC{DIAGNOSTIC}
                                   {
                                   };
 
@@ -63,7 +67,7 @@ class CustomTaggingCriterion
     {
         data_t criterion { 0. };
 
-        if (m_activate_extraction)
+        if (m_activate_extraction && m_activate_extraction_tagging)
         {
             const Coordinates<data_t> coords(current_cell, m_dx, m_center);
             
@@ -98,8 +102,14 @@ class CustomTaggingCriterion
 
         data_t criterion { simd_max(FixedGridsTaggingCriterion, ExtractionTaggingCriterion) };
 
-        // Write back into the flattened Chombo box
-        current_cell.store_vars(criterion, 0);
+        // Write back into the flattened Chombo box. If Diagnostic is turned on, then write to c_Tagging_Diagnostic
+        if (m_DIAGNOSTIC) 
+        {
+            current_cell.store_vars(criterion, c_Tagging_Diagnostic);
+        } else
+        {
+            current_cell.store_vars(criterion, 0);
+        } 
     }
 };
 
