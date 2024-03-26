@@ -65,7 +65,7 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificEvalRHS(GRLevelData &a_
     proca_t proca_field(background_init, m_p.matter_params);
     
     MatterEvolution<proca_t, background_t> matter_class(proca_field, background_init, m_p.sigma, m_dx, m_p.center);
-    ExcisionEvolution<proca_t, background_t> excisor(m_dx, m_p.center, background_init);
+    ExcisionEvolution<proca_t, background_t> excisor(m_dx, m_p.center, m_p.evolution_excision_width, background_init);
 
     BoxLoops::loop(matter_class, a_soln, a_rhs, SKIP_GHOST_CELLS);
     BoxLoops::loop(excisor,a_soln, a_rhs, SKIP_GHOST_CELLS, disable_simd());
@@ -118,7 +118,7 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
             background_t background_init { m_p.background_params, m_dx };
             proca_t proca_field(background_init, m_p.matter_params);
             ChargesFluxes<proca_t, background_t> EM(background_init,m_dx, proca_field, m_p.center);
-            ExcisionDiagnostics<proca_t,background_t> excisor(background_init, m_dx, m_p.center);
+            ExcisionDiagnostics<proca_t,background_t> excisor(background_init, m_dx, m_p.center, m_p.diagnostic_excision_width);
 
             BoxLoops::loop(
                 EM,
@@ -158,7 +158,7 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
             proca_t proca_field(background_init, m_p.matter_params);
 
             ChargesFluxes<proca_t, background_t> EM(background_init,m_dx, proca_field, m_p.center);
-            ExcisionDiagnostics<proca_t,background_t> excisor(background_init, m_dx, m_p.center);
+            ExcisionDiagnostics<proca_t,background_t> excisor(background_init, m_dx, m_p.center, m_p.diagnostic_excision_width);
 
             BoxLoops::loop(EM,m_state_new, m_state_diagnostics, EXCLUDE_GHOST_CELLS);
             BoxLoops::loop(excisor, m_state_diagnostics, m_state_diagnostics, EXCLUDE_GHOST_CELLS, disable_simd());

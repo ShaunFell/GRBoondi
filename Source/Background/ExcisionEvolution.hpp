@@ -26,12 +26,13 @@ class ExcisionEvolution
     const std::array<double, CH_SPACEDIM> m_center; //!< The BH center
     const FourthOrderDerivatives m_deriv;
     const background_t m_background;
+    const double m_buffer;
 
   public:
     ExcisionEvolution(const double a_dx,
-                      const std::array<double, CH_SPACEDIM> a_center,
+                      const std::array<double, CH_SPACEDIM> a_center, double a_buffer,
                       background_t a_background)
-        : m_dx(a_dx), m_deriv(m_dx), m_center(a_center),
+        : m_dx(a_dx), m_deriv(m_dx), m_center(a_center), m_buffer(a_buffer),
           m_background(a_background)
     {
     }
@@ -39,7 +40,9 @@ class ExcisionEvolution
     void compute(const Cell<double> current_cell) const
     {
         const Coordinates<double> coords(current_cell, m_dx, m_center);
-        bool is_excised = m_background.check_if_excised(coords);
+        bool is_excised = m_background.check_if_excised(coords, m_buffer);
+        bool is_excised_Z = m_background.check_if_excised(coords, 1);
+        
         if (is_excised)
         {
             // the matter rhs vars within the excision zone
@@ -49,6 +52,11 @@ class ExcisionEvolution
             // assign values of rhs or vars in output box
             current_cell.store_vars(vars);
         } // else do nothing
+
+        if (is_excised_Z)
+        {
+            current_cell.store_vars(0.0, c_Z);
+        }
     }
 };
 

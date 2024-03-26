@@ -96,7 +96,7 @@ class ProcaField: public BaseProcaField<KerrSchild, ProcaField>
             data_t gnn {  m_params.alpha2 * (g_func_prime - 2 * vars.phi * vars.phi * g_func_prime2) };
 
             //Modify scalar part
-            total_rhs.phi += metric_vars.lapse * vars.Z * m_params.mass * m_params.mass / (2 * gnn);
+            total_rhs.phi -= metric_vars.lapse * vars.Z * m_params.mass * m_params.mass / (2 * gnn);
 
             //modify electric field part
             FOR2(i,j)
@@ -105,8 +105,7 @@ class ProcaField: public BaseProcaField<KerrSchild, ProcaField>
             }
 
             //add evolution for auxiliary Z field
-            // total_rhs.Z = 2 * m_params.alpha2 * metric_vars.lapse * g_func_prime * vars.phi - m_params.vector_damping * metric_vars.lapse * vars.Z + advec.Z;
-            total_rhs.Z =  - 2 * m_params.alpha2 * metric_vars.lapse * g_func_prime * vars.phi - m_params.vector_damping * metric_vars.lapse * vars.Z + advec.Z;
+            total_rhs.Z = 2 * m_params.alpha2 * metric_vars.lapse * g_func_prime * vars.phi - m_params.vector_damping * metric_vars.lapse * vars.Z + advec.Z;
 
             FOR1(i)
             {
