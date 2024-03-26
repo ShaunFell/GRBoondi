@@ -133,11 +133,6 @@ void BaseProcaField<background_t, modification_t>::matter_rhs(
     data_t gnn{dVdA - 2.0 * dVddA * matter_vars.phi * matter_vars.phi};
     data_t mass{m_params.mass};
 
-    pout() << " mass " << mass << endl;
-    pout() << " dVddA " << dVddA << endl;
-    pout() << "dVdA " << dVdA << endl;
-    pout() << " V " << V << endl;
-
     // evolution equations for spatial part of vector field (index down)
     FOR1(i)
     {
