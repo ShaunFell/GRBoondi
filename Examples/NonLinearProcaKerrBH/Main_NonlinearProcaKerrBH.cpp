@@ -2,7 +2,7 @@
 Main method to run simulation
 */
 #include "runGRChombo.hpp" //main run function
-#include "ProcaFieldLevel.hpp" // new Level class
+#include "NonlinearProcaFieldLevel.hpp" // new Level class
 #include "SetupFunctions.hpp" //For setting up MPI processes
 
 

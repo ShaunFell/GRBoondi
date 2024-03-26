@@ -26,7 +26,7 @@ class ProcaField: public BaseProcaField<KerrSchild, ProcaField>
         template <class data_t>
         using MetricVars = typename ADMFixedBGVars::template Vars<data_t>;
 
-        using L2_t = L2<DefaultG>;
+        using L2_t = L2<NonlinearG2>;
 
 
     public:
@@ -93,7 +93,7 @@ class ProcaField: public BaseProcaField<KerrSchild, ProcaField>
             data_t V { 0 };
             data_t dVdA { 0 };
             data_t dVddA { 0 };
-            m_G2.compute_function(V, dVdA, dVddA, matter_vars, metric_vars, d1, d2);
+            m_G2.compute_function(V, dVdA, dVddA, matter_vars, metric_vars);
 
             //Compute constraint algebra term
             data_t gnn{dVdA - 2.0 * dVddA * matter_vars.phi * matter_vars.phi};
