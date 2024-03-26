@@ -9,6 +9,11 @@ implementation file for ProcaField.hpp
 #ifndef BASEPROCAFIELD_IMPL_H_INCLUDED
 #define BASEPROCAFIELD_IMPL_H_INCLUDED
 
+//DEBUGGING
+#include "DefaultG.hpp"
+#include "ProcaField.hpp"
+
+
 template <class background_t, class modification_t>
 template <class data_t, template <typename> class vars_t, template <typename> class diff2_vars_t>
 emtensor_t<data_t> BaseProcaField<background_t, modification_t>::compute_emtensor(
@@ -106,8 +111,17 @@ void BaseProcaField<background_t, modification_t>::matter_rhs(
     const Tensor<2, data_t> gamma_UU = TensorAlgebra::compute_inverse(metric_vars.gamma);
     const Tensor<3, data_t> chris_phys =
         TensorAlgebra::compute_christoffel(metric_vars.d1_gamma, gamma_UU).ULL;
-    
-    // covariant derivative of spatial part of Proca field
+
+
+    ProcaField::params_t m_params { 0.4,1,1};
+    DefaultG m_G2 { DefaultG::params_t{0.4}};
+    // compute potential and its derivatives
+    data_t V{0.};
+    data_t dVdA{0.};
+    data_t dVddA{0.};
+    m_G2.compute_function(V, dVdA, dVddA, matter_vars, metric_vars, d1, d2);
+      
+        // covariant derivative of spatial part of Proca field
     Tensor<2, data_t> DA;
     FOR2(i, j)
     {
@@ -116,7 +130,15 @@ void BaseProcaField<background_t, modification_t>::matter_rhs(
     }
 
 
-    // evolution equations for spatial part of vector field (index down). 
+    data_t gnn{dVdA - 2.0 * dVddA * matter_vars.phi * matter_vars.phi};
+    data_t mass{m_params.mass};
+
+    pout() << " mass " << mass << endl;
+    pout() << " dVddA " << dVddA << endl;
+    pout() << "dVdA " << dVdA << endl;
+    pout() << " V " << V << endl;
+
+    // evolution equations for spatial part of vector field (index down)
     FOR1(i)
     {
         total_rhs.Avec[i] =
@@ -125,7 +147,7 @@ void BaseProcaField<background_t, modification_t>::matter_rhs(
         FOR1(j)
         {
             total_rhs.Avec[i] += -metric_vars.lapse * metric_vars.gamma[i][j] * matter_vars.Evec[j] +
-                                matter_vars.Avec[j] * metric_vars.d1_shift[j][i];
+                                 matter_vars.Avec[j] * metric_vars.d1_shift[j][i];
         };
     };
 
@@ -136,7 +158,10 @@ void BaseProcaField<background_t, modification_t>::matter_rhs(
 
         FOR1(j)
         {
-            total_rhs.Evec[i] += - matter_vars.Evec[j] * metric_vars.d1_shift[i][j];
+            total_rhs.Evec[i] +=
+                metric_vars.lapse * gamma_UU[i][j] * d1.Z[j] +
+                2 * metric_vars.lapse * dVdA * gamma_UU[i][j] * matter_vars.Avec[j] -
+                matter_vars.Evec[j] * metric_vars.d1_shift[i][j];
         }
 
         FOR3(j, k, l)
@@ -151,20 +176,49 @@ void BaseProcaField<background_t, modification_t>::matter_rhs(
                 total_rhs.Evec[i] +=
                     -metric_vars.lapse * gamma_UU[j][k] * gamma_UU[i][l] *
                     (chris_phys[m][j][l] * (d1.Avec[k][m] - d1.Avec[m][k]) +
-                    chris_phys[m][j][k] * (d1.Avec[m][l] - d1.Avec[l][m]));
+                     chris_phys[m][j][k] * (d1.Avec[m][l] - d1.Avec[l][m]));
             };
         };
     };
 
     // evolution equation for auxiliary constraint-damping scalar field Z
-    total_rhs.Z = 0.;
+    total_rhs.Z = 2 * metric_vars.lapse * dVdA * matter_vars.phi -
+                  m_params.vector_damping * metric_vars.lapse * matter_vars.Z + advec.Z;
+    FOR1(i)
+    {
+        total_rhs.Z += metric_vars.lapse * d1.Evec[i][i];
+        FOR1(j)
+        {
+            total_rhs.Z += metric_vars.lapse * chris_phys[i][i][j] * matter_vars.Evec[j];
+        }
+    }
 
-    //Evolution equation for phi could be determined from constraint equation
-    //phi could also be solved for directly using constraint. So we set its evolution to
-    total_rhs.phi = 0.;
+    total_rhs.phi = - metric_vars.lapse * matter_vars.Z * mass * mass / (2 * gnn) +
+                    metric_vars.lapse * dVdA * matter_vars.phi * metric_vars.K / (gnn) + advec.phi;
+    FOR1(i)
+    {
+        total_rhs.phi += 2 * metric_vars.lapse * dVddA * matter_vars.phi * matter_vars.Avec[i] *
+                         matter_vars.Evec[i] / gnn;
 
-    //add modifications ala CRTP
-    static_cast<const modification_t*>(this)->matter_rhs_modification(total_rhs, matter_vars, metric_vars, d1, d2, advec);
+        FOR1(j)
+        {
+            total_rhs.phi +=
+                gamma_UU[i][j] * (-metric_vars.lapse * dVdA / gnn * DA[i][j] -
+                                  matter_vars.Avec[i] * metric_vars.d1_lapse[j] +
+                                  2 * metric_vars.lapse * dVddA / gnn * 2 * matter_vars.phi *
+                                      matter_vars.Avec[i] * d1.phi[j]);
+
+            FOR2(k, l)
+            {
+                total_rhs.phi -=
+                    gamma_UU[i][k] * gamma_UU[j][l] *
+                    (2 * metric_vars.lapse * dVddA / gnn * matter_vars.phi * matter_vars.Avec[i] *
+                         matter_vars.Avec[j] * metric_vars.K_tensor[k][l] +
+                     2 * metric_vars.lapse * dVddA / gnn * matter_vars.Avec[i] *
+                         matter_vars.Avec[j] * DA[k][l]);
+            }
+        }
+    }
 };
 
 

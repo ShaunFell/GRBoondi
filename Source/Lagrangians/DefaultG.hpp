@@ -38,8 +38,8 @@ class DefaultG
                 A_squared += vars.Avec[i] * vars.Avec[i] * gamma_UU[i][j];
             }
 
-            g_fun = - 0.5 * m_params.mass * m_params.mass * A_squared;
-            g_prime = -0.5 * m_params.mass * m_params.mass; 
+            g_fun =0.5 * m_params.mass * m_params.mass * A_squared;
+            g_prime = 0.5 * m_params.mass * m_params.mass; 
             g_prime2 = 0.;
         }
 

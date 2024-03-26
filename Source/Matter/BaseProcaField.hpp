@@ -21,7 +21,10 @@ class BaseProcaField
 
     public:
         //constructor, inputs are matter params
-        BaseProcaField(background_t a_background): m_background{a_background}{};
+        BaseProcaField(background_t a_background): m_background{a_background}{
+            pout() << "Kerr Mass: " << m_background.m_params.mass << endl;
+            pout() << "Kerr spin: " << m_background.m_params.spin << endl;
+        };
 
         template <class data_t> 
         using MetricVars = ADMFixedBGVars::Vars<data_t>;

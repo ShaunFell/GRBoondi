@@ -41,7 +41,7 @@ class ExcisionEvolution
     {
         const Coordinates<double> coords(current_cell, m_dx, m_center);
         bool is_excised = m_background.check_if_excised(coords, m_buffer);
-        bool is_excised_Z = m_background.check_if_excised(coords, 1);
+        bool is_excised_Z = m_background.check_if_excised(coords, 0.9);
         
         if (is_excised)
         {
@@ -53,10 +53,10 @@ class ExcisionEvolution
             current_cell.store_vars(vars);
         } // else do nothing
 
-        if (is_excised_Z)
+        /* if (is_excised_Z)
         {
             current_cell.store_vars(0.0, c_Z);
-        }
+        } */
     }
 };
 

@@ -7,7 +7,7 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23273884"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23282546"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -89,7 +89,7 @@ min_box_size = 16
 tag_buffer_size = 0
 
 #grid spacing between refinement levels
-# grid_buffer_size = 16
+# grid_buffer_size = 32
 # fill_ratio = 0.7
 # num_ghosts = 3
 # center = 256.0 256.0 256.0 # defaults to center of the grid
@@ -118,25 +118,22 @@ lo_boundary = 1 1 2
 # 1,2,3 = odd x, y, z
 # 4,5,6 = odd xy, yz, xz
 # 7     = odd xyz
-vars_parity            = 0 0 4 6 0 5 0    #chi and hij
-                         0 0 4 6 0 5 0    #K and Aij
-                         0 1 2 3          #Theta and Gamma
-                         0 1 2 3 1 2 3    #lapse shift and B
-                         0 1 2 3 1 2 3 0  # phi, Ai, Ei, Z 
-vars_parity_diagnostic = 0 0 1 2 3 0 0 0    #Ham and Mom
-                         0 0 0 0 0 0 0 0 0 0   # Other vars all scalars
-                         0 7                # Weyl scalars
+vars_parity            = 0 1 2 3 #proca field
+                                    1 2 3 0 # electric field and z field
+vars_parity_diagnostic = 0        #Asquared
+                                            0 0 0  #rho rhoE rhoJ
+                                            0 0     #Edot Jdot
+                                            0        # chi
+                                            0        # c_Z_out
+                                            0        # Tagging_Diagnostic
 
 # if sommerfeld boundaries selected, must select
 # non zero asymptotic values
 num_nonzero_asymptotic_vars = 0
-#nonzero_asymptotic_vars = chi h11 h22 h33 lapse
-#nonzero_asymptotic_values = 1.0 1.0 1.0 1.0 1.0
 
 # if you are using extrapolatin BC:
 extrapolation_order = 0
 num_extrapolating_vars = 0
-extrapolating_vars = phi Evec1 Evec2 Evec3 Avec1 Avec2 Avec3
 
 
 
@@ -151,13 +148,13 @@ stop_time = 10000.0
 nan_check = 1
 
 # coefficient for KO numerical dissipation
-sigma = 0.3 #the default
+sigma = 0.4 #the default
 
 
 ################################################## Excision
 ##################################################
 
-inner_r = 1.1
+inner_r = 1.141067359796659 #excision radius
 outer_r = 30
 
 ## percentage to excise within horizon
@@ -174,7 +171,7 @@ activate_integration = 1 # integration of densities
 
 num_extraction_radii = 2
 extraction_radii = 1.2 30
-extraction_levels = 0 0
+extraction_levels = 1 1
 num_points_phi = 24
 num_points_theta = 37
 
