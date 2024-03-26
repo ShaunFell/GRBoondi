@@ -67,7 +67,8 @@ class ProcaSimulationParameters : public ChomboParameters
         pp.load("sigma", sigma, 0.1);
 
         //excision 
-        pp.load("excision_width", excision_width, 1.);
+        pp.load("diagnostic_excision_width", diagnostic_excision_width, 0.97);
+        pp.load("evolution_excision_width", evolution_excision_width, 0.97);
 
         //tagging
         pp.load("initial_ratio", initial_ratio, 0.25);
@@ -76,23 +77,21 @@ class ProcaSimulationParameters : public ChomboParameters
         pp.load("grid_scaling", grid_scaling, 1.);
         pp.load("activate_tagging_diagnostic", tagging_diagnostic, false);
 
-
-
-
-    }
+    };
 
     void check_params()
     {
         warn_parameter("inner_r", inner_r, inner_r != 0.0, "set to default parameters (0.0)");
         warn_parameter("outer_r", outer_r, outer_r != 200.0, "set to default parameter (200.0)");
-        warn_parameter("activate_tagging_diagnostic", !activate_tagging_diagnostic, "Diagnostic tagging turned on. Tagging criteria will be written to c_Tagging_Diagnostic");
+        warn_parameter("activate_tagging_diagnostic", tagging_diagnostic,  !tagging_diagnostic, "Diagnostic tagging turned on. Tagging criteria will be written to c_Tagging_Diagnostic");
 
         check_parameter("grid_scaling", grid_scaling, grid_scaling>0, "Grid scaling parameter must be greater than zero");
-            
+        check_parameter("evolution_excision_width", evolution_excision_width, evolution_excision_width <= diagnostic_excision_width, "Evolution excision width must be less than or equal to diagnostic excision width");
     }
 
     double outer_r, inner_r;
-    double excision_width;
+    double diagnostic_excision_width;
+    double evolution_excision_width;
     double sigma;
     int nan_check;
     std::string integrals_filename;

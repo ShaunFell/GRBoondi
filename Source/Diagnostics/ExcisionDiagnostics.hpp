@@ -23,26 +23,25 @@ template <class matter_t, class background_t>
 class ExcisionDiagnostics
 {
   protected:
-        const double m_dx; //grid spacing
-        const std::array<double, CH_SPACEDIM> m_center; //center of BH
+      const double m_dx; //grid spacing
+      const std::array<double, CH_SPACEDIM> m_center; //center of BH
         
-        background_t m_background;
-
+      background_t m_background;
+      double m_buffer;
+      
       using Vars = typename ADMProcaVars::MatterVars<double>;
 
   public:
 
         //constructor
-        ExcisionDiagnostics(background_t a_background, const double a_dx, const std::array<double, CH_SPACEDIM> a_center): m_background{a_background}, m_dx{a_dx}, m_center{a_center}
-        {
-        };
+        ExcisionDiagnostics(background_t a_background, const double a_dx, const std::array<double, CH_SPACEDIM> a_center, double a_buffer=0.97): m_background{a_background}, m_dx{a_dx}, m_center{a_center}, m_buffer{a_buffer} {};
 
         void compute(const Cell<double> current_cell) const
         {
             const Coordinates<double> coords(current_cell, m_dx, m_center);
             Vars matter_vars;
 
-            if (m_background.check_if_excised(coords, 0.97) )
+            if (m_background.check_if_excised(coords, m_buffer) )
             {
                   VarsTools::assign(matter_vars, 0.0);
 

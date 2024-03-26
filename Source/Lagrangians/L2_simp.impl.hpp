@@ -26,16 +26,16 @@ void L2<G2>::compute_emtensor_modification(
     data_t g_prime2 { 0 };
     m_g2_function.compute_function(g_func, g_prime, g_prime2, matter_vars, metric_vars, d1, d2);
 
-    base_emtensor.rho += - m_params.alpha2 * (  g_func + 2 * matter_vars.phi * matter_vars.phi * g_prime );
+    base_emtensor.rho += m_params.alpha2 * (  g_func + 2 * matter_vars.phi * matter_vars.phi * g_prime );
 
     FOR1(i)
     {
-        base_emtensor.Si[i] +=  - m_params.alpha2 * (  2 * matter_vars.Avec[i] * matter_vars.phi * g_prime );
+        base_emtensor.Si[i] +=  m_params.alpha2 * (  2 * matter_vars.Avec[i] * matter_vars.phi * g_prime );
 
         FOR1(j)
         {
-            base_emtensor.S +=  m_params.alpha2 * (  3 * g_func - 2 * gamma_UU[i][j] * matter_vars.Avec[i] * matter_vars.Avec[j] * g_prime );
-            base_emtensor.Sij[i][j] +=  m_params.alpha2 * (  metric_vars.gamma[i][j] * g_func - 2 * matter_vars.Avec[i] * matter_vars.Avec[j] * g_prime );
+            base_emtensor.S +=  m_params.alpha2 * (  - 3 * g_func + 2 * gamma_UU[i][j] * matter_vars.Avec[i] * matter_vars.Avec[j] * g_prime );
+            base_emtensor.Sij[i][j] +=  m_params.alpha2 * (  - metric_vars.gamma[i][j] * g_func + 2 * matter_vars.Avec[i] * matter_vars.Avec[j] * g_prime );
         }
     }
 };
@@ -76,7 +76,7 @@ void L2<G2>::matter_rhs_modification(
     //Modify electric part
     FOR2(i,j)
     {
-        total_rhs.Evec[i] += - m_params.alpha2 * (  2 * metric_vars.lapse * g_prime * gamma_UU[i][j] * vars.Avec[j] );
+        total_rhs.Evec[i] += + m_params.alpha2 * (  2 * metric_vars.lapse * g_prime * gamma_UU[i][j] * vars.Avec[j] );
     }
 
     //Spatial part remains unchanged
