@@ -40,6 +40,9 @@ class BaseProcaField
         We use the method of 'Curiously Recurring Template Pattern' to allow arbitrary templated modifications
         to the theory
         https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern
+
+        This allows us to use virtual functions that can be specified by derived classes.
+        e.g. see ProcaKerrBH Example
         */
 
         template <class data_t, template <typename> class vars_t, template <typename> class diff2_vars_t>
