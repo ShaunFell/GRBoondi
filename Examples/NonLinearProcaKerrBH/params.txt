@@ -72,6 +72,9 @@ L2_alpha = 1
 #proca parameters
 proca_mass = 0.4
 
+#proca self interaction coupling
+self_interaction = 1.0
+
 #constraint violation damping
 z_damping = 1.0
 
