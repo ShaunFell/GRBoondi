@@ -7,7 +7,7 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23282913"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/test_NonlinearProca"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -20,11 +20,11 @@ plot_prefix = "GeneralizedProcap_"
 checkpoint_interval = 100
 # set to 0 to turn off plot files (except at t=0 and t=stop_time)
 # set to -1 to never ever print plotfiles
-plot_interval = 20
+plot_interval = 1
 
 #plot variable names must match those in the DiagnosticVariables::DiagnosticVariables namespace
 num_plot_vars = 8
-plot_vars = Z Asquared rho rhoJ rhoE Edot Jdot Tagging_Diagnostic
+plot_vars = Z Asquared rho rhoJ rhoE Edot Jdot gnn
 
 # subpaths - specific directories for hdf5, pout, extraction data
 # (these are created at runtime)
@@ -42,9 +42,7 @@ print_progress_only_to_rank_0 = 0
 
 ################################################# constraint tagging
 ##################################################
-activate_ham_tagging = 0
-activate_extraction_tagging = 0
-activate_tagging_diagnostic = 0
+activate_gnn_tagging = 1
 
 
 ################################################# AMR levels
@@ -53,7 +51,8 @@ activate_tagging_diagnostic = 0
 max_level = 4
 
 #Since we use fixed grid tagging, we dont ever need to regrid
-regrid_interval = 0 0 0 0 
+regrid_interval = 0 4 1 1
+regrid_threshold = 0.005
 
 ################################################## Initial Data parameters
 ##################################################
@@ -127,6 +126,7 @@ vars_parity_diagnostic = 0        #Asquared
                                             0 0 0  #rho rhoE rhoJ
                                             0 0     #Edot Jdot
                                             0        # chi
+                                            0        # gnn
                                             0        # c_Z_out
                                             0        # Tagging_Diagnostic
 

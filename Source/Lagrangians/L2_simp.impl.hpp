@@ -26,7 +26,7 @@ void L2<G2>::compute_emtensor_modification(
     data_t g_func { 0 };
     data_t g_prime { 0 };
     data_t g_prime2 { 0 };
-    m_g2_function.compute_function(g_func, g_prime, g_prime2, matter_vars, metric_vars, d1, d2);
+    m_g2_function.compute_function(g_func, g_prime, g_prime2, matter_vars, metric_vars);
 
     //compute addition to Eulerian energy
     base_emtensor.rho += m_params.alpha2 * (  g_func + 2 * matter_vars.phi * matter_vars.phi * g_prime );
@@ -69,7 +69,7 @@ void L2<G2>::matter_rhs_modification(
     data_t V{0.};
     data_t dVdA{0.};
     data_t dVddA{0.};
-    m_g2_function.compute_function(V, dVdA, dVddA, matter_vars, metric_vars, d1, d2);
+    m_g2_function.compute_function(V, dVdA, dVddA, matter_vars, metric_vars);
 
     //Compute constraint algebra term
     data_t gnn{dVdA - 2.0 * dVddA * matter_vars.phi * matter_vars.phi};

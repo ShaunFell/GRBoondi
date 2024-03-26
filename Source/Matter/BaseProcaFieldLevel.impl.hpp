@@ -83,13 +83,13 @@ void BaseProcaFieldLevel<background_t, proca_t>::computeTaggingCriterion(FArrayB
 {
     CH_TIME("BaseProcaFieldLevel::computeTaggingCriterion");
 
-    CustomTaggingCriterion tagger(m_dx, m_level, m_p.grid_scaling*m_p.L, m_p.initial_ratio, m_p.center, m_p.extraction_params, m_p.activate_extraction, m_p.activate_ham_tagging, m_p.activate_extraction_tagging);
+    TaggingCriterion tagger(m_dx, m_level, m_p.grid_scaling*m_p.L, m_p.initial_ratio, m_p.center, m_p.extraction_params, m_p.activate_extraction, m_p.activate_ham_tagging, m_p.activate_extraction_tagging);
 
     BoxLoops::loop(tagger, current_state_diagnostics, tagging_criterion);
 
     if (m_p.tagging_diagnostic)
     {
-        CustomTaggingCriterion tagger(m_dx, m_level, m_p.grid_scaling*m_p.L, m_p.initial_ratio, m_p.center, m_p.extraction_params, m_p.activate_extraction, m_p.activate_ham_tagging, m_p.activate_extraction_tagging, m_p.tagging_diagnostic);
+        TaggingCriterion tagger(m_dx, m_level, m_p.grid_scaling*m_p.L, m_p.initial_ratio, m_p.center, m_p.extraction_params, m_p.activate_extraction, m_p.activate_ham_tagging, m_p.activate_extraction_tagging, m_p.tagging_diagnostic);
 
         BoxLoops::loop(tagger, m_state_new, m_state_diagnostics, SKIP_GHOST_CELLS);
     }

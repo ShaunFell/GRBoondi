@@ -40,6 +40,9 @@ class SimulationParameters : public ProcaSimulationParameters
             //self interaction coupling
             pp.load("self_interaction", matter_params.self_interaction);
 
+            //tagging criteria
+            pp.load("activate_gnn_tagging", activate_gnn_tagging, false);
+
 
         }
 
@@ -51,6 +54,9 @@ class SimulationParameters : public ProcaSimulationParameters
 
         //Proca parameters
         ProcaField::params_t matter_params;
+
+        //tagging criteria
+        bool activate_gnn_tagging;
 
 };
 

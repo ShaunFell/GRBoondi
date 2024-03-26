@@ -17,6 +17,8 @@ enum
 
     c_chi,
 
+    c_gnn,
+
     c_Z_out,
 
     c_Tagging_Diagnostic,
@@ -38,6 +40,8 @@ namespace DiagnosticVariables
         "Jdot",
 
         "chi",
+
+        "gnn",
 
         "Z",
 

@@ -10,8 +10,8 @@
  Extraction piece from ChiExtractionTaggingCriterion.hpp
  */
 
-#ifndef CUSTOMTAGGINGCRITERION_HPP_
-#define CUSTOMTAGGINGCRITERION_HPP_
+#ifndef TAGGINGCRITERION_HPP_
+#define TAGGINGCRITERION_HPP_
 
 #include "Cell.hpp"
 #include "DimensionDefinitions.hpp"
@@ -19,7 +19,7 @@
 #include "SphericalExtraction.hpp"
 #include "Tensor.hpp"
 
-class CustomTaggingCriterion
+class TaggingCriterion
 {
   protected:
     const double m_dx;
@@ -35,7 +35,7 @@ class CustomTaggingCriterion
 
 
   public:
-    CustomTaggingCriterion(double dx, const int a_level, const double a_L, const double a_rat,
+    TaggingCriterion(double dx, const int a_level, const double a_L, const double a_rat,
                                   const std::array<double, CH_SPACEDIM> a_center,
                                   const spherical_extraction_params_t a_params,
                                   const bool a_activate_extraction = false,
@@ -113,4 +113,4 @@ class CustomTaggingCriterion
     }
 };
 
-#endif /* CUSTOMTAGGINGCRITERION_HPP_ */
+#endif /* TAGGINGCRITERION_HPP_ */
