@@ -87,7 +87,7 @@ void L2<G2>::matter_rhs_modification(
     //Spatial part remains unchanged
 
     //Modify scalar part
-
+    //Also modify electric part in same loop
     total_rhs.phi += metric_vars.lapse * dVdA * matter_vars.phi * metric_vars.K / (gnn) + advec.phi;
     FOR1(i)
     {

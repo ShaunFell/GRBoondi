@@ -248,15 +248,15 @@ class KerrSchild
     {
         // black hole params - mass M and spin a
         const double M = m_params.mass;
-        const double a = m_params.spin;
-        const double a2 = a * a;
 
         // work out where we are on the grid
         const double x = coords.x;
         const double y = coords.y;
         const double z = coords.z;
-        const double r_plus = M + sqrt(M * M - a2);
-        const double r_minus = M - sqrt(M * M - a2);
+
+        //compute inner and outer Boyer-Lindquist horizon radii
+        const double r_plus = BL_outer_horizon();
+        const double r_minus = BL_inner_horizon();
 
         // position relative to outer horizon - 1 indicates on horizon
         // less than one is within
@@ -270,11 +270,33 @@ class KerrSchild
 
         bool is_excised = false;
         // value less than 1 indicates we are within the horizon
-        if (outer_horizon <  0.9|| inner_horizon < 1.05)
+        if (outer_horizon <  buffer|| inner_horizon < 1.0 / buffer)
         {
             is_excised = true;
         }
         return is_excised;
+    }
+
+    double BL_outer_horizon() const
+    {
+        // black hole params - mass M and spin a
+        const double M = m_params.mass;
+        const double a = m_params.spin;
+        const double a2 = a * a;
+        const double r_plus = M + sqrt(M * M - a2);
+        
+        return r_plus;
+    }
+
+    double BL_inner_horizon() const
+    {
+        // black hole params - mass M and spin a
+        const double M = m_params.mass;
+        const double a = m_params.spin;
+        const double a2 = a * a;
+        const double r_minus = M - sqrt(M * M - a2);
+        
+        return r_minus;
     }
 };
 

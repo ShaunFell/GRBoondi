@@ -106,8 +106,7 @@ void BaseProcaField<background_t, modification_t>::matter_rhs(
 ) const
 {
 
-    // calculate conformal contravariant metric and conformal christoffel
-    // symbols
+    // calculate conformal contravariant metric and conformal christoffel symbols
     const Tensor<2, data_t> gamma_UU = TensorAlgebra::compute_inverse(metric_vars.gamma);
     const Tensor<3, data_t> chris_phys =
         TensorAlgebra::compute_christoffel(metric_vars.d1_gamma, gamma_UU).ULL;
@@ -162,9 +161,10 @@ void BaseProcaField<background_t, modification_t>::matter_rhs(
     };
 
     // Evolution equations for phi field totally depend on the theory, so we leave is up to the user to specify them for their model
+    total_rhs.phi = 0.;
+
     // Evolution for auxiliary Z field is also left up to the user in how they want to add damping terms
     total_rhs.Z = 0.;
-    total_rhs.phi = 0.;
 
     //add modifications ala CRTP
     static_cast<const modification_t*>(this)->matter_rhs_modification(total_rhs, matter_vars, metric_vars, d1, d2, advec);

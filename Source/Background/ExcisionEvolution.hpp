@@ -39,9 +39,11 @@ class ExcisionEvolution
 
     void compute(const Cell<double> current_cell) const
     {
+        //where are we?!
         const Coordinates<double> coords(current_cell, m_dx, m_center);
+
+        //check if we're inside buffered horizon region
         bool is_excised = m_background.check_if_excised(coords, m_buffer);
-        bool is_excised_Z = m_background.check_if_excised(coords, 0.9);
         
         if (is_excised)
         {
@@ -53,10 +55,12 @@ class ExcisionEvolution
             current_cell.store_vars(vars);
         } // else do nothing
 
-        /* if (is_excised_Z)
+        //Excise Z field right at horizon since it can derive errors
+        bool is_excised_Z = m_background.check_if_excised(coords, 1.0);
+        if (is_excised_Z)
         {
             current_cell.store_vars(0.0, c_Z);
-        } */
+        };
     }
 };
 

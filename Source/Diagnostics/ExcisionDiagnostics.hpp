@@ -10,11 +10,10 @@
 #include "Coordinates.hpp"
 #include "GRInterval.hpp"
 #include "Tensor.hpp"
-#include "UserVariables.hpp" //This files needs NUM_VARS - total number of components
 #include "VarsTools.hpp"
 #include "simd.hpp"
 
-#include "DiagnosticVariables.hpp"
+#include "DiagnosticVariables.hpp" //we need NUM_DIAGNOSTIC_VARS
 #include "ADMProcaVars.hpp"
 
 //! Does excision for fixed BG BH solutions
@@ -38,20 +37,21 @@ class ExcisionDiagnostics
 
         void compute(const Cell<double> current_cell) const
         {
+            //where are we?!
             const Coordinates<double> coords(current_cell, m_dx, m_center);
+
+            //instance of matter variables
             Vars matter_vars;
 
+            // check if we're in horizon region, with a buffer
             if (m_background.check_if_excised(coords, m_buffer) )
             {
-                  VarsTools::assign(matter_vars, 0.0);
-
-                  //assign values of variables to cell
-                  current_cell.store_vars(matter_vars);
-            }
-
-            if (m_background.check_if_excised(coords, 1)) //Excise the auxiliary Z field right at the horizon, since it can substantially drive errors
-            {
-                  current_cell.store_vars(0.0, c_Z);
+                  //diagnostic variables have a corresponding enum, so we just pass the enum value to store_vars and iterate over all enums in DiagnosticVariables.hpp
+                  //This allows for easy addition of new diagnostic variables
+                  for ( int diag_var {0}; diag_var < NUM_DIAGNOSTIC_VARS; diag_var++)
+                  {
+                      current_cell.store_vars(0.0, diag_var);
+                  }
             }
 
         }//end of method def

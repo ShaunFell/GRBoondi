@@ -7,7 +7,7 @@ This class adds the simplest L2 lagrangian to the base equations of motion
 #include "BaseProcaField.hpp"
 #include "KerrSchild.hpp"
 #include "L2_simp.hpp"
-#include "DefaultG.hpp"
+#include "NonlinearG2.hpp"
 #include "ADMFixedBGVars.hpp"
 #include "ADMProcaVars.hpp"
 
@@ -36,12 +36,13 @@ class ProcaField: public BaseProcaField<KerrSchild, ProcaField>
             double mass;
             double alpha2;
             double vector_damping;
+            double self_interaction;
         };
 
         KerrSchild m_background;
         params_t m_params;
         L2_t m_L2;
-        DefaultG m_G2;
+        NonlinearG2 m_G2;
 
 
 
@@ -49,10 +50,10 @@ class ProcaField: public BaseProcaField<KerrSchild, ProcaField>
         {
             //set up the L2 lagrangian
 
-            DefaultG::params_t G2_params{m_params.mass}; //Initialize G2 function parameters
+            NonlinearG2::params_t G2_params{m_params.mass, m_params.self_interaction}; //Initialize G2 function parameters
             L2_t::params_t L2_params{m_params.alpha2}; //Initialize L2 Lagrangian parameters
 
-            DefaultG a_G2(G2_params);
+            NonlinearG2 a_G2(G2_params);
             this -> m_L2 = L2_t(a_G2, L2_params);
             this -> m_G2 = a_G2;
         };
