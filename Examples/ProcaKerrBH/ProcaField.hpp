@@ -92,7 +92,7 @@ class ProcaField: public BaseProcaField<KerrSchild, ProcaField>
             data_t V { 0 };
             data_t dVdA { 0 };
             data_t dVddA { 0 };
-            m_G2.compute_function(V, dVdA, dVddA, matter_vars, metric_vars, d1, d2);
+            m_G2.compute_function(V, dVdA, dVddA, matter_vars, metric_vars);
 
             //Compute constraint algebra term
             data_t gnn{dVdA - 2.0 * dVddA * matter_vars.phi * matter_vars.phi};

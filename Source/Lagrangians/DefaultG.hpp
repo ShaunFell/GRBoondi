@@ -28,8 +28,8 @@ class DefaultG
 
         DefaultG(params_t a_params): m_params{a_params} {};
 
-        template <class data_t, template <typename> class vars_t, template <typename> class diff2_vars_t>
-        void compute_function(data_t &g_fun, data_t &g_prime, data_t &g_prime2, const vars_t<data_t> &vars, const MetricVars<data_t> &metric_vars, const vars_t<Tensor<1,data_t>> &d1, const diff2_vars_t<Tensor<2,data_t>> &d2) const
+        template <class data_t, template <typename> class vars_t>
+        void compute_function(data_t &g_fun, data_t &g_prime, data_t &g_prime2, const vars_t<data_t> &vars, const MetricVars<data_t> &metric_vars) const
         {
             auto gamma_UU { TensorAlgebra::compute_inverse_sym(metric_vars.gamma) };
             data_t A_squared { - vars.phi * vars.phi };
