@@ -44,14 +44,11 @@ void BaseProcaFieldLevel<background_t, proca_t>::prePlotLevel()
         m_state_new, m_state_diagnostics, EXCLUDE_GHOST_CELLS
         );
 
+    // add any other computations from the user here
+    additionalPrePlotLevel();
+
 };
 #endif //CH_USE_HDF5
-
-template <class background_t, class proca_t>
-void BaseProcaFieldLevel<background_t, proca_t>::preTagCells()
-{
-
-}
 
 
 //RHS routines used at each RK4 step
@@ -86,13 +83,6 @@ void BaseProcaFieldLevel<background_t, proca_t>::computeTaggingCriterion(FArrayB
     TaggingCriterion tagger(m_dx, m_level, m_p.grid_scaling*m_p.L, m_p.initial_ratio, m_p.center, m_p.extraction_params, m_p.activate_extraction, m_p.activate_ham_tagging, m_p.activate_extraction_tagging);
 
     BoxLoops::loop(tagger, current_state_diagnostics, tagging_criterion);
-
-    if (m_p.tagging_diagnostic)
-    {
-        TaggingCriterion tagger(m_dx, m_level, m_p.grid_scaling*m_p.L, m_p.initial_ratio, m_p.center, m_p.extraction_params, m_p.activate_extraction, m_p.activate_ham_tagging, m_p.activate_extraction_tagging, m_p.tagging_diagnostic);
-
-        BoxLoops::loop(tagger, m_state_new, m_state_diagnostics, SKIP_GHOST_CELLS);
-    }
 }
 
 
@@ -192,6 +182,10 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
         }
          
     } //end of integration block
+
+
+    // add any other computations from the user, via virtual function
+    additionalPostTimeStep();
 
 }
 

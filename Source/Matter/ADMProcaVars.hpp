@@ -9,7 +9,7 @@ namespace ADMProcaVars
 {
     template <class data_t> 
     struct MatterVars{
-        data_t phi;
+        data_t phi; //scalar part of Proca field
         data_t Z; //auxilliary damping scalar
         Tensor<1, data_t> Avec; //Spatial part of Proca field
         Tensor<1, data_t> Evec; //Electric part of Proca field strength tensor

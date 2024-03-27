@@ -134,6 +134,24 @@ void ChargesFluxes<matter_t, background_t>::compute(Cell<data_t> current_cell) c
     }
     Jdot *= sqrt_det_Sigma / r2sintheta;
 
+    // trace of the energy momentum tensor
+    data_t EM_trace { emtensor.rho - emtensor.S };
+
+    // square of the energy momentum tensor T^{mn} T_{mn}
+    data_t EM_squared { emtensor.rho * emtensor.rho };
+    FOR4(i,j,k,l)
+    {
+        EM_squared += gamma_UU[i][k] * gamma_UU[j][l] * ( emtensor.Sij[i][j] * emtensor.Sij[k][l] - emtensor.Si[i] * emtensor.Si[k] * emtensor.Si[j] * emtensor.Si[l] );
+    }
+
+
+    pout() << "c_rho = " << c_rho << endl;
+    pout() << "c_rhoJ = " << c_rhoJ << endl;
+    pout() << "c_Edot = " << c_Edot << endl;
+    pout() << "c_Jdot = " << c_Jdot << endl;
+    pout() << "c_EM_trace = " << c_EM_trace << endl;
+    pout() << "c_EM_squared = " << c_EM_squared << endl;
+    
 
     //assign to grid cell
     current_cell.store_vars(rho, c_rho);
@@ -141,6 +159,8 @@ void ChargesFluxes<matter_t, background_t>::compute(Cell<data_t> current_cell) c
     current_cell.store_vars(Edot, c_Edot);
     current_cell.store_vars(Jdot, c_Jdot);
     current_cell.store_vars(emtensor.rho, c_rhoE);
+    current_cell.store_vars(EM_trace, c_EM_trace);
+    current_cell.store_vars(EM_squared, c_EM_squared);
 }
 
 

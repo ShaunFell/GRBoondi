@@ -1,13 +1,13 @@
-### EMKerrBH
+### NonlinearProca
 ###  params.txt
 
 ################################################## Filesystem parameters
 
 
-verbosity = 0
+verbosity = 1
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/test_NonlinearProca"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_NonlinearProcaKerrBH_23284188"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -23,8 +23,8 @@ checkpoint_interval = 100
 plot_interval = 1
 
 #plot variable names must match those in the DiagnosticVariables::DiagnosticVariables namespace
-num_plot_vars = 8
-plot_vars = Z Asquared rho rhoJ rhoE Edot Jdot gnn
+num_plot_vars = 7
+plot_vars = Z Asquared rho rhoE gnn EMtrace EMsquared
 
 # subpaths - specific directories for hdf5, pout, extraction data
 # (these are created at runtime)
@@ -51,7 +51,7 @@ activate_gnn_tagging = 1
 max_level = 4
 
 #Since we use fixed grid tagging, we dont ever need to regrid
-regrid_interval = 0 4 1 1
+regrid_interval = 0 10 2 1
 regrid_threshold = 0.005
 
 ################################################## Initial Data parameters
@@ -128,7 +128,8 @@ vars_parity_diagnostic = 0        #Asquared
                                             0        # chi
                                             0        # gnn
                                             0        # c_Z_out
-                                            0        # Tagging_Diagnostic
+                                            0        # EMtrace
+                                            0        # EMsquared
 
 # if sommerfeld boundaries selected, must select
 # non zero asymptotic values

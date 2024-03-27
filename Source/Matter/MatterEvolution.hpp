@@ -84,8 +84,7 @@ template <class matter_t, class background_t> class MatterEvolution
   protected:
     const matter_t m_matter;              //!< The matter object
     const background_t m_background;      //!< The metric background
-    const FourthOrderDerivatives m_deriv; //!< An object for calculating
-                                          //!< derivatives of the vars
+    const FourthOrderDerivatives m_deriv; //!< An object for calculating derivatives of the vars
     const double m_sigma;                 //!< Sigma for dissipation
     const double m_dx;                    //!< Grid spacing
     const std::array<double, CH_SPACEDIM> m_center; //!< Grid center

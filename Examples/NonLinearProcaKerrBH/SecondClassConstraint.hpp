@@ -48,9 +48,6 @@ class SecondClassConstraint
             //load matter variables from Chombo grid
             const MatterVars<data_t> matter_vars = current_cell.template load_vars<MatterVars>();
 
-            //compute derivatives
-            const auto matter_vars_d1 = m_deriv.template diff1<MatterVars>(current_cell);
-
             //compute contravariant spatial metric
             const Tensor<2,data_t> gamma_UU { TensorAlgebra::compute_inverse_sym(metric_vars.gamma) };
 
