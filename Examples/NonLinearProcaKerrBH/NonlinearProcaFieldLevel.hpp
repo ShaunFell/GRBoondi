@@ -1,9 +1,6 @@
-#ifndef PROCAFIELDLEVEL_H_INCLUDED
-#define PROCAFIELDLEVEL_H_INCLUDED
+#ifndef NONLINEARPROCAFIELDLEVEL_H_INCLUDED
+#define NONLINEARPROCAFIELDLEVEL_H_INCLUDED
 
-/*
-Example of defining a level class that sets initial conditions
-*/
 
 #include "BaseProcaFieldLevel.hpp"
 #include "ProcaField.hpp"
@@ -19,7 +16,7 @@ Example of defining a level class that sets initial conditions
 
 
 
-//Inherits from BaseProcaFieldLevel with background = KerrSchild and matter = BaseProcaField
+//Inherits from BaseProcaFieldLevel with background = KerrSchild and matter = ProcaField
 class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
 {
 public:
@@ -35,7 +32,7 @@ public:
         //Initialize the initial conditions class
         Initial_Proca_Conditions initial_conditions(m_dx, m_p.initial_conditions_params, m_p.matter_params, m_p.background_params, kerr_schild);
 
-        //Loop over box cells and assign initial EM field
+        //Loop over box cells and assign initial Proca field
         BoxLoops::loop(initial_conditions, m_state_new, m_state_new, INCLUDE_GHOST_CELLS);
 
         //Excise within horizon
@@ -47,6 +44,22 @@ public:
         //Done!
     }
 
+    // we add the computation of the gnn diagnostic variable here
+    virtual void additionalPrePlotLevel() override 
+    {
+        //Initialize the background class
+        KerrSchild kerr_schild(m_p.background_params, m_dx);
+
+        //Initialize the Proca field class
+        ProcaField proca_field(kerr_schild, m_p.matter_params);
+
+        //Initialize the constraint class, to be computed on the grid
+        SecondClassConstraint<KerrSchild> constraint(m_dx, m_p.center, kerr_schild, proca_field);
+
+        //Loop over the box cells and compute the constraint on the grid
+        BoxLoops::loop(constraint, m_state_diagnostics, m_state_diagnostics, SKIP_GHOST_CELLS);
+    }
+
 
 
     //Since we use a custom tagging criteria that uses the diagnostic data, 
@@ -55,8 +68,11 @@ public:
     virtual void preTagCells() override 
     {
 
-        if (m_p.activate_gnn_tagging)
+        //We only need to 
+        if (m_p.activate_gnn_tagging && m_time > m_dt)
         {
+            //We dont need any derivatives, so no need to populate ghost cells
+
             //Initialize the background class
             KerrSchild kerr_schild(m_p.background_params, m_dx);
 
@@ -70,10 +86,12 @@ public:
             BoxLoops::loop(constraint, m_state_new, m_state_diagnostics, SKIP_GHOST_CELLS);
 
             //Excise within horizon
-            ExcisionDiagnostics<ProcaField, KerrSchild> excisor (kerr_schild, m_dx, m_p.center, m_p.evolution_excision_width);
+            // Note: we use diagnostic_excision_width, since we usually set this to outside the horizon,
+            // and this is the part we really care about
+            ExcisionDiagnostics<ProcaField, KerrSchild> excisor (kerr_schild, m_dx, m_p.center, m_p.diagnostic_excision_width);
 
             //Loop over the box cells and excise within the horizon
-            BoxLoops::loop(excisor, m_state_new, m_state_diagnostics, SKIP_GHOST_CELLS, disable_simd()); //disable SIMD for this loop since excision doesnt use SIMD
+            BoxLoops::loop(excisor, m_state_diagnostics, m_state_diagnostics, SKIP_GHOST_CELLS, disable_simd()); //disable SIMD for this loop since excision doesnt use SIMD
         };
     }; //end of preTagCells method
 
@@ -82,8 +100,11 @@ public:
     //compute the tagging criteria on the grid, overriding the Base function
     virtual void computeTaggingCriterion(FArrayBox &tagging_criterion, const FArrayBox &current_state, const FArrayBox &current_state_diagnostics) override
     {
+        //We dont need to activate gnn tagging at t=0
+        bool activate_gnn_tagging = (m_time > 0.0 && m_p.activate_gnn_tagging) ? true : false;
+
         //Initialize the tagging class
-        CustomTaggingCriterion tagger(m_dx, m_level, m_p.grid_scaling * m_p.L, m_p.initial_ratio, m_p.center, m_p.activate_gnn_tagging);
+        CustomTaggingCriterion tagger(m_dx, m_level, m_p.grid_scaling * m_p.L, m_p.initial_ratio, m_p.regrid_threshold, m_p.center, activate_gnn_tagging);
 
         //Loop over the box cells and compute the tagging criterion
         BoxLoops::loop(tagger, current_state_diagnostics, tagging_criterion);
@@ -91,4 +112,4 @@ public:
 };
 
 
-#endif //PROCAFIELDLEVEL_H_INCLUDED
+#endif //NONLINEARPROCAFIELDLEVEL_H_INCLUDED

@@ -54,15 +54,21 @@ class BaseProcaFieldLevel : public GRAMRLevel
 
 #ifdef CH_USE_HDF5
     virtual void prePlotLevel();
+
+    // additional pre-plot routines from the user, e.g. writing custom diagnostic data
+    virtual void additionalPrePlotLevel(){};
 #endif
 
     virtual void specificEvalRHS(GRLevelData &a_soln, GRLevelData &a_rhs,
                                     const double a_time); //RHS routines used at each RK4 step
     
 
-    virtual void preTagCells() override; //things to do before tagging cells (e.g. filling ghosts)
+    virtual void preTagCells() override {}; //things to do before tagging cells (e.g. filling ghosts)
 
     virtual void specificPostTimeStep() override;
+
+    // additional post-time-step routines from the user, e.g. computating additional fluxes
+    virtual void additionalPostTimeStep() {};
 
     virtual void computeTaggingCriterion(
         FArrayBox &tagging_criterion, const FArrayBox &current_state,

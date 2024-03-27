@@ -4,6 +4,7 @@
 #include "CoordinateTransformations.hpp"
 #include "ADMFixedBGVars.hpp"
 #include "ADMProcaVars.hpp"
+#include "DiagnosticVariables.hpp"
 
 template <class matter_t, class background_t>
 class ChargesFluxes

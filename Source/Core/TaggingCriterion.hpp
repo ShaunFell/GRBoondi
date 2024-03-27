@@ -103,13 +103,9 @@ class TaggingCriterion
         data_t criterion { simd_max(FixedGridsTaggingCriterion, ExtractionTaggingCriterion) };
 
         // Write back into the flattened Chombo box. If Diagnostic is turned on, then write to c_Tagging_Diagnostic
-        if (m_DIAGNOSTIC) 
-        {
-            current_cell.store_vars(criterion, c_Tagging_Diagnostic);
-        } else
-        {
-            current_cell.store_vars(criterion, 0);
-        } 
+
+        current_cell.store_vars(criterion, 0);
+  
     }
 };
 

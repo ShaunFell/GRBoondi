@@ -72,10 +72,9 @@ class ProcaSimulationParameters : public ChomboParameters
 
         //tagging
         pp.load("initial_ratio", initial_ratio, 0.25);
-        pp.load("activate_ham_tagging", activate_ham_tagging, false);
         pp.load("activate_extraction_tagging", activate_extraction_tagging, false);
         pp.load("grid_scaling", grid_scaling, 1.);
-        pp.load("activate_tagging_diagnostic", tagging_diagnostic, false);
+        pp.load("regrid_threshold", regrid_threshold, 0.5);
 
         //excision
 
@@ -83,7 +82,6 @@ class ProcaSimulationParameters : public ChomboParameters
 
     void check_params()
     {
-        warn_parameter("activate_tagging_diagnostic", tagging_diagnostic,  !tagging_diagnostic, "Diagnostic tagging turned on. Tagging criteria will be written to c_Tagging_Diagnostic");
 
         check_parameter("grid_scaling", grid_scaling, grid_scaling>0, "Grid scaling parameter must be greater than zero");
         check_parameter("evolution_excision_width", evolution_excision_width, evolution_excision_width <= diagnostic_excision_width, "Evolution excision width must be less than or equal to diagnostic excision width");
@@ -105,7 +103,7 @@ class ProcaSimulationParameters : public ChomboParameters
 
     double initial_ratio; 
 
-    bool tagging_diagnostic;
+    double regrid_threshold;
 
 
 

@@ -21,7 +21,9 @@ enum
 
     c_Z_out,
 
-    c_Tagging_Diagnostic,
+    c_EM_trace,
+
+    c_EM_squared,
 
     NUM_DIAGNOSTIC_VARS
 };
@@ -45,9 +47,9 @@ namespace DiagnosticVariables
 
         "Z",
 
-        "Tagging_Diagnostic"
-        
+        "EMtrace",
 
+        "EMsquared"
     };
 }
 
