@@ -122,12 +122,12 @@ vars_parity            = 0 1 2 3 #proca field
                                     1 2 3 0 # electric field and z field
 vars_parity_diagnostic = 0        #Asquared
                                             0 0 0  #rho rhoE rhoJ
-                                            0 0     #Edot Jdot
                                             0        # chi
                                             0        # gnn
                                             0        # c_Z_out
-                                            0 0     # EMtrace EMsquared
-                                            0 0 0  # rhoLinMom fluxLinMom sourceLinMom
+                                            0 0     # EM_trace EM_squared
+                                            0 0     # rhoLinMom sourceLinMom
+                                            0 0 0  # Edot Jdot fluxLinMom
 
 # if sommerfeld boundaries selected, must select
 # non zero asymptotic values
