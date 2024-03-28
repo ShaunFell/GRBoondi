@@ -107,14 +107,16 @@ lo_boundary = 3 3 2
 # 1,2,3 = odd x, y, z
 # 4,5,6 = odd xy, yz, xz
 # 7     = odd xyz
-vars_parity            = 0 0 4 6 0 5 0    #chi and hij
-                         0 0 4 6 0 5 0    #K and Aij
-                         0 1 2 3          #Theta and Gamma
-                         0 1 2 3 1 2 3    #lapse shift and B
-                         0 1 2 3 1 2 3 0  # phi, Ai, Ei, Z 
-vars_parity_diagnostic = 0 0 1 2 3 0 0 0    #Ham and Mom
-                         0 0 0 0 0 0 0 0 0 0   # Other vars all scalars
-                         0 7                # Weyl scalars
+vars_parity            = 0 1 2 3 #proca field
+                                    1 2 3 0 # electric field and z field
+vars_parity_diagnostic = 
+                                            0 0 0  #rho rhoE rhoJ
+                                            0        # chi
+                                            0        # gnn
+                                            0        # c_Z_out
+                                            0 0     # EM_trace EM_squared
+                                            0 0     # rhoLinMom sourceLinMom
+                                            0 0 0  # Edot Jdot fluxLinMom
 
 # if sommerfeld boundaries selected, must select
 # non zero asymptotic values
