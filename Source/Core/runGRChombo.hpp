@@ -1,8 +1,3 @@
-/* GRChombo
- * Copyright 2012 The GRChombo collaboration.
- * Please refer to LICENSE in GRChombo's root directory.
- */
-
 // Chombo includes
 #include "parstream.H" //Gives us pout()
 
@@ -39,24 +34,24 @@ int runGRChombo(int argc, char *argv[])
     if (sim_params.just_check_params)
         return 0;
 
-    // The line below selects the problem that is simulated
-    // (To simulate a different problem, define a new child of AMRLevel
-    // and an associated LevelFactory)
-    GRAMR bh_amr;
-    DefaultLevelFactory<level_t> problem_level_factory(bh_amr, sim_params);
-    setupAMRObject(bh_amr, problem_level_factory);
+    // DefaultLevelFactor is templated over level_t, itself a template parameter
+    // Setup the AMR object and initialize the grid
+    GRAMR gr_amr;
+    DefaultLevelFactory<level_t> problem_level_factory(gr_amr, sim_params);
+    setupAMRObject(gr_amr, problem_level_factory);
 
     //setup interpolating object
     AMRInterpolator<Lagrange<4>> interpolator(
-        bh_amr, sim_params.origin, sim_params.dx, sim_params.boundary_params,
+        gr_amr, sim_params.origin, sim_params.dx, sim_params.boundary_params,
         sim_params.verbosity);
-    bh_amr.set_interpolator(&interpolator); // also sets puncture_tracker interpolator
+    gr_amr.set_interpolator(&interpolator); // also sets puncture_tracker interpolator
 
+    //setup timing routine
     using Clock = std::chrono::steady_clock;
     using Minutes = std::chrono::duration<double, std::ratio<60, 1>>;
-
     std::chrono::time_point<Clock> start_time = Clock::now();
 
+    // We want to calculate the charges and fluxes at t = 0 
     //call the PostTimeStep right now!!!!
     pout() << "Running initial PostTimeStep" << endl;
     auto task = [](GRAMRLevel *level)
@@ -69,17 +64,17 @@ int runGRChombo(int argc, char *argv[])
 
     // call 'now' really now
     MultiLevelTaskPtr<> call_task(task);
-    call_task.execute(bh_amr);  
+    call_task.execute(gr_amr);  
 
 
     //go go go !!!!!! Run simulation
-    bh_amr.run(sim_params.stop_time, sim_params.max_steps);
+    gr_amr.run(sim_params.stop_time, sim_params.max_steps);
 
     auto now = Clock::now();
     auto duration = std::chrono::duration_cast<Minutes>(now - start_time);
     pout() << "Total simulation time (mins): " << duration.count() << ".\n";
 
-    bh_amr.conclude();
+    gr_amr.conclude();
 
     CH_TIMER_REPORT(); // Report results when running with Chombo timers.
 

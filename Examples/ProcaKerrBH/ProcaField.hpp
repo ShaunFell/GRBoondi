@@ -67,6 +67,7 @@ class ProcaField: public BaseProcaField<KerrSchild, ProcaField>
             const MatterVars<data_t> &advec //value of the beta^i d_i(var) terms
         ) const 
         {
+            //add modifications coming from L2 lagrangian
             m_L2.compute_emtensor_modification(base_emtensor, vars, metric_vars, d1,  d2, advec);
         }; 
 
