@@ -22,8 +22,11 @@ enum
     c_Z_out,
 
     c_EM_trace,
-
     c_EM_squared,
+
+    c_rhoLinMom, 
+    c_fluxLinMom,
+    c_sourceLinMom,
 
     NUM_DIAGNOSTIC_VARS
 };
@@ -48,8 +51,11 @@ namespace DiagnosticVariables
         "Z",
 
         "EMtrace",
+        "EMsquared",
 
-        "EMsquared"
+        "rhoLinMom",
+        "fluxLinMom",
+        "sourceLinMom"
     };
 }
 

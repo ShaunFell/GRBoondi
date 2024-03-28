@@ -97,43 +97,46 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
     bool at_course_timestep_on_any_level = at_level_timestep_multiple(min_level);
 
     //extract fluxes at specified radii
-    if (m_p.activate_extraction)
+    if (m_p.activate_extraction && at_course_timestep_on_any_level)
     {
-        
+        //get the minimum level for extraction, as specified in parameter file
         int min_level = m_p.extraction_params.min_extraction_level();
-        if (at_course_timestep_on_any_level)
+
+        //fill the ghost cells, so we can calculate derivatives
+        fillAllGhosts();
+        
+        //Instantiate classes to compute the charges and fluxes
+        background_t background_init { m_p.background_params, m_dx };
+        proca_t proca_field(background_init, m_p.matter_params);
+        ChargesFluxes<proca_t, background_t> EM(background_init,m_dx, proca_field, m_p.center);
+        ExcisionDiagnostics<proca_t,background_t> excisor(background_init, m_dx, m_p.center, m_p.diagnostic_excision_width);
+
+        //Loop over box cells and compute the charges and fluxes
+        BoxLoops::loop(
+            EM,
+            m_state_new, m_state_diagnostics, SKIP_GHOST_CELLS);
+
+        //excise within the excision zone
+        BoxLoops::loop(
+            excisor,
+            m_state_diagnostics, m_state_diagnostics, SKIP_GHOST_CELLS, disable_simd()
+        );
+
+        //do extraction
+        if (m_level == min_level)
         {
-            fillAllGhosts();
-            
-            background_t background_init { m_p.background_params, m_dx };
-            proca_t proca_field(background_init, m_p.matter_params);
-            ChargesFluxes<proca_t, background_t> EM(background_init,m_dx, proca_field, m_p.center);
-            ExcisionDiagnostics<proca_t,background_t> excisor(background_init, m_dx, m_p.center, m_p.diagnostic_excision_width);
-
-            BoxLoops::loop(
-                EM,
-                m_state_new, m_state_diagnostics, SKIP_GHOST_CELLS);
-
-            BoxLoops::loop(
-                excisor,
-                m_state_diagnostics, m_state_diagnostics, SKIP_GHOST_CELLS, disable_simd()
-            );
-
-            //do extraction
-            if (m_level == min_level)
-            {
-                CH_TIME("WeylExtraction");
-                //refresh interpolator
-                //fill ghosts manually
-                bool fill_ghosts = false;
-                m_gr_amr.m_interpolator->refresh(fill_ghosts);
-                m_gr_amr.fill_multilevel_ghosts(
-                    VariableType::diagnostic, Interval(c_Edot, c_Jdot),
-                    min_level);
-                FluxExtraction my_extraction(m_p.extraction_params, m_dt, m_time, first_step, m_restart_time);
-                my_extraction.execute_query(m_gr_amr.m_interpolator);
-            }
+            CH_TIME("WeylExtraction");
+            //refresh interpolator
+            //fill ghosts manually
+            bool fill_ghosts = false;
+            m_gr_amr.m_interpolator->refresh(fill_ghosts);
+            m_gr_amr.fill_multilevel_ghosts(
+                VariableType::diagnostic, Interval(c_Edot, c_Jdot),
+                min_level);
+            FluxExtraction my_extraction(m_p.extraction_params, m_dt, m_time, first_step, m_restart_time);
+            my_extraction.execute_query(m_gr_amr.m_interpolator);
         }
+        
     } //end of flux block
 
     //integrate charges
