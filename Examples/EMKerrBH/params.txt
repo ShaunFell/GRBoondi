@@ -166,7 +166,7 @@ extraction_levels = 0 0
 num_points_phi = 24
 num_points_theta = 37
 
-extraction_vars = Edot Jdot fluxLinMom
+extraction_vars = Edot Jdot
 num_extraction_vars = 3
 
 integration_vars = rhoE rhoJ EMsquared
