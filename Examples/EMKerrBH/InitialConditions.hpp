@@ -7,6 +7,7 @@ This example sets the initial data to be a uniform magnetic field
 */
 
 #include "BaseProcaField.hpp"
+#include "ADMProcaVars.hpp"
 #include "KerrSchild.hpp" //background class
 #include "Cell.hpp"
 #include "TensorAlgebra.hpp"
@@ -28,7 +29,7 @@ class Initial_EM_Conditions
         const params_t m_params;
 
         template <class data_t>
-        using MatterVars = typename BaseProcaField<KerrSchild>::template Vars<data_t>;
+        using MatterVars = typename ADMProcaVars::MatterVars<data_t>;
 
     public:
         Initial_EM_Conditions(params_t a_params): m_params{a_params}{};
