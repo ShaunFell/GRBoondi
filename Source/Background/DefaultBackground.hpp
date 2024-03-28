@@ -4,6 +4,7 @@
 #include "ADMFixedBGVars.hpp"
 #include "Cell.hpp"
 
+//Class which computes a Minkowski background
 
 class DefaultBackground
 {
