@@ -17,6 +17,7 @@
 //Flux Extraction
 #include "FluxExtraction.hpp"
 #include "ChargesFluxes.hpp"
+#include "LinearMomConservation.hpp"
 
 //Diagnostics
 #include "ProcaSquared.hpp"

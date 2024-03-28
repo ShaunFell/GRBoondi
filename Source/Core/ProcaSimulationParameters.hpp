@@ -9,7 +9,8 @@
 // General includes
 #include "ChomboParameters.hpp"
 #include "GRParmParse.hpp"
-/* #include "SimulationParametersBase.hpp" */
+#include "UserVariables.hpp"
+#include "VariableType.hpp"
 
 // Proca specific includes:
 #include "BaseProcaField.hpp"
@@ -76,8 +77,14 @@ class ProcaSimulationParameters : public ChomboParameters
         pp.load("grid_scaling", grid_scaling, 1.);
         pp.load("regrid_threshold", regrid_threshold, 0.5);
 
-        //excision
+        //linear momentum direction
+        pp.load("linear_momentum_dir", linear_momentum_dir, 0);
 
+        //load extraction variables
+        UserVariables::load_vars_to_vector(pp, "extraction_vars", "num_extraction_vars", extraction_vars,num_extraction_vars);
+
+        //load integration variables
+        UserVariables::load_vars_to_vector(pp, "integration_vars", "num_integration_vars", integration_vars,num_integration_vars);
     };
 
     void check_params()
@@ -94,6 +101,11 @@ class ProcaSimulationParameters : public ChomboParameters
     std::string integrals_filename;
 
     spherical_extraction_params_t extraction_params;
+    int num_extraction_vars;
+    std::vector<std::pair<int, VariableType>> extraction_vars;
+
+    int num_integration_vars;
+    std::vector<std::pair<int, VariableType>> integration_vars;
 
     bool activate_integration;
     bool activate_ham_tagging;
@@ -104,6 +116,9 @@ class ProcaSimulationParameters : public ChomboParameters
     double initial_ratio; 
 
     double regrid_threshold;
+
+    //linear momentum direction
+    int linear_momentum_dir;
 
 
 

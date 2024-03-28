@@ -97,30 +97,41 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
     bool at_course_timestep_on_any_level = at_level_timestep_multiple(min_level);
 
     //extract fluxes at specified radii
-    if (m_p.activate_extraction && at_course_timestep_on_any_level)
+    if (m_p.activate_extraction && at_course_timestep_on_any_level && m_p.num_extraction_vars > 0)
     {
         //get the minimum level for extraction, as specified in parameter file
         int min_level = m_p.extraction_params.min_extraction_level();
 
         //fill the ghost cells, so we can calculate derivatives
         fillAllGhosts();
+
+        //get enums of variables we want to extract
+        const std::vector<int> vars_to_extract = DiagnosticVariables::convert_pairs_to_enum(m_p.extraction_vars);
+
         
         //Instantiate classes to compute the charges and fluxes
         background_t background_init { m_p.background_params, m_dx };
         proca_t proca_field(background_init, m_p.matter_params);
-        ChargesFluxes<proca_t, background_t> EM(background_init,m_dx, proca_field, m_p.center);
+        
+        //If we want to extract Edot or Jdot, we need to compute the charges and fluxes on the grid
+        if ( DiagnosticVariables::is_variable_to_extract(c_Edot, vars_to_extract) || DiagnosticVariables::is_variable_to_extract(c_Jdot, vars_to_extract) )
+        {
+            ChargesFluxes<proca_t, background_t> EM(background_init,m_dx, proca_field, m_p.center);
+            //Loop over box cells and compute the charges and fluxes
+            BoxLoops::loop(EM,m_state_new, m_state_diagnostics, SKIP_GHOST_CELLS);
+        }
+
+        if (DiagnosticVariables::is_variable_to_extract(c_fluxLinMom, vars_to_extract))
+        {
+            LinearMomConservation<proca_t, background_t> LinearMomentum(proca_field, background_init,m_p.linear_momentum_dir, m_dx, m_p.center);
+            //Loop over box cells and compute the charges and fluxes
+            BoxLoops::loop(LinearMomentum,m_state_new, m_state_diagnostics, SKIP_GHOST_CELLS);
+        }
+
         ExcisionDiagnostics<proca_t,background_t> excisor(background_init, m_dx, m_p.center, m_p.diagnostic_excision_width);
 
-        //Loop over box cells and compute the charges and fluxes
-        BoxLoops::loop(
-            EM,
-            m_state_new, m_state_diagnostics, SKIP_GHOST_CELLS);
-
         //excise within the excision zone
-        BoxLoops::loop(
-            excisor,
-            m_state_diagnostics, m_state_diagnostics, SKIP_GHOST_CELLS, disable_simd()
-        );
+        BoxLoops::loop(excisor,m_state_diagnostics, m_state_diagnostics, SKIP_GHOST_CELLS, disable_simd());
 
         //do extraction
         if (m_level == min_level)
@@ -130,10 +141,13 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
             //fill ghosts manually
             bool fill_ghosts = false;
             m_gr_amr.m_interpolator->refresh(fill_ghosts);
-            m_gr_amr.fill_multilevel_ghosts(
-                VariableType::diagnostic, Interval(c_Edot, c_Jdot),
-                min_level);
-            FluxExtraction my_extraction(m_p.extraction_params, m_dt, m_time, first_step, m_restart_time);
+
+            //fill multilevel ghost cells, based on the quantities we want to extract, as specified in the param file
+            for (auto var_enum: vars_to_extract)
+            {
+                m_gr_amr.fill_multilevel_ghosts( VariableType::diagnostic, Interval(var_enum, var_enum), min_level);
+            };
+            FluxExtraction my_extraction(m_p.extraction_params, vars_to_extract, m_dt, m_time, first_step, m_restart_time);
             my_extraction.execute_query(m_gr_amr.m_interpolator);
         }
         
@@ -142,31 +156,61 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
     //integrate charges
     if (m_p.activate_integration && at_course_timestep_on_any_level)
     {
-        
+        //get enums of variables we want to extract
+        const std::vector<int> vars_to_integrate= DiagnosticVariables::convert_pairs_to_enum(m_p.integration_vars);
+
+        //initialize background and matter class
+        background_t background_init { m_p.background_params, m_dx };
+        proca_t proca_field(background_init, m_p.matter_params);
+
+
         //calculate densities on grid
-        if ( !m_p.activate_extraction ) //did we already calculate diagnostics during extraction?
+        if ( !m_p.activate_extraction ) //did we already fill ghosts in the extraction block?
         {
             fillAllGhosts();
-            background_t background_init { m_p.background_params, m_dx };
-            proca_t proca_field(background_init, m_p.matter_params);
-
-            ChargesFluxes<proca_t, background_t> EM(background_init,m_dx, proca_field, m_p.center);
-            ExcisionDiagnostics<proca_t,background_t> excisor(background_init, m_dx, m_p.center, m_p.diagnostic_excision_width);
-
-            BoxLoops::loop(EM,m_state_new, m_state_diagnostics, EXCLUDE_GHOST_CELLS);
-            BoxLoops::loop(excisor, m_state_diagnostics, m_state_diagnostics, EXCLUDE_GHOST_CELLS, disable_simd());
         }
 
+        //If we want to extract any of the densities, we need to compute the charges and fluxes on the grid
+        //determine if any of the variables we want to integrate are calculated in ChargesFluxes class
+        bool calculate_chargesfluxes = false;
+        for (auto var_enum: {c_rho, c_rhoJ, c_rhoE, c_EM_squared, c_EM_trace})
+        {
+            calculate_chargesfluxes += DiagnosticVariables::is_variable_to_extract(var_enum, vars_to_integrate);
+        }
+        // if any of them are, we should compute the class over the grid
+        if (calculate_chargesfluxes)
+        {
+            ChargesFluxes<proca_t, background_t> EM(background_init,m_dx, proca_field, m_p.center);
+            //Loop over box cells and compute the charges and fluxes
+            BoxLoops::loop(EM,m_state_new, m_state_diagnostics, SKIP_GHOST_CELLS);
+        }
+
+        // If we want to extract these, we need to compute the LinearMomConservation class over the grid
+        bool calculate_linmom = false;
+        for (auto var_enum: {c_rhoLinMom, c_sourceLinMom})
+        {
+            calculate_linmom += DiagnosticVariables::is_variable_to_extract(var_enum, vars_to_integrate);
+        }
+        if (calculate_linmom)
+        {
+            LinearMomConservation<proca_t, background_t> LinearMomentum(proca_field, background_init,m_p.linear_momentum_dir, m_dx, m_p.center);
+            //Loop over box cells and compute the charges and fluxes
+            BoxLoops::loop(LinearMomentum,m_state_new, m_state_diagnostics, SKIP_GHOST_CELLS);
+        }
 
         if (m_level == min_level)
         {
             //setup integrator
             AMRReductions<VariableType::diagnostic> amr_reductions(m_gr_amr);
 
-            //integrate densities
-            double SUM_rho = amr_reductions.sum(c_rho);
-            double SUM_rhoE = amr_reductions.sum(c_rhoE);
-            double SUM_rhoJ = amr_reductions.sum(c_rhoJ);
+            //setup container for solution
+            std::vector<double> integrals; 
+
+            //now perform the integrals and push solution onto container
+            for (auto var_enum: vars_to_integrate)
+            {
+                integrals.push_back(amr_reductions.sum(var_enum));
+            }
 
             //setup output file
             SmallDataIO constraint_file(m_p.data_path + m_p.integrals_filename,
@@ -176,12 +220,23 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
             //remove duplicates
             constraint_file.remove_duplicate_time_data();
 
-            //save to disk
+            // if this is the first step, we should write a header line
+            // the header name comes from DiagnosticVariables::variable_names
             if (first_step)
             {
-                constraint_file.write_header_line({"SUM_rho", "SUM_rhoE", "SUM_rhoJ"});
+                //first create a container for the variable names and iterate over the vars_to_integrate
+                std::vector<std::string> header_names;
+                for (auto var_enum: vars_to_integrate)
+                {
+                    header_names.push_back(DiagnosticVariables::variable_names[var_enum]);
+                }
+
+                //now write the header line to file
+                constraint_file.write_header_line(header_names);
             }
-            constraint_file.write_time_data_line({ SUM_rho, SUM_rhoE, SUM_rhoJ});
+
+            //now add the integrals to the file
+            constraint_file.write_time_data_line(integrals);
         }
          
     } //end of integration block
