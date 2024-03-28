@@ -9,11 +9,6 @@ implementation file for ProcaField.hpp
 #ifndef BASEPROCAFIELD_IMPL_H_INCLUDED
 #define BASEPROCAFIELD_IMPL_H_INCLUDED
 
-//DEBUGGING
-#include "DefaultG.hpp"
-#include "ProcaField.hpp"
-
-
 template <class background_t, class modification_t>
 template <class data_t, template <typename> class vars_t, template <typename> class diff2_vars_t>
 emtensor_t<data_t> BaseProcaField<background_t, modification_t>::compute_emtensor(
