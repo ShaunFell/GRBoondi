@@ -49,7 +49,7 @@ public:
         current_cell.store_vars(vars);
     }
 
-    bool check_if_excised(const Coordinates<double> &coords) const
+    bool check_if_excised(const Coordinates<double> &coords, const double buffer=1.0) const
     {
         return false; //Dont ever excise 
     }
