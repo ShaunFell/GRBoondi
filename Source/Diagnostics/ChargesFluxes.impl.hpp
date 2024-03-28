@@ -144,15 +144,6 @@ void ChargesFluxes<matter_t, background_t>::compute(Cell<data_t> current_cell) c
         EM_squared += gamma_UU[i][k] * gamma_UU[j][l] * ( emtensor.Sij[i][j] * emtensor.Sij[k][l] - emtensor.Si[i] * emtensor.Si[k] * emtensor.Si[j] * emtensor.Si[l] );
     }
 
-
-    pout() << "c_rho = " << c_rho << endl;
-    pout() << "c_rhoJ = " << c_rhoJ << endl;
-    pout() << "c_Edot = " << c_Edot << endl;
-    pout() << "c_Jdot = " << c_Jdot << endl;
-    pout() << "c_EM_trace = " << c_EM_trace << endl;
-    pout() << "c_EM_squared = " << c_EM_squared << endl;
-    
-
     //assign to grid cell
     current_cell.store_vars(rho, c_rho);
     current_cell.store_vars(rhoJ, c_rhoJ);

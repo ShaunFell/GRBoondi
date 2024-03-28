@@ -11,10 +11,11 @@ Example of defining a level class that sets simple initial conditions
 #include "ExcisionEvolution.hpp"
 #include "KerrSchild.hpp"
 #include "BoxLoops.hpp"
+#include "ProcaField.hpp"
 
 
-//Inherits from BaseProcaFieldLevel with background = KerrSchild and matter = BaseProcaField
-class EMFieldLevel : public BaseProcaFieldLevel<KerrSchild, BaseProcaField<KerrSchild>>
+//Inherits from BaseProcaFieldLevel with background = KerrSchild and matter = Default
+class EMFieldLevel : public BaseProcaFieldLevel<KerrSchild,ProcaField>
 {
 public:
     //inherit constructor from base class
@@ -32,7 +33,7 @@ public:
 
         //Excise within horizon
         KerrSchild kerr_schild(m_p.background_params, m_dx);
-        ExcisionEvolution<BaseProcaField<KerrSchild>, KerrSchild> excisor(m_dx, m_p.center, kerr_schild);
+        ExcisionEvolution<BaseProcaField<KerrSchild, ProcaField>, KerrSchild> excisor(m_dx, m_p.center, m_p.evolution_excision_width, kerr_schild);
 
         //Loop over box cells and excise cells within horizon
         BoxLoops::loop(excisor, m_state_new, m_state_new, SKIP_GHOST_CELLS, disable_simd()); //disable SIMD for this loop since excision doesnt use SIMD

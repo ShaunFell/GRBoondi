@@ -7,7 +7,7 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23282913"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23285913"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -23,8 +23,8 @@ checkpoint_interval = 100
 plot_interval = 20
 
 #plot variable names must match those in the DiagnosticVariables::DiagnosticVariables namespace
-num_plot_vars = 8
-plot_vars = Z Asquared rho rhoJ rhoE Edot Jdot Tagging_Diagnostic
+num_plot_vars = 7
+plot_vars = Z Asquared rho rhoE gnn EMtrace EMsquared
 
 # subpaths - specific directories for hdf5, pout, extraction data
 # (these are created at runtime)
@@ -122,10 +122,12 @@ vars_parity            = 0 1 2 3 #proca field
                                     1 2 3 0 # electric field and z field
 vars_parity_diagnostic = 0        #Asquared
                                             0 0 0  #rho rhoE rhoJ
-                                            0 0     #Edot Jdot
                                             0        # chi
+                                            0        # gnn
                                             0        # c_Z_out
-                                            0        # Tagging_Diagnostic
+                                            0 0     # EM_trace EM_squared
+                                            0 0     # rhoLinMom sourceLinMom
+                                            0 0 0  # Edot Jdot fluxLinMom
 
 # if sommerfeld boundaries selected, must select
 # non zero asymptotic values
@@ -174,6 +176,12 @@ extraction_radii = 1.2 30
 extraction_levels = 1 1
 num_points_phi = 24
 num_points_theta = 37
+
+extraction_vars = Edot Jdot
+num_extraction_vars = 3
+
+integration_vars = rhoE rhoJ EMsquared
+num_integration_vars = 3
 
 write_extraction = 0
 extraction_subpath = "extraction"

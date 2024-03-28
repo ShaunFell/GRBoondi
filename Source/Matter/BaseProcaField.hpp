@@ -11,13 +11,14 @@
 #include "DefaultBackground.hpp" //Minkowski background as default
 
 
-
 template <class background_t, class modification_t>
 class BaseProcaField
 {
     protected: 
 
         const background_t m_background;
+
+        struct params_t{};
 
     public:
         //constructor, inputs are matter params
@@ -63,7 +64,6 @@ class BaseProcaField
         ) const;
         
 };
-
 
 #include "BaseProcaField.impl.hpp"
 #endif //BASEPROCAFIELD_H_INCLUDED

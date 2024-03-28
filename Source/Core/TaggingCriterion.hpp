@@ -1,14 +1,6 @@
-/* GRChombo
- * Copyright 2012 The GRChombo collaboration.
- * Please refer to LICENSE in GRChombo's root directory.
- */
-
- /*
- Code retrieved from 
- https://github.com/KAClough/GRChombo_public/blob/main/Examples/Oscillaton/HamTaggingCriterion.hpp
-
- Extraction piece from ChiExtractionTaggingCriterion.hpp
- */
+/*
+This tagging criterion is a generic criterion that uses a fixed grid, but can also deal with flux extraction in the outer region of the simulation
+*/
 
 #ifndef TAGGINGCRITERION_HPP_
 #define TAGGINGCRITERION_HPP_

@@ -19,15 +19,20 @@
 
 //! Calculates the momentum flux S_i with type matter_t and writes it to the
 //! grid, see https://arxiv.org/pdf/2104.13420.pdf for details
-template <class matter_t, class background_t> class LinearMomConservation
+template <class matter_t, class background_t> 
+class LinearMomConservation
 {
     // Use the variable definition in the matter class
     template <class data_t>
-    using MatterVars = typename ADMProcaVars::MatterVars<data_t>;
+    using MatterVars = ADMProcaVars::MatterVars<data_t>;
+
+    //  Need d2 of certain matter vars
+    template <class data_t>
+    using MatterDiff2Vars = ADMProcaVars::Diff2MatterVars<data_t>;
 
     // Now the non grid ADM vars
     template <class data_t> 
-    using MatterVars = ADMProcaVars::MatterVars<data_t>;
+    using MetricVars = ADMFixedBGVars::Vars<data_t>;
 
   protected:
     const FourthOrderDerivatives
@@ -53,33 +58,51 @@ template <class matter_t, class background_t> class LinearMomConservation
 
     template <class data_t> void compute(Cell<data_t> current_cell) const
     {
-        // copy data from chombo gridpoint into local variables, and derivs
-        const auto vars = current_cell.template load_vars<MatterVars>();
-        const auto d1 = m_deriv.template diff1<MatterVars>(current_cell);
+        
 
         // get the metric vars from the background
         Coordinates<data_t> coords(current_cell, m_dx, m_center);
         MetricVars<data_t> metric_vars;
         m_background.compute_metric_background(metric_vars, coords);
+        
+        // copy data from chombo gridpoint into local variables, and calculate the derivatives
+        const auto vars = current_cell.template load_vars<MatterVars>();
+        const auto d1 = m_deriv.template diff1<MatterVars>(current_cell);
+        const auto d2 = m_deriv.template diff2<MatterDiff2Vars>(current_cell);
+        const auto advec = m_deriv.template advection<MatterVars>(
+            current_cell, metric_vars.shift);
 
         // some useful quantities
         using namespace TensorAlgebra;
         const auto gamma_UU = compute_inverse_sym(metric_vars.gamma);
         const auto chris_phys =
             compute_christoffel(metric_vars.d1_gamma, gamma_UU);
+
+        //compute the EM tensor
         const emtensor_t<data_t> emtensor = m_matter.compute_emtensor(
-            vars, metric_vars, d1, gamma_UU, chris_phys.ULL);
-        const data_t det_gamma = compute_determinant_sym(metric_vars.gamma);
-        const data_t R = coords.get_radius();
-        data_t rho2 =
-            simd_max(coords.x * coords.x + coords.y * coords.y, 1e-12);
-        data_t r2sintheta = sqrt(rho2) * R;
+            vars, metric_vars, d1,d2,advec);
+
+        const auto det_gamma = TensorAlgebra::compute_determinant_sym(metric_vars.gamma);
+
+        
+        //sphere area element
+        const data_t rho2 = simd_max(coords.x * coords.x + coords.y * coords.y, 1e-12);
+        const data_t R { coords.get_radius() };
+        const data_t r2sintheta = sqrt(rho2)*R;
+        Tensor<2,data_t> spherical_gamma = CoordinateTransformations::cartesian_to_spherical_LL(metric_vars.gamma,coords.x, coords.y, coords.z);
+        const data_t sqrt_det_Sigma = CoordinateTransformations::area_element_sphere(spherical_gamma);
 
         // the unit coordinate one form in the radial direction
         Tensor<1, data_t> si_L;
         si_L[0] = coords.x / R;
         si_L[1] = coords.y / R;
         si_L[2] = coords.z / R;
+
+        //Normalize the vector using the full metric
+        data_t S_mod { 0. };
+        FOR2(i,j){ S_mod += gamma_UU[i][j] * si_L[i] * si_L[j]; }
+        //Apply normalization
+        FOR1(i) { si_L[i] *= 1. / sqrt(S_mod); }
 
         // see eqn (12) in https://arxiv.org/pdf/2104.13420.pdf
         data_t rhoLinMom = emtensor.Si[m_dir] * sqrt(det_gamma);
@@ -96,9 +119,9 @@ template <class matter_t, class background_t> class LinearMomConservation
             }
         }
 
-        // Add the volume factor to account for the spherical surface and
-        // normal vector proper lengths
-        fluxLinMom *= sqrt(det_gamma);
+        // Add the volume element, taking into account that r^2 sin(theta) is 
+        // already applied in the spherical surface extraction
+        fluxLinMom *=  sqrt_det_Sigma / r2sintheta;
 
         // now the source as in eqn (19)
         data_t sourceLinMom = -emtensor.rho * metric_vars.d1_lapse[m_dir];
@@ -113,7 +136,7 @@ template <class matter_t, class background_t> class LinearMomConservation
             }
         }
         // add in volume factor
-        sourceLinMom = sourceLinMom * sqrt(det_gamma);
+        sourceLinMom += sqrt(det_gamma);
 
         current_cell.store_vars(rhoLinMom, c_rhoLinMom);
         current_cell.store_vars(fluxLinMom, c_fluxLinMom);

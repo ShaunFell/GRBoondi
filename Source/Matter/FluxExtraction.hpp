@@ -7,6 +7,7 @@
 #define FLUXEXTRACTION_HPP_
 
 #include "SphericalExtraction.hpp"
+#include "DiagnosticVariables.hpp"
 //!  The class allows extraction of the values of the flux components on
 //!  spheroidal shells at specified radii, and integration over those shells
 /*!
@@ -16,62 +17,66 @@
 */
 class FluxExtraction : public SphericalExtraction
 {
-  public:
-    //! The constructor
-    FluxExtraction(spherical_extraction_params_t &a_params, double a_dt,
-                   double a_time, bool a_first_step,
-                   double a_restart_time = 0.0)
-        : SphericalExtraction(a_params, a_dt, a_time, a_first_step,
-                              a_restart_time)
-    {
-        add_var(c_Edot, VariableType::diagnostic);
-        add_var(c_Jdot, VariableType::diagnostic);
-    }
+    protected:
+        std::vector<int> m_vars_to_extract;// vector storing the variables we wish to integrate over the spheres
 
-    //! The old constructor which assumes it is called in specificPostTimeStep
-    //! so the first time step is when m_time == m_dt
-    FluxExtraction(spherical_extraction_params_t a_params, double a_dt,
-                   double a_time, double a_restart_time = 0.0)
-        : FluxExtraction(a_params, a_dt, a_time, (a_dt == a_time),
-                         a_restart_time)
-    {
-    }
-
-    // the references of the vars as used in the integrator
-    enum M_VARS
-    {
-        m_Edot,
-        m_Jdot
-    };
-
-    //! Execute the query
-    void execute_query(AMRInterpolator<Lagrange<4>> *a_interpolator)
-    {
-        // extract the values of the Flux scalars on the spheres
-        extract(a_interpolator);
-
-        // this would write out the values at every point on the sphere
-        if (m_params.write_extraction)
+     public:
+        //! The constructor
+        FluxExtraction(spherical_extraction_params_t &a_params, std::vector<int> a_vars_to_extract, double a_dt,
+                    double a_time, bool a_first_step,
+                    double a_restart_time = 0.0)
+            : SphericalExtraction(a_params, a_dt, a_time, a_first_step,
+                                a_restart_time), m_vars_to_extract(a_vars_to_extract)
         {
-            write_extraction("FluxExtraction");
+            //iterate over variables to extract and add them to the extractor
+            for (auto var: m_vars_to_extract)
+            {
+                add_var(var, VariableType::diagnostic);
+            }
         }
 
-        // Setup to integrate Edot and Jdot
-        std::vector<std::vector<double>> flux_integrals(2);
-        add_var_integrand(m_Edot, flux_integrals[m_Edot],
-                          IntegrationMethod::simpson);
-        add_var_integrand(m_Jdot, flux_integrals[m_Jdot],
-                          IntegrationMethod::simpson);
+        //! The old constructor which assumes it is called in specificPostTimeStep
+        //! so the first time step is when m_time == m_dt
+        FluxExtraction(spherical_extraction_params_t a_params, std::vector<int> a_vars_to_extract, double a_dt,
+                    double a_time, double a_restart_time = 0.0)
+            : FluxExtraction(a_params, a_vars_to_extract,a_dt, a_time, (a_dt == a_time),
+                            a_restart_time)
+        {
+        }
 
-        // do the integration over the surface
-        integrate();
 
-        // write the integrals
-        std::vector<std::string> labels(2);
-        labels[m_Edot] = "Edot";
-        labels[m_Jdot] = "Jdot";
-        write_integrals(m_params.integral_file_prefix, flux_integrals, labels);
-    }
+        //! Execute the query
+        void execute_query(AMRInterpolator<Lagrange<4>> *a_interpolator)
+        {
+            // extract the values of the Flux scalars on the spheres
+            extract(a_interpolator);
+
+            // this would write out the values at every point on the sphere
+            if (m_params.write_extraction)
+            {
+                write_extraction("FluxExtraction");
+            }
+
+            // Setup to integrate user specified variables
+            std::vector<std::vector<double>> flux_integrals(m_vars_to_extract.size());
+            for (int var {0}; var < m_vars_to_extract.size(); var++)
+            {
+                add_var_integrand(var, flux_integrals[var], IntegrationMethod::simpson);
+            }
+
+            // do the integration over the surface
+            integrate();
+
+            // Create the header for the integral file
+            std::vector<std::string> labels(m_vars_to_extract.size());
+            for (int var {0}; var < m_vars_to_extract.size(); var++)
+            {
+                labels[var] = DiagnosticVariables::variable_names[m_vars_to_extract[var]];
+            }
+
+            //write out to file
+            write_integrals(m_params.integral_file_prefix, flux_integrals, labels);
+        }
 };
 
 #endif /* FLUXEXTRACTION_HPP_ */

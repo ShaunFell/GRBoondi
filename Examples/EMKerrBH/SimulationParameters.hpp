@@ -4,6 +4,7 @@
 #include "ProcaSimulationParameters.hpp"
 #include "KerrSchild.hpp"
 #include "InitialConditions.hpp"
+#include "ProcaField.hpp"
 
 
 class SimulationParameters : public ProcaSimulationParameters
@@ -32,6 +33,10 @@ class SimulationParameters : public ProcaSimulationParameters
         
         //initial conditions parameters
         Initial_EM_Conditions::params_t initial_conditions_params;
+
+        //Proca field params. In this class, an empty struct
+        ProcaField::params_t matter_params;
+
 
 };
 
