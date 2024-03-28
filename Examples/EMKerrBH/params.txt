@@ -4,10 +4,10 @@
 ################################################## Filesystem parameters
 
 
-verbosity = 3
+verbosity = 1
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_EMField_23262292"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/test_EMFIeld"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -24,7 +24,7 @@ plot_interval = 1
 
 #plot variable names must match those in the DiagnosticVariables::DiagnosticVariables namespace
 num_plot_vars = 7
-plot_vars = Ham Asquared  rho rhoJ rhoE Edot Jdot
+plot_vars = Asquared rho rhoE gnn Z_out EMtrace EMsquared
 
 # subpaths - specific directories for hdf5, pout, extraction data
 # (these are created at runtime)
@@ -48,10 +48,10 @@ activate_ham_tagging = 0
 ################################################# AMR levels
 ##################################################
 
-max_level = 5
+max_level = 3
 
 #Since we use fixed grid tagging, we dont ever need to regrid
-regrid_interval = 0 0 0 0 0
+regrid_interval = 0 0 0
 
 ################################################## Initial Data parameters
 ##################################################
@@ -67,7 +67,7 @@ initial_em_field = 0.1
 ################################################## Grid parameters
 ##################################################
 
-N_full = 64
+N_full = 32
 L_full = 64
 
 # Max and min box sizes
@@ -165,6 +165,12 @@ extraction_radii = 1.2 30
 extraction_levels = 0 0
 num_points_phi = 24
 num_points_theta = 37
+
+extraction_vars = Edot Jdot fluxLinMom
+num_extraction_vars = 3
+
+integration_vars = rhoE rhoJ EMsquared
+num_integration_vars = 3
 
 write_extraction = 0
 extraction_subpath = "extraction"

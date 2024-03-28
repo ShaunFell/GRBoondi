@@ -24,11 +24,15 @@ class LinearMomConservation
 {
     // Use the variable definition in the matter class
     template <class data_t>
-    using MatterVars = typename ADMProcaVars::MatterVars<data_t>;
+    using MatterVars = ADMProcaVars::MatterVars<data_t>;
+
+    //  Need d2 of certain matter vars
+    template <class data_t>
+    using MatterDiff2Vars = ADMProcaVars::Diff2MatterVars<data_t>;
 
     // Now the non grid ADM vars
     template <class data_t> 
-    using MatterVars = ADMProcaVars::MatterVars<data_t>;
+    using MetricVars = ADMFixedBGVars::Vars<data_t>;
 
   protected:
     const FourthOrderDerivatives
@@ -54,14 +58,19 @@ class LinearMomConservation
 
     template <class data_t> void compute(Cell<data_t> current_cell) const
     {
-        // copy data from chombo gridpoint into local variables, and derivs
-        const auto vars = current_cell.template load_vars<MatterVars>();
-        const auto d1 = m_deriv.template diff1<MatterVars>(current_cell);
+        
 
         // get the metric vars from the background
         Coordinates<data_t> coords(current_cell, m_dx, m_center);
         MetricVars<data_t> metric_vars;
         m_background.compute_metric_background(metric_vars, coords);
+        
+        // copy data from chombo gridpoint into local variables, and calculate the derivatives
+        const auto vars = current_cell.template load_vars<MatterVars>();
+        const auto d1 = m_deriv.template diff1<MatterVars>(current_cell);
+        const auto d2 = m_deriv.template diff2<MatterDiff2Vars>(current_cell);
+        const auto advec = m_deriv.template advection<MatterVars>(
+            current_cell, metric_vars.shift);
 
         // some useful quantities
         using namespace TensorAlgebra;
@@ -71,13 +80,14 @@ class LinearMomConservation
 
         //compute the EM tensor
         const emtensor_t<data_t> emtensor = m_matter.compute_emtensor(
-            vars, metric_vars, d1, gamma_UU, chris_phys.ULL);
+            vars, metric_vars, d1,d2,advec);
 
         const auto det_gamma = TensorAlgebra::compute_determinant_sym(metric_vars.gamma);
 
         
         //sphere area element
         const data_t rho2 = simd_max(coords.x * coords.x + coords.y * coords.y, 1e-12);
+        const data_t R { coords.get_radius() };
         const data_t r2sintheta = sqrt(rho2)*R;
         Tensor<2,data_t> spherical_gamma = CoordinateTransformations::cartesian_to_spherical_LL(metric_vars.gamma,coords.x, coords.y, coords.z);
         const data_t sqrt_det_Sigma = CoordinateTransformations::area_element_sphere(spherical_gamma);
