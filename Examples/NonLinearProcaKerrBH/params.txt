@@ -180,7 +180,7 @@ num_points_phi = 24
 num_points_theta = 37
 
 extraction_vars = Edot Jdot
-num_extraction_vars = 3
+num_extraction_vars = 2
 
 integration_vars = rhoE rhoJ EMsquared
 num_integration_vars = 3
