@@ -34,6 +34,8 @@ template <class data_t> struct Vars
     Tensor<2, Tensor<1, data_t>> d1_gamma;
     Tensor<1, data_t> d1_lapse;
     Tensor<2, data_t> d1_shift;
+    Tensor<2,data_t> d2_lapse;
+    Tensor<3,data_t> d2_shift;
 };
 
 }; // namespace ADMFixedBGVars
