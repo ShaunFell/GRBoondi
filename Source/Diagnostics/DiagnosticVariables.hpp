@@ -7,6 +7,7 @@ enum holding diagnostic variables
 #include <array>
 #include <vector>
 #include <string>
+#include <algorithm> // for std::find
 
 #include "VariableType.hpp" //GRChombo include
 
