@@ -93,12 +93,9 @@ class KerrSchild
 
         // Calculate the gradients in el and H
         Tensor<1, data_t> dHdx;
-        Tensor<2,data_t> dHdxx;
         Tensor<1, data_t> dltdx;
-        Tensor<2,data_t> dltdxx;
         Tensor<2, data_t> dldx;
-        Tensor<3,data_t> dldxx;
-        get_KS_derivs(dHdx, dHdxx, dldx, dldxx, dltdx, dltdxx, H, coords);
+        get_KS_derivs(dHdx, dldx, dltdx, H, coords);
 
         // populate ADM vars
         vars.lapse = pow(1.0 + 2.0 * H * el_t * el_t, -0.5);
@@ -167,29 +164,14 @@ class KerrSchild
         }
         vars.K = compute_trace(gamma_UU, vars.K_tensor);
 
-
-        //Now the second derivatives
-
-        FOR2(i,j)
-        {
-            vars.d2_lapse[i][j] = (pow(vars.lapse,5)*(12*(el_t*dHdx[i] + 2*H*dltdx[i])*(el_t*dHdx[j] + 2*H*dltdx[j])*pow(el_t,2) - 4*(1 + 2*H*pow(el_t,2))*(2*H*dltdx[i]*dltdx[j] + pow(el_t,2)*dHdxx[i][j] + 2*el_t*(dHdx[j]*dltdx[i] + dHdx[i]*dltdx[j] + H*dltdxx[i][j]))))/4.;
-        }
-
-        FOR3(i,j,k)
-        {
-            vars.d2_shift[k][i][j] = 4*el_t*dHdx[j]*vars.lapse*vars.d1_lapse[i]*el[k] + 4*H*dltdx[j]*vars.lapse*vars.d1_lapse[i]*el[k] + 4*el_t*dHdx[i]*vars.lapse*vars.d1_lapse[j]*el[k] + 4*H*dltdx[i]*vars.lapse*vars.d1_lapse[j]*el[k] + 4*el_t*H*vars.d1_lapse[i]*vars.d1_lapse[j]*el[k] + 2*dHdx[j]*dltdx[i]*el[k]*pow(vars.lapse,2) + 2*dHdx[i]*dltdx[j]*el[k]*pow(vars.lapse,2) + 2*el_t*el[k]*pow(vars.lapse,2)*dHdxx[i][j] + 4*el_t*H*vars.lapse*vars.d1_lapse[j]*dldx[k][i] + 2*el_t*dHdx[j]*pow(vars.lapse,2)*dldx[k][i] + 2*H*dltdx[j]*pow(vars.lapse,2)*dldx[k][i] + 4*el_t*H*vars.lapse*vars.d1_lapse[i]*dldx[k][j] + 2*el_t*dHdx[i]*pow(vars.lapse,2)*dldx[k][j] + 2*H*dltdx[i]*pow(vars.lapse,2)*dldx[k][j] + 2*H*el[k]*pow(vars.lapse,2)*dltdxx[i][j] + 4*el_t*H*vars.lapse*el[k]*vars.d2_lapse[i][j] + 2*el_t*H*pow(vars.lapse,2)*dldxx[k][i][j];
-        }
-
-
-
     }
 
   protected:
     /// Work out the gradients of the quantities H and el appearing in the Kerr
     /// Schild solution
     template <class data_t>
-    void get_KS_derivs(Tensor<1, data_t> &dHdx, Tensor<2,data_t> &dHdxx, Tensor<2, data_t> &dldx, Tensor<3,data_t> &dldxx,
-                       Tensor<1, data_t> &dltdx, Tensor<2,data_t> &dltdxx, const data_t &H,
+    void get_KS_derivs(Tensor<1, data_t> &dHdx, Tensor<2, data_t> &dldx,
+                       Tensor<1, data_t> &dltdx, const data_t &H,
                        const Coordinates<data_t> &coords) const
     {
         // black hole params - spin a
@@ -219,15 +201,6 @@ class KerrSchild
         Tensor<1, data_t> drhodx;
         FOR1(i) { drhodx[i] = x_vec[i] / rho; }
 
-        // second derivatives of rho wrt actual grid coords
-        Tensor<2,data_t> drhodxx;
-        FOR2(i,j)
-        {
-            drhodxx[i][j] = 0.0; //zero initialize 
-            drhodxx[i][j] += delta(i,j) * (rho2 - x_vec[i] * x_vec[j]) - ( 1 - delta(i,j) ) * x_vec[i] * x_vec[j];
-            drhodxx[i][j] *= 1. / rho / rho / rho;
-        }
-
         //compute drdx
         Tensor<1, data_t> drdx;
         FOR1(i)
@@ -239,30 +212,10 @@ class KerrSchild
                      (drhodx[i] * rho * (rho2 - a2) +
                       delta(i, 2) * 2.0 * a2 * z));
         }
-
-        //compute drdxx, using Mathematica. See associated mathematica files
-        //Is there a better way of computing these?
-        Tensor<2,data_t> drdxx;
-        drdxx[0][0] = pow(2,-0.5)*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1.5)*pow(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5),-0.5)*(-(pow(a,2)*pow(drhodx[0],2)*(pow(rho,4) - (pow(a,2) + 4*pow(z,2))*(-pow(a,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5)) + pow(rho,2)*(-2*pow(a,2) - 8*pow(z,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5)))) + rho*(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2))*(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5))*drhodxx[0][0]);
-        drdxx[0][1] = pow(2,-0.5)*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1.5)*pow(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5),-0.5)*(-(drhodx[0]*drhodx[1]*pow(a,2)*(pow(rho,4) - (pow(a,2) + 4*pow(z,2))*(-pow(a,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5)) + pow(rho,2)*(-2*pow(a,2) - 8*pow(z,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5)))) + rho*(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2))*(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5))*drhodxx[0][1]);
-        drdxx[0][2] = pow(2,-0.5)*pow(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5),-0.5)*(drhodx[0]*drhodx[2] - 2*rho*drhodx[0]*(-pow(a,2) + pow(rho,2))*(2*z*pow(a,2) + rho*drhodx[2]*(-pow(a,2) + pow(rho,2)))*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1.5) + 2*drhodx[0]*drhodx[2]*pow(rho,2)*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-0.5) + drhodx[0]*drhodx[2]*(-pow(a,2) + pow(rho,2))*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-0.5) - rho*drhodx[0]*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1)*(2*z*pow(a,2) + rho*drhodx[2]*(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5))) + rho*drhodxx[0][2] + rho*(-pow(a,2) + pow(rho,2))*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-0.5)*drhodxx[0][2]);
-        drdxx[1][0] = pow(2,-0.5)*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1.5)*pow(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5),-0.5)*(-(drhodx[0]*drhodx[1]*pow(a,2)*(pow(rho,4) - (pow(a,2) + 4*pow(z,2))*(-pow(a,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5)) + pow(rho,2)*(-2*pow(a,2) - 8*pow(z,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5)))) + rho*(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2))*(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5))*drhodxx[0][1]);
-        drdxx[1][1] = pow(2,-0.5)*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1.5)*pow(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5),-0.5)*(-(pow(a,2)*pow(drhodx[1],2)*(pow(rho,4) - (pow(a,2) + 4*pow(z,2))*(-pow(a,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5)) + pow(rho,2)*(-2*pow(a,2) - 8*pow(z,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5)))) + rho*(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2))*(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5))*drhodxx[1][1]);
-        drdxx[1][2] = pow(2,-0.5)*pow(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5),-0.5)*(drhodx[1]*drhodx[2] - 2*rho*drhodx[1]*(-pow(a,2) + pow(rho,2))*(2*z*pow(a,2) + rho*drhodx[2]*(-pow(a,2) + pow(rho,2)))*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1.5) + 2*drhodx[1]*drhodx[2]*pow(rho,2)*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-0.5) + drhodx[1]*drhodx[2]*(-pow(a,2) + pow(rho,2))*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-0.5) - rho*drhodx[1]*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1)*(2*z*pow(a,2) + rho*drhodx[2]*(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5))) + rho*drhodxx[1][2] + rho*(-pow(a,2) + pow(rho,2))*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-0.5)*drhodxx[1][2]);
-        drdxx[2][0] = (pow(2,-0.5)*pow(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5),-0.5)*(2*drhodx[0]*drhodx[2] - 4*rho*drhodx[0]*(-pow(a,2) + pow(rho,2))*(2*z*pow(a,2) + rho*drhodx[2]*(-pow(a,2) + pow(rho,2)))*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1.5) - 2*rho*drhodx[0]*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1)*(2*z*pow(a,2) + rho*drhodx[2]*(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5))) + 2*rho*drhodxx[0][2] + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-0.5)*(-2*drhodx[0]*drhodx[2]*(pow(a,2) - 3*pow(rho,2)) + 2*rho*(-pow(a,2) + pow(rho,2))*drhodxx[0][2])))/2.;
-        drdxx[2][1] = (pow(2,-0.5)*pow(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5),-0.5)*(2*drhodx[1]*drhodx[2] - 4*rho*drhodx[1]*(-pow(a,2) + pow(rho,2))*(2*z*pow(a,2) + rho*drhodx[2]*(-pow(a,2) + pow(rho,2)))*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1.5) - 2*rho*drhodx[1]*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1)*(2*z*pow(a,2) + rho*drhodx[2]*(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5))) + 2*rho*drhodxx[1][2] + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-0.5)*(-2*drhodx[1]*drhodx[2]*(pow(a,2) - 3*pow(rho,2)) + 2*rho*(-pow(a,2) + pow(rho,2))*drhodxx[1][2])))/2.;
-        drdxx[2][2] = -0.25*(pow(2,-0.5)*pow(2*rho*drhodx[2] + ((8*z*pow(a,2) + 4*rho*drhodx[2]*(-pow(a,2) + pow(rho,2)))*pow(4*pow(a,2)*pow(z,2) + pow(pow(a,2) - pow(rho,2),2),-0.5))/2.,2)*pow(-pow(a,2) + pow(rho,2) + pow(4*pow(a,2)*pow(z,2) + pow(pow(a,2) - pow(rho,2),2),0.5),-1.5)) + (pow(2,-0.5)*pow(-pow(a,2) + pow(rho,2) + pow(4*pow(a,2)*pow(z,2) + pow(pow(a,2) - pow(rho,2),2),0.5),-0.5)*(2*pow(drhodx[2],2) - (pow(8*z*pow(a,2) + 4*rho*drhodx[2]*(-pow(a,2) + pow(rho,2)),2)*pow(4*pow(a,2)*pow(z,2) + pow(pow(a,2) - pow(rho,2),2),-1.5))/4. + 2*rho*drhodxx[2][2] + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-0.5)*(4*pow(a,2) - 2*(pow(a,2) - 3*pow(rho,2))*pow(drhodx[2],2) + 2*rho*(-pow(a,2) + pow(rho,2))*drhodxx[2][2])))/2.;
-
+        
         Tensor<1, data_t> dcosthetadx;
         FOR1(i) { dcosthetadx[i] = -z / r2 * drdx[i] + delta(i, 2) / r; }
-
-        Tensor<2,data_t> dcosthetadxx;
-        FOR2(i,j)
-        {
-            dcosthetadxx[i][j] = 0.; //zero initialize first
-            dcosthetadxx[i][j] += 2 * z / r2 / r * drdx[i] * drdx[j] - z / r2 * drdxx[i][j] - delta(i,2) / r2 * drdx[j] - delta(j,2) / r2 * drdx[i];
-        }
-
+     
         // work out dHdx
         FOR1(i)
         {
@@ -292,10 +245,104 @@ class KerrSchild
         // then dltdi
         FOR1(i) { dltdx[i] = 0.0; }
 
-        // now dltdxx
+    }
+
+  public:
+    // compute the second derivatives of the shift vector
+    // These should really only be needed for higher couplings in the Proca EOM, hence we put them in their own method
+    template <class data_t, template <typename> class vars_t>
+    void compute_2nd_derivatives(vars_t<data_t> &vars,
+                                   const Coordinates<data_t> &coords) const
+    {
+        // black hole params - mass M and spin a
+        const double M = m_params.mass;
+        const double a = m_params.spin;
+        const double a2 = a * a;
+
+        // work out where we are on the grid, and useful quantities
+        Tensor<1, data_t> x_vec;
+        x_vec[0] = coords.x;
+        x_vec[1] = coords.y;
+        x_vec[2] = coords.z;
+        const data_t x = coords.x;
+        const data_t y = coords.y;
+        const data_t z = coords.z;
+        const data_t rho = coords.get_radius();
+        const data_t rho2 = rho * rho;
+
+        // the Kerr Schild radius r
+        const data_t r2 = 0.5 * (rho2 - a2) +
+                          sqrt(0.25 * (rho2 - a2) * (rho2 - a2) + a2 * z * z);
+        const data_t r = sqrt(r2);
+        const data_t costheta = z / r;
+        const data_t costheta2 = costheta * costheta;
+
+        using namespace TensorAlgebra;
+        // derivatives of r wrt actual grid coords
+        Tensor<1, data_t> drhodx;
+        FOR1(i) { drhodx[i] = x_vec[i] / rho; }
+
+        // find the H and el quantities (el decomposed into space and time)
+        data_t H = M * r / (r2 + a2 * costheta * costheta);
+        const Tensor<1, data_t> el = {(r * x + a * y) / (r2 + a2),
+                                      (r * y - a * x) / (r2 + a2), z / r};
+        const data_t el_t = 1.0;
+
+        //compute drdx
+        Tensor<1, data_t> drdx;
+        FOR1(i)
+        {
+            drdx[i] =
+                0.5 / r *
+                (rho * drhodx[i] +
+                 0.5 / sqrt(0.25 * (rho2 - a2) * (rho2 - a2) + a2 * z * z) *
+                     (drhodx[i] * rho * (rho2 - a2) +
+                      delta(i, 2) * 2.0 * a2 * z));
+        }
+
+        
+        Tensor<1, data_t> dcosthetadx;
+        FOR1(i) { dcosthetadx[i] = -z / r2 * drdx[i] + delta(i, 2) / r; }
+
+        // second derivatives of rho wrt actual grid coords
+        Tensor<2,data_t> drhodxx;
+        FOR2(i,j)
+        {
+            drhodxx[i][j] = 0.0; //zero initialize 
+            drhodxx[i][j] += delta(i,j) * (rho2 - x_vec[i] * x_vec[j]) - ( 1 - delta(i,j) ) * x_vec[i] * x_vec[j];
+            drhodxx[i][j] *= 1. / rho / rho / rho;
+        }
+
+        Tensor<1, data_t> dHdx;
+        Tensor<2, data_t> dldx;
+        Tensor<1, data_t> dltdx;
+        get_KS_derivs(dHdx, dldx, dltdx, H, coords);
+
+        Tensor<2, data_t> dltdxx;
         FOR2(i,j) { dltdxx[i][j] = 0.0; }
 
+        //compute drdxx, using Mathematica. See associated mathematica files
+        //Is there a better way of computing these?
+        Tensor<2,data_t> drdxx;
+        drdxx[0][0] = pow(2,-0.5)*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1.5)*pow(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5),-0.5)*(-(pow(a,2)*pow(drhodx[0],2)*(pow(rho,4) - (pow(a,2) + 4*pow(z,2))*(-pow(a,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5)) + pow(rho,2)*(-2*pow(a,2) - 8*pow(z,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5)))) + rho*(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2))*(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5))*drhodxx[0][0]);
+        drdxx[0][1] = pow(2,-0.5)*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1.5)*pow(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5),-0.5)*(-(drhodx[0]*drhodx[1]*pow(a,2)*(pow(rho,4) - (pow(a,2) + 4*pow(z,2))*(-pow(a,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5)) + pow(rho,2)*(-2*pow(a,2) - 8*pow(z,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5)))) + rho*(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2))*(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5))*drhodxx[0][1]);
+        drdxx[0][2] = pow(2,-0.5)*pow(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5),-0.5)*(drhodx[0]*drhodx[2] - 2*rho*drhodx[0]*(-pow(a,2) + pow(rho,2))*(2*z*pow(a,2) + rho*drhodx[2]*(-pow(a,2) + pow(rho,2)))*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1.5) + 2*drhodx[0]*drhodx[2]*pow(rho,2)*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-0.5) + drhodx[0]*drhodx[2]*(-pow(a,2) + pow(rho,2))*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-0.5) - rho*drhodx[0]*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1)*(2*z*pow(a,2) + rho*drhodx[2]*(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5))) + rho*drhodxx[0][2] + rho*(-pow(a,2) + pow(rho,2))*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-0.5)*drhodxx[0][2]);
+        drdxx[1][0] = pow(2,-0.5)*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1.5)*pow(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5),-0.5)*(-(drhodx[0]*drhodx[1]*pow(a,2)*(pow(rho,4) - (pow(a,2) + 4*pow(z,2))*(-pow(a,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5)) + pow(rho,2)*(-2*pow(a,2) - 8*pow(z,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5)))) + rho*(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2))*(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5))*drhodxx[0][1]);
+        drdxx[1][1] = pow(2,-0.5)*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1.5)*pow(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5),-0.5)*(-(pow(a,2)*pow(drhodx[1],2)*(pow(rho,4) - (pow(a,2) + 4*pow(z,2))*(-pow(a,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5)) + pow(rho,2)*(-2*pow(a,2) - 8*pow(z,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5)))) + rho*(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2))*(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5))*drhodxx[1][1]);
+        drdxx[1][2] = pow(2,-0.5)*pow(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5),-0.5)*(drhodx[1]*drhodx[2] - 2*rho*drhodx[1]*(-pow(a,2) + pow(rho,2))*(2*z*pow(a,2) + rho*drhodx[2]*(-pow(a,2) + pow(rho,2)))*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1.5) + 2*drhodx[1]*drhodx[2]*pow(rho,2)*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-0.5) + drhodx[1]*drhodx[2]*(-pow(a,2) + pow(rho,2))*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-0.5) - rho*drhodx[1]*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1)*(2*z*pow(a,2) + rho*drhodx[2]*(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5))) + rho*drhodxx[1][2] + rho*(-pow(a,2) + pow(rho,2))*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-0.5)*drhodxx[1][2]);
+        drdxx[2][0] = (pow(2,-0.5)*pow(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5),-0.5)*(2*drhodx[0]*drhodx[2] - 4*rho*drhodx[0]*(-pow(a,2) + pow(rho,2))*(2*z*pow(a,2) + rho*drhodx[2]*(-pow(a,2) + pow(rho,2)))*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1.5) - 2*rho*drhodx[0]*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1)*(2*z*pow(a,2) + rho*drhodx[2]*(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5))) + 2*rho*drhodxx[0][2] + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-0.5)*(-2*drhodx[0]*drhodx[2]*(pow(a,2) - 3*pow(rho,2)) + 2*rho*(-pow(a,2) + pow(rho,2))*drhodxx[0][2])))/2.;
+        drdxx[2][1] = (pow(2,-0.5)*pow(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5),-0.5)*(2*drhodx[1]*drhodx[2] - 4*rho*drhodx[1]*(-pow(a,2) + pow(rho,2))*(2*z*pow(a,2) + rho*drhodx[2]*(-pow(a,2) + pow(rho,2)))*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1.5) - 2*rho*drhodx[1]*pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-1)*(2*z*pow(a,2) + rho*drhodx[2]*(-pow(a,2) + pow(rho,2) + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),0.5))) + 2*rho*drhodxx[1][2] + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-0.5)*(-2*drhodx[1]*drhodx[2]*(pow(a,2) - 3*pow(rho,2)) + 2*rho*(-pow(a,2) + pow(rho,2))*drhodxx[1][2])))/2.;
+        drdxx[2][2] = -0.25*(pow(2,-0.5)*pow(2*rho*drhodx[2] + ((8*z*pow(a,2) + 4*rho*drhodx[2]*(-pow(a,2) + pow(rho,2)))*pow(4*pow(a,2)*pow(z,2) + pow(pow(a,2) - pow(rho,2),2),-0.5))/2.,2)*pow(-pow(a,2) + pow(rho,2) + pow(4*pow(a,2)*pow(z,2) + pow(pow(a,2) - pow(rho,2),2),0.5),-1.5)) + (pow(2,-0.5)*pow(-pow(a,2) + pow(rho,2) + pow(4*pow(a,2)*pow(z,2) + pow(pow(a,2) - pow(rho,2),2),0.5),-0.5)*(2*pow(drhodx[2],2) - (pow(8*z*pow(a,2) + 4*rho*drhodx[2]*(-pow(a,2) + pow(rho,2)),2)*pow(4*pow(a,2)*pow(z,2) + pow(pow(a,2) - pow(rho,2),2),-1.5))/4. + 2*rho*drhodxx[2][2] + pow(pow(a,4) - 2*pow(a,2)*pow(rho,2) + pow(rho,4) + 4*pow(a,2)*pow(z,2),-0.5)*(4*pow(a,2) - 2*(pow(a,2) - 3*pow(rho,2))*pow(drhodx[2],2) + 2*rho*(-pow(a,2) + pow(rho,2))*drhodxx[2][2])))/2.;
+
+        Tensor<2,data_t> dcosthetadxx;
+        FOR2(i,j)
+        {
+            dcosthetadxx[i][j] = 0.; //zero initialize first
+            dcosthetadxx[i][j] += 2 * z / r2 / r * drdx[i] * drdx[j] - z / r2 * drdxx[i][j] - delta(i,2) / r2 * drdx[j] - delta(j,2) / r2 * drdx[i];
+        }
+
         // Now we compute the second derivatives of H
+        Tensor<2,data_t> dHdxx;
         dHdxx[0][0] = H*pow(r,-1)*pow(a2*costheta2 + pow(r,2),-2)*(6*a2*costheta2*r*(a2*pow(dcosthetadx[0],2) - pow(drdx[0],2)) + 2*pow(r,3)*(-(a2*pow(dcosthetadx[0],2)) + pow(drdx[0],2)) - 2*a2*costheta*pow(r,2)*(-6*dcosthetadx[0]*drdx[0] + r*dcosthetadxx[0][0]) - 2*pow(a2,2)*pow(costheta,3)*(2*dcosthetadx[0]*drdx[0] + r*dcosthetadxx[0][0]) + (pow(a2,2)*pow(costheta,4) - pow(r,4))*drdxx[0][0]);
         dHdxx[0][1] = H*pow(r,-1)*pow(a2*costheta2 + pow(r,2),-2)*(-2*a2*dcosthetadx[0]*(costheta*drdx[1]*(a2*costheta2 - 3*pow(r,2)) + r*dcosthetadx[1]*(-3*a2*costheta2 + pow(r,2))) + 2*drdx[0]*(r*drdx[1]*(-3*a2*costheta2 + pow(r,2)) + a2*costheta*dcosthetadx[1]*(-(a2*costheta2) + 3*pow(r,2))) - 2*a2*costheta*r*(a2*costheta2 + pow(r,2))*dcosthetadxx[0][1] + (pow(a2,2)*pow(costheta,4) - pow(r,4))*drdxx[0][1]);
         dHdxx[0][2] = H*pow(r,-1)*pow(a2*costheta2 + pow(r,2),-2)*(-2*a2*dcosthetadx[0]*(costheta*drdx[2]*(a2*costheta2 - 3*pow(r,2)) + r*dcosthetadx[2]*(-3*a2*costheta2 + pow(r,2))) + 2*drdx[0]*(r*drdx[2]*(-3*a2*costheta2 + pow(r,2)) + a2*costheta*dcosthetadx[2]*(-(a2*costheta2) + 3*pow(r,2))) - 2*a2*costheta*r*(a2*costheta2 + pow(r,2))*dcosthetadxx[0][2] + (pow(a2,2)*pow(costheta,4) - pow(r,4))*drdxx[0][2]);
@@ -310,7 +357,8 @@ class KerrSchild
         //ok, now the dldxx terms.
         //First index is the Li index, second two are the derivative indicies
         //again, these were computated with mathematica
-        dldxx[0][0][0] = pow(a2 + pow(r,2),-3)*(2*drdx[0]*(pow(a2,2) + drdx[0]*(-3*a2*r*x - y*pow(a,3) + 3*a*y*pow(r,2) + x*pow(r,3)) - pow(r,4)) + (a2*x - r*(r*x + 2*a*y))*(a2 + pow(r,2))*drdxx[0][0]);
+        Tensor<3, data_t> dldxx;
+        dldxx[0][0][0] = pow(a2 + pow(r,2),-3)*(2*drdx[0]*(pow(a2,2) + drdx[0]*(-3*a2*r*x - y*pow(a,3) + 3*a*y*pow(r,2) + x*pow(r,3)) - pow(r,4)) + (a2*x - r*(r*x + 2*a*y))*(a2 + pow(r,2)) * drdxx[0][0]);
         dldxx[0][0][1] = pow(a2 + pow(r,2),-3)*(drdx[1]*(pow(a2,2) + 2*drdx[0]*(-3*a2*r*x - y*pow(a,3) + 3*a*y*pow(r,2) + x*pow(r,3)) - pow(r,4)) + (a2 + pow(r,2))*(-2*a*r*drdx[0] + (a2*x - r*(r*x + 2*a*y))*drdxx[0][1]));
         dldxx[0][0][2] = pow(a2 + pow(r,2),-3)*(drdx[2]*(pow(a2,2) + 2*drdx[0]*(-3*a2*r*x - y*pow(a,3) + 3*a*y*pow(r,2) + x*pow(r,3)) - pow(r,4)) + (a2*x - r*(r*x + 2*a*y))*(a2 + pow(r,2))*drdxx[0][2]);
                 
@@ -346,7 +394,21 @@ class KerrSchild
         dldxx[2][2][1] = dldxx[2][1][2];
         dldxx[2][2][2] = pow(r,-3)*(2*z*pow(drdx[2],2) - r*(2*drdx[2] + z*drdxx[2][2]));
 
+
+         //Now the second derivatives of the lapse and shift
+
+        FOR2(i,j)
+        {
+            vars.d2_lapse[i][j] = (pow(vars.lapse,5)*(12*(el_t*dHdx[i] + 2*H*dltdx[i])*(el_t*dHdx[j] + 2*H*dltdx[j])*pow(el_t,2) - 4*(1 + 2*H*pow(el_t,2))*(2*H*dltdx[i]*dltdx[j] + pow(el_t,2)*dHdxx[i][j] + 2*el_t*(dHdx[j]*dltdx[i] + dHdx[i]*dltdx[j] + H*dltdxx[i][j]))))/4.;
+        }
+
+        FOR3(i,j,k)
+        {
+            vars.d2_shift[k][i][j] = 4*el_t*dHdx[j]*vars.lapse*vars.d1_lapse[i]*el[k] + 4*H*dltdx[j]*vars.lapse*vars.d1_lapse[i]*el[k] + 4*el_t*dHdx[i]*vars.lapse*vars.d1_lapse[j]*el[k] + 4*H*dltdx[i]*vars.lapse*vars.d1_lapse[j]*el[k] + 4*el_t*H*vars.d1_lapse[i]*vars.d1_lapse[j]*el[k] + 2*dHdx[j]*dltdx[i]*el[k]*pow(vars.lapse,2) + 2*dHdx[i]*dltdx[j]*el[k]*pow(vars.lapse,2) + 2*el_t*el[k]*pow(vars.lapse,2)*dHdxx[i][j] + 4*el_t*H*vars.lapse*vars.d1_lapse[j]*dldx[k][i] + 2*el_t*dHdx[j]*pow(vars.lapse,2)*dldx[k][i] + 2*H*dltdx[j]*pow(vars.lapse,2)*dldx[k][i] + 4*el_t*H*vars.lapse*vars.d1_lapse[i]*dldx[k][j] + 2*el_t*dHdx[i]*pow(vars.lapse,2)*dldx[k][j] + 2*H*dltdx[i]*pow(vars.lapse,2)*dldx[k][j] + 2*H*el[k]*pow(vars.lapse,2)*dltdxx[i][j] + 4*el_t*H*vars.lapse*el[k]*vars.d2_lapse[i][j] + 2*el_t*H*pow(vars.lapse,2)*dldxx[k][i][j];
+        }
+ 
         //phew! done.
+
     }
 
   public:
