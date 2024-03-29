@@ -7,7 +7,7 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23285913"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23286983"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -178,7 +178,7 @@ num_points_phi = 24
 num_points_theta = 37
 
 extraction_vars = Edot Jdot
-num_extraction_vars = 3
+num_extraction_vars = 2
 
 integration_vars = rhoE rhoJ EMsquared
 num_integration_vars = 3
