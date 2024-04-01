@@ -50,10 +50,10 @@ activate_tagging_diagnostic = 0
 ################################################# AMR levels
 ##################################################
 
-max_level = 3
+max_level = 4
 
 #Since we use fixed grid tagging, we dont ever need to regrid
-regrid_interval = 0 0 0
+regrid_interval = 0 0 0 0
 
 ################################################## Initial Data parameters
 ##################################################
@@ -84,8 +84,8 @@ bh_evolution = 1
 ################################################## Grid parameters
 ##################################################
 
-N_full = 32
-L_full = 32
+N_full = 64
+L_full = 64
 
 # Max and min box sizes
 max_box_size = 16
