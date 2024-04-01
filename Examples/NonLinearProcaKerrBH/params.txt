@@ -7,7 +7,7 @@
 verbosity = 1
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_NonlinearProcaKerrBH_23285914"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/GRMilijun_NonlinearProcaKerrBH_23284538"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -165,7 +165,7 @@ outer_r = 30
 # 1 = excise the entire region within r<r_s
 # 0.97 = excise r < 0.97*r_s
 diagnostic_excision_width = 1.0
-evolution_excision_width = 0.9
+evolution_excision_width = 0.97
 
 ################################################## Extraction
 ##################################################
