@@ -18,6 +18,7 @@
 #include "FluxExtraction.hpp"
 #include "ChargesFluxes.hpp"
 #include "LinearMomConservation.hpp"
+#include "DataContainer.hpp"
 
 //Diagnostics
 #include "ProcaSquared.hpp"
@@ -74,6 +75,14 @@ class BaseProcaFieldLevel : public GRAMRLevel
     virtual void computeTaggingCriterion(
         FArrayBox &tagging_criterion, const FArrayBox &current_state,
         const FArrayBox &current_state_diagnostics) override;
+
+    public:
+     //container classes to store results of flux and density integrations
+     //note: Since these are in the level class, each level instance will have its own copy of these
+    //              but since the fluxes and integrals are calculated on only a single level (usually m_level=0), 
+    //              only that level will contain the actual results
+    DataContainer<std::vector<double>> m_flux_container{}; //default initialize
+    DataContainer<double> m_integral_container{};
 
     
 };
