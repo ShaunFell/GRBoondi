@@ -42,6 +42,17 @@ public:
         
         //Done!
     }
+
+    //override method to add black hole evolution
+    virtual void additionalPostTimeStep() override
+    {
+        //if the matter field has finished its transient initial relaxation, then we start the black hole evolution
+        if (m_time > m_p.relaxation_time && m_p.bh_evolution)
+        {
+
+        }
+
+    };
 };
 
 
