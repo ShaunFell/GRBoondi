@@ -4,10 +4,10 @@
 ################################################## Filesystem parameters
 
 
-verbosity = 0
+verbosity = 1
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23292111"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23292136"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -76,7 +76,7 @@ proca_mass = 0.4
 z_damping = 1.0
 
 #relaxation time of matter fields
-relaxation_time = 500
+relaxation_time = 0
 
 #activate evolution of black hole, due to flux of matter across horizon
 bh_evolution = 1

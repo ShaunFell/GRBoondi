@@ -19,7 +19,7 @@ Example of defining a level class that sets initial conditions
 class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
 {
 public:
-    //inherit constructor from base class (note: BaseProcaFieldLevel itself inherits from GRAMRLevel)
+    //inherit constructor from base class 
     using BaseProcaFieldLevel::BaseProcaFieldLevel;
 
 
@@ -51,7 +51,7 @@ public:
 
         //if the matter field has finished its transient initial relaxation, then we start the black hole evolution
         //Note: The conditions for this code block must match exactly the conditions for the flux calculation code block in BaseProcaFieldLevel.impl.hpp
-        if (m_time > m_p.relaxation_time && m_p.evolve_bh &&m_p.activate_extraction && m_level == min_level)
+        if (m_time >= m_p.relaxation_time && m_p.evolve_bh &&m_p.activate_extraction && m_level == min_level)
         {
 
             //get enums of variables we want to extract

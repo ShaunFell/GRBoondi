@@ -13,6 +13,7 @@
 #include "NanCheck.hpp"
 #include "SetValue.hpp"
 #include "SmallDataIO.hpp"
+#include "SimulationParameters.hpp"
 
 //Flux Extraction
 #include "FluxExtraction.hpp"
@@ -47,7 +48,17 @@ class BaseProcaFieldLevel : public GRAMRLevel
 
     friend class DefaultLevelFactory<BaseProcaFieldLevel<background_t, proca_t>>;
     //inherit constructors from GRAMRLevel;
-    using GRAMRLevel::GRAMRLevel;
+    /* using GRAMRLevel::GRAMRLevel; */
+
+    //Define own constructor with non-const SimulationParameters
+    public:
+    BaseProcaFieldLevel(GRAMR &gr_amr, SimulationParameters &a_p, int a_verbosity) : GRAMRLevel(gr_amr, a_p, a_verbosity)
+    {
+        if (m_verbosity)
+            pout() << "BaseProcaField constructor" << endl;
+    }
+
+    BaseProcaFieldLevel(){};
     
     virtual void specificAdvance(); //do things at end of advance step, after RK4 calculation
 
