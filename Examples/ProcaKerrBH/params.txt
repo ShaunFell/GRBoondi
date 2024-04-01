@@ -75,6 +75,9 @@ proca_mass = 0.4
 #constraint violation damping
 z_damping = 1.0
 
+#relaxation time of matter fields
+relaxation_time = 500
+
 ################################################## Grid parameters
 ##################################################
 
