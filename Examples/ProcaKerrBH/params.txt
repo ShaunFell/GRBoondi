@@ -110,7 +110,7 @@ isPeriodic = 0 0 0
 #sommerfeld outgoing-radiation condition and use z-symmetry of kerr background
 # see read_me for definition of hi and lo boundary
 hi_boundary = 1 1 1
-lo_boundary = 1 1 2
+lo_boundary = 1 1 1
 
 # if reflective boundaries selected, must set
 # parity of all vars (in order given by UserVariables.hpp)
@@ -150,7 +150,7 @@ stop_time = 10000.0
 nan_check = 1
 
 # coefficient for KO numerical dissipation
-sigma = 0.4 #the default
+sigma = 0.3 #the default
 
 
 ################################################## Excision
@@ -163,7 +163,7 @@ outer_r = 30
 # 1 = excise the entire region within r<r_s
 # 0.97 = excise r < 0.97*r_s
 diagnostic_excision_width = 1.0
-evolution_excision_width = 0.9
+evolution_excision_width = 0.97
 
 ################################################## Extraction
 ##################################################
@@ -172,7 +172,7 @@ activate_extraction = 1 # extraction of fluxes
 activate_integration = 1 # integration of densities
 
 num_extraction_radii = 2
-extraction_radii = 1.2 30
+extraction_radii = 1.6 30
 extraction_levels = 1 1
 num_points_phi = 24
 num_points_theta = 37
@@ -180,8 +180,8 @@ num_points_theta = 37
 extraction_vars = Edot Jdot
 num_extraction_vars = 2
 
-integration_vars = rhoE rhoJ EMsquared
-num_integration_vars = 3
+integration_vars = rho rhoE rhoJ EMsquared
+num_integration_vars = 4
 
 write_extraction = 0
 extraction_subpath = "extraction"

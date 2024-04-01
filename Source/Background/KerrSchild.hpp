@@ -277,6 +277,9 @@ class KerrSchild
         const data_t costheta = z / r;
         const data_t costheta2 = costheta * costheta;
 
+        //we need the lapse
+        compute_metric_background(vars, coords);
+
         using namespace TensorAlgebra;
         // derivatives of r wrt actual grid coords
         Tensor<1, data_t> drhodx;
