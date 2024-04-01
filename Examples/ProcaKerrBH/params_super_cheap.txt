@@ -4,10 +4,10 @@
 ################################################## Filesystem parameters
 
 
-verbosity = 0
+verbosity = 1
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23292111"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/test_GRMilijun_BHEvo"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -50,10 +50,10 @@ activate_tagging_diagnostic = 0
 ################################################# AMR levels
 ##################################################
 
-max_level = 4
+max_level = 3
 
 #Since we use fixed grid tagging, we dont ever need to regrid
-regrid_interval = 0 0 0 0
+regrid_interval = 0 0 0
 
 ################################################## Initial Data parameters
 ##################################################
@@ -76,7 +76,7 @@ proca_mass = 0.4
 z_damping = 1.0
 
 #relaxation time of matter fields
-relaxation_time = 500
+relaxation_time = 0
 
 #activate evolution of black hole, due to flux of matter across horizon
 bh_evolution = 1
@@ -84,8 +84,8 @@ bh_evolution = 1
 ################################################## Grid parameters
 ##################################################
 
-N_full = 128
-L_full = 64
+N_full = 32
+L_full = 32
 
 # Max and min box sizes
 max_box_size = 16
@@ -116,7 +116,7 @@ isPeriodic = 0 0 0
 #sommerfeld outgoing-radiation condition and use z-symmetry of kerr background
 # see read_me for definition of hi and lo boundary
 hi_boundary = 1 1 1
-lo_boundary = 1 1 1
+lo_boundary = 1 1 2
 
 # if reflective boundaries selected, must set
 # parity of all vars (in order given by UserVariables.hpp)
@@ -178,7 +178,7 @@ activate_extraction = 1 # extraction of fluxes
 activate_integration = 1 # integration of densities
 
 num_extraction_radii = 2
-extraction_radii = 1.6 30 #radius of horizon ~ 1.51
+extraction_radii = 1.6 15 #radius of horizon ~ 1.51
 extraction_levels = 1 1
 num_points_phi = 24
 num_points_theta = 37
