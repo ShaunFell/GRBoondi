@@ -54,7 +54,8 @@ class FluxExtraction : public SphericalExtraction
             std::vector<std::vector<double>> flux_integrals(m_vars_to_extract.size());
             for (int var {0}; var < m_vars_to_extract.size(); var++)
             {
-                add_var_integrand(var, flux_integrals[var], IntegrationMethod::simpson);
+                bool broadcast_result { true }; //broadcast the result to the other MPI processes
+                add_var_integrand(var, flux_integrals[var], IntegrationMethod::simpson, IntegrationMethod::simpson, broadcast_result);
             }
 
             // do the integration over the surface
