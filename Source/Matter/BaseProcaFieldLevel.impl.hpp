@@ -145,7 +145,7 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
             {
                 m_gr_amr.fill_multilevel_ghosts( VariableType::diagnostic, Interval(var_enum, var_enum), min_level);
             };
-            FluxExtraction my_extraction(m_flux_container, m_p.extraction_params, vars_to_extract, m_dt, m_time, first_step, m_restart_time);
+            FluxExtraction my_extraction(m_flux_container, m_p.extraction_params, vars_to_extract, m_dt, m_time, first_step, m_restart_time, m_p.SymmetryFactor);
             my_extraction.execute_query(m_gr_amr.m_interpolator);
         }
         
@@ -207,7 +207,7 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
             //now perform the integrals and push solution onto container
             for (auto var_enum: vars_to_integrate)
             {
-                integrals.push_back(amr_reductions.sum(var_enum));
+                integrals.push_back(m_p.SymmetryFactor * amr_reductions.sum(var_enum));
             }
 
             //setup output file
