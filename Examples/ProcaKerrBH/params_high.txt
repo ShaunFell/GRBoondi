@@ -7,7 +7,7 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23293701"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/prod/high_single_GRMilijun_ProcaKerrBH_23293487"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -78,7 +78,7 @@ z_damping = 1.0
 ################################################## Grid parameters
 ##################################################
 
-N_full = 128
+N_full = 160
 L_full = 64
 
 # Max and min box sizes
