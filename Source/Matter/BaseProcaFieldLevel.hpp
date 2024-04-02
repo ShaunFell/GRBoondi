@@ -13,11 +13,13 @@
 #include "NanCheck.hpp"
 #include "SetValue.hpp"
 #include "SmallDataIO.hpp"
+#include "SimulationParameters.hpp"
 
 //Flux Extraction
 #include "FluxExtraction.hpp"
 #include "ChargesFluxes.hpp"
 #include "LinearMomConservation.hpp"
+#include "DataContainer.hpp"
 
 //Diagnostics
 #include "ProcaSquared.hpp"
@@ -46,7 +48,17 @@ class BaseProcaFieldLevel : public GRAMRLevel
 
     friend class DefaultLevelFactory<BaseProcaFieldLevel<background_t, proca_t>>;
     //inherit constructors from GRAMRLevel;
-    using GRAMRLevel::GRAMRLevel;
+    /* using GRAMRLevel::GRAMRLevel; */
+
+    //Define own constructor with non-const SimulationParameters
+    public:
+    BaseProcaFieldLevel(GRAMR &gr_amr, SimulationParameters &a_p, int a_verbosity) : GRAMRLevel(gr_amr, a_p, a_verbosity)
+    {
+        if (m_verbosity)
+            pout() << "BaseProcaField constructor" << endl;
+    }
+
+    BaseProcaFieldLevel(){};
     
     virtual void specificAdvance(); //do things at end of advance step, after RK4 calculation
 
@@ -74,6 +86,14 @@ class BaseProcaFieldLevel : public GRAMRLevel
     virtual void computeTaggingCriterion(
         FArrayBox &tagging_criterion, const FArrayBox &current_state,
         const FArrayBox &current_state_diagnostics) override;
+
+    public:
+     //container classes to store results of flux and density integrations
+     //note: Since these are in the level class, each level instance will have its own copy of these
+    //              but since the fluxes and integrals are calculated on only a single level (usually m_level=0), 
+    //              only that level will contain the actual results
+    DataContainer<std::vector<double>> m_flux_container{}; //default initialize
+    DataContainer<double> m_integral_container{};
 
     
 };
