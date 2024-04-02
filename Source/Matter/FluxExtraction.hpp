@@ -20,15 +20,16 @@ class FluxExtraction : public SphericalExtraction
     protected:
         std::vector<int> m_vars_to_extract;// vector storing the variables we wish to integrate over the spheres
         Container& m_flux_container; //container 
+        double m_symmetry_mult; //symmetry multiplier for integration
 
      public:
 
         // Constructor that allows passing a container object by reference
         FluxExtraction(Container& a_flux_container, spherical_extraction_params_t &a_params, std::vector<int> a_vars_to_extract, double a_dt,
                     double a_time, bool a_first_step,
-                    double a_restart_time = 0.0)
+                    double a_restart_time = 0.0, double a_symmetry_mult = 1.0)
             : SphericalExtraction(a_params, a_dt, a_time, a_first_step,
-                                a_restart_time), m_vars_to_extract(a_vars_to_extract), m_flux_container(a_flux_container)
+                                a_restart_time), m_vars_to_extract(a_vars_to_extract), m_flux_container(a_flux_container), m_symmetry_mult(a_symmetry_mult)
         {
             //iterate over variables to extract and add them to the extractor
             for (auto var: m_vars_to_extract)
@@ -66,6 +67,15 @@ class FluxExtraction : public SphericalExtraction
             for (int var {0}; var < m_vars_to_extract.size(); var++)
             {
                 labels[var] = DiagnosticVariables::variable_names[m_vars_to_extract[var]];
+            }
+
+            //add symmetry multiplier
+            for (std::vector<double>& vector_results: flux_integrals)
+            {
+                for (double& integral_result: vector_results)
+                {
+                    integral_result *= m_symmetry_mult;
+                }
             }
 
             //write out to file
