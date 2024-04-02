@@ -93,14 +93,12 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
 
     bool first_step = (m_time == 0.); //is this the first call of posttimestep? Recall, we're calling PostTimeStep in the main function, so m_time==0 is first step
 
-    int min_level = 0;
+    int min_level = m_p.extraction_params.min_extraction_level(); //get the minimum level for extraction, as specified in parameter file
     bool at_course_timestep_on_any_level = at_level_timestep_multiple(min_level);
 
     //extract fluxes at specified radii
     if (m_p.activate_extraction && at_course_timestep_on_any_level && m_p.num_extraction_vars > 0)
     {
-        //get the minimum level for extraction, as specified in parameter file
-        int min_level = m_p.extraction_params.min_extraction_level();
 
         //fill the ghost cells, so we can calculate derivatives
         fillAllGhosts();
@@ -147,7 +145,7 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
             {
                 m_gr_amr.fill_multilevel_ghosts( VariableType::diagnostic, Interval(var_enum, var_enum), min_level);
             };
-            FluxExtraction my_extraction(m_p.extraction_params, vars_to_extract, m_dt, m_time, first_step, m_restart_time);
+            FluxExtraction my_extraction(m_flux_container, m_p.extraction_params, vars_to_extract, m_dt, m_time, first_step, m_restart_time, m_p.SymmetryFactor);
             my_extraction.execute_query(m_gr_amr.m_interpolator);
         }
         
@@ -209,7 +207,7 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
             //now perform the integrals and push solution onto container
             for (auto var_enum: vars_to_integrate)
             {
-                integrals.push_back(amr_reductions.sum(var_enum));
+                integrals.push_back(m_p.SymmetryFactor * amr_reductions.sum(var_enum));
             }
 
             //setup output file
@@ -237,6 +235,9 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
 
             //now add the integrals to the file
             constraint_file.write_time_data_line(integrals);
+
+            //update the corresponding container boject
+            m_integral_container.update(m_time, integrals);
         }
          
     } //end of integration block

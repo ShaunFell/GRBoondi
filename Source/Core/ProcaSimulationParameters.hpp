@@ -11,6 +11,7 @@
 #include "GRParmParse.hpp"
 #include "UserVariables.hpp"
 #include "VariableType.hpp"
+#include "BoundaryConditions.hpp"
 
 // Proca specific includes:
 #include "BaseProcaField.hpp"
@@ -85,6 +86,18 @@ class ProcaSimulationParameters : public ChomboParameters
 
         //load integration variables
         UserVariables::load_vars_to_vector(pp, "integration_vars", "num_integration_vars", integration_vars,num_integration_vars);
+
+        //boundary conditions
+        boundary_params.read_params(pp);
+        //symmetry factor
+        FOR(dir)
+        {
+            if (boundary_params.lo_boundary[dir] == BoundaryConditions::REFLECTIVE_BC || 
+            boundary_params.hi_boundary[dir] == BoundaryConditions::REFLECTIVE_BC)
+            {
+                SymmetryFactor *= 2;
+            }
+        }
     };
 
     void check_params()
@@ -119,6 +132,11 @@ class ProcaSimulationParameters : public ChomboParameters
 
     //linear momentum direction
     int linear_momentum_dir;
+
+
+    // Boundary conditions
+    BoundaryConditions::params_t boundary_params; // set boundaries in each dir
+    double SymmetryFactor {1.0}; // 1.0 for non-reflective boundary conditions, 2.0 for 1 symmetry, 4.0 for 2 symmetries, and 8.0 for 3
 
 
 
