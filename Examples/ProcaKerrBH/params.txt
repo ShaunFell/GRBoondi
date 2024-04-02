@@ -1,4 +1,4 @@
-### EMKerrBH
+### ProcaKerrBH
 ###  params.txt
 
 ################################################## Filesystem parameters
@@ -7,7 +7,7 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23287045"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/xxx"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -53,7 +53,7 @@ activate_tagging_diagnostic = 0
 max_level = 4
 
 #Since we use fixed grid tagging, we dont ever need to regrid
-regrid_interval = 0 0 0 0 
+regrid_interval = 0 0 0 0
 
 ################################################## Initial Data parameters
 ##################################################
@@ -75,6 +75,12 @@ proca_mass = 0.4
 #constraint violation damping
 z_damping = 1.0
 
+#relaxation time of matter fields
+relaxation_time = 500
+
+#activate evolution of black hole, due to flux of matter across horizon
+bh_evolution = 1
+
 ################################################## Grid parameters
 ##################################################
 
@@ -89,7 +95,7 @@ min_box_size = 16
 tag_buffer_size = 0
 
 #grid spacing between refinement levels
-# grid_buffer_size = 32
+grid_buffer_size = 32
 # fill_ratio = 0.7
 # num_ghosts = 3
 # center = 256.0 256.0 256.0 # defaults to center of the grid
@@ -149,6 +155,8 @@ stop_time = 10000.0
 
 nan_check = 1
 
+
+
 # coefficient for KO numerical dissipation
 sigma = 0.3 #the default
 
@@ -156,8 +164,6 @@ sigma = 0.3 #the default
 ################################################## Excision
 ##################################################
 
-inner_r = 1.141067359796659 #excision radius
-outer_r = 30
 
 ## percentage to excise within horizon
 # 1 = excise the entire region within r<r_s

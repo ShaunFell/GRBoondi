@@ -5,7 +5,7 @@
 #include <iostream>
 
 // Our general includes
-#include "DefaultLevelFactory.hpp"
+#include "ProcaLevelFactory.hpp"
 #include "AMRInterpolator.hpp"
 #include "GRAMR.hpp"
 #include "GRParmParse.hpp"
@@ -30,14 +30,15 @@ int runGRChombo(int argc, char *argv[])
     char *in_file = argv[1];
     GRParmParse pp(argc - 2, argv + 2, NULL, in_file);
     SimulationParameters sim_params(pp);
-
+    pout() << "Symmetry factor of computational grid: " << sim_params.SymmetryFactor << endl;
+    
     if (sim_params.just_check_params)
         return 0;
 
     // DefaultLevelFactor is templated over level_t, itself a template parameter
     // Setup the AMR object and initialize the grid
     GRAMR gr_amr;
-    DefaultLevelFactory<level_t> problem_level_factory(gr_amr, sim_params);
+    ProcaLevelFactory<level_t> problem_level_factory(gr_amr, sim_params);
     setupAMRObject(gr_amr, problem_level_factory);
 
     //setup interpolating object

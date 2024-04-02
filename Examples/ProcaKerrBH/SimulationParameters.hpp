@@ -37,6 +37,18 @@ class SimulationParameters : public ProcaSimulationParameters
             //constraint violation damping
             pp.load("z_damping", matter_params.vector_damping);
 
+            //relaxation time of matter field into superradiant growth
+            pp.load("relaxation_time", relaxation_time, 0.0);
+
+            //turn on black hole evolution
+            pp.load("bh_evolution", evolve_bh, false);
+
+        }
+
+        void check_params()
+        {
+            const std::vector<int> vars_to_extract = DiagnosticVariables::convert_pairs_to_enum(extraction_vars);
+            check_parameter("bh_evolution", evolve_bh, DiagnosticVariables::is_variable_to_extract(c_Edot, vars_to_extract) && DiagnosticVariables::is_variable_to_extract(c_Jdot, vars_to_extract), "If you want to evolve the black hole, you must turn on extraction of Edot and Jdot");
         }
 
         //parameters of kerr bh
@@ -47,6 +59,9 @@ class SimulationParameters : public ProcaSimulationParameters
 
         //Proca parameters
         ProcaField::params_t matter_params;
+
+        double relaxation_time;
+        bool evolve_bh;
 
 };
 
