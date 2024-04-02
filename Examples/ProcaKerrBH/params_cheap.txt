@@ -76,7 +76,7 @@ proca_mass = 0.4
 z_damping = 1.0
 
 #relaxation time of matter fields
-relaxation_time = 500
+relaxation_time = 1000
 
 #activate evolution of black hole, due to flux of matter across horizon
 bh_evolution = 1

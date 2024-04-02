@@ -26,16 +26,20 @@ namespace ADMFixedBGVars
 template <class data_t> struct Vars
 {
     // ADM vars needed in matter only rhs (ok for Proca and SF)
-    Tensor<2, data_t> gamma;
     Tensor<2, data_t> K_tensor;
     data_t K;
+
     data_t lapse;
     Tensor<1, data_t> shift;
-    Tensor<2, Tensor<1, data_t>> d1_gamma;
+    Tensor<2, data_t> gamma;
+
     Tensor<1, data_t> d1_lapse;
-    Tensor<2, data_t> d1_shift;
-    Tensor<2,data_t> d2_lapse;
-    Tensor<3,data_t> d2_shift;
+    Tensor<1, Tensor<1,data_t>> d1_shift;
+    Tensor<2, Tensor<1, data_t>> d1_gamma;
+
+    Tensor<2, data_t> d2_lapse;
+    Tensor<1, Tensor<2,data_t>> d2_shift;
+    Tensor<2, Tensor<2,data_t>> d2_gamma;
 };
 
 }; // namespace ADMFixedBGVars

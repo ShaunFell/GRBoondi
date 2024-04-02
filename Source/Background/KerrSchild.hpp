@@ -398,7 +398,7 @@ class KerrSchild
         dldxx[2][2][2] = pow(r,-3)*(2*z*pow(drdx[2],2) - r*(2*drdx[2] + z*drdxx[2][2]));
 
 
-         //Now the second derivatives of the lapse and shift
+        //Now the second derivatives of the lapse, shift, and metric
 
         FOR2(i,j)
         {
@@ -408,6 +408,14 @@ class KerrSchild
         FOR3(i,j,k)
         {
             vars.d2_shift[k][i][j] = 4*el_t*dHdx[j]*vars.lapse*vars.d1_lapse[i]*el[k] + 4*H*dltdx[j]*vars.lapse*vars.d1_lapse[i]*el[k] + 4*el_t*dHdx[i]*vars.lapse*vars.d1_lapse[j]*el[k] + 4*H*dltdx[i]*vars.lapse*vars.d1_lapse[j]*el[k] + 4*el_t*H*vars.d1_lapse[i]*vars.d1_lapse[j]*el[k] + 2*dHdx[j]*dltdx[i]*el[k]*pow(vars.lapse,2) + 2*dHdx[i]*dltdx[j]*el[k]*pow(vars.lapse,2) + 2*el_t*el[k]*pow(vars.lapse,2)*dHdxx[i][j] + 4*el_t*H*vars.lapse*vars.d1_lapse[j]*dldx[k][i] + 2*el_t*dHdx[j]*pow(vars.lapse,2)*dldx[k][i] + 2*H*dltdx[j]*pow(vars.lapse,2)*dldx[k][i] + 4*el_t*H*vars.lapse*vars.d1_lapse[i]*dldx[k][j] + 2*el_t*dHdx[i]*pow(vars.lapse,2)*dldx[k][j] + 2*H*dltdx[i]*pow(vars.lapse,2)*dldx[k][j] + 2*H*el[k]*pow(vars.lapse,2)*dltdxx[i][j] + 4*el_t*H*vars.lapse*el[k]*vars.d2_lapse[i][j] + 2*el_t*H*pow(vars.lapse,2)*dldxx[k][i][j];
+        }
+
+        FOR4(i,j,k,l)
+        {
+            vars.d2_gamma[i][j][k][l] = 2 * (dHdxx[l][k] * el[i] * el[j] + dHdx[k] * dldx[i][l] * el[j] + dHdx[k] * el[i] * dldx[j][l] +
+                                                                    dHdx[l] * dldx[i][k] * el[j] + H * dldxx[i][k][l] * el[j] + H * dldx[i][k] * dldx[j][l] +
+                                                                    dHdx[l] * el[i] * dldx[j][k] + H * dldx[i][l] * dldx[j][k] + H * el[i] * dldxx[j][k][l]
+                                                                    );
         }
  
         //phew! done.

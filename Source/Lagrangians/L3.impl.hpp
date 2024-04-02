@@ -210,6 +210,7 @@ void L3<G3>::matter_rhs_modification(
 template <class G3>
 template <class data_t, template <typename> class vars_t, template <typename> class diff2_vars_t, template <typename> class rhs_vars_t>
 void L3<G3>::compute_phi_dot(
+    double &phi_dot,
     const vars_t<data_t> &matter_vars,
     const MetricVars<data_t> &metric_vars,
     const vars_t<Tensor<1,data_t>> &d1,
@@ -237,6 +238,16 @@ void L3<G3>::compute_phi_dot(
         FOR1(k) { DA[i][j] -= chris_phys[k][i][j] * matter_vars.Avec[k]; }
     };
     
+    // covariant derivative of shift vector D_i beta^j
+    Tensor<2,data_t> DB;
+    FOR2(i,j)
+    {
+        DB[i][j] = metric_vars.d1_shift[j][i];
+        FOR1(k) { 
+            DB[i][j] += chris_phys[i][i][jk] * metric_vars.shift[k]; 
+            }
+    }
+
     // Covariant divergence of spatial vector
     data_t DA_div { 0. };
     FOR2(i,j)
@@ -248,17 +259,58 @@ void L3<G3>::compute_phi_dot(
     data_t shift_div { 0. };
     FOR2(i,j)
     {
-        shift_div += gamma_UU[i][j] * metric_vars.d1_shift[j][i] + chris_phy[i][i][j] * metric_vars.shift[j];
+        shift_div += gamma_UU[i][j] * DB[i][j];
     }
 
+    // spatial derivative of christoffel symbols
+    Tensor<4,data_t> dChris;
+    FOR4(i,i,k,p)
+    {
+        dChris[k][i][j][p] = 0;
+        
+        FOR(l)
+        {
+            dChris[k][i][j][p] += -0.5 * gammaUU[i][l] * gammaUU[k][j]*metric_vars.d1_gamma[i][j][p] * (metric_vars.d1_gamma[l][j][i] + metric_vars.d1_gamma[l][i][j] - metric_vars.d1_gamma[i][j][l] ) + 0.5 * gamma_UU[k][l] * (metric_vars.d2_gamma[l][j][i][p] + metric_vars.d2_gamma[i][l][j][p] - metric_vars.d2_gamma[i][j][l][p] );
+        }
+    }
+
+    //second covariant derivative of shift
+    Tensor<3,data_t> DDB;
+    FOR3(i,l,k)
+    {
+        DDB[i][l][k] = metric_vars.d2_shift[i][l][k];
+        
+        FOR1(j)
+        {
+            DDB[i][l][k] += dChris[i][l][j][k] * metric_vars.shift[j] + chris_phys[i][l][j] * metric_vars.d1_shift[j][k] + chris_phys[i][k][j] * DB[j][l] - chris_phys[j][k][l] * DB[i][j];
+        }
+    }
+
+    //Covariant derivative of extrinsic curvature trace
+    Tensor<1,data_t> Dcurv;
+    FOR1(i)
+    {
+        Dcurv[i] = - shift_div * metric_vars.d1_lapse[i] / metric_vars.lapse / metric_vars.lapse;
+        FOR1(j)
+        {
+            Dcurv[i] += DDB[j][j][i] / metric_vars.lapse;
+        }
+    }
+    
+    // X^i beta^j D_i X_j
     data_t X_dot_B_DX { 0. };
     FOR4(i,j,k,l)
     {
         B_dot_X_DX += gamma_UU[i][k] * gamma_UU[j][l] * matter_vars.Avec[i] * metric_vars.shift[j] * DA[l][k];
     }
 
+    //X^i X_j D_i beta^j
+
     //constraint algebra term
     data_t CAlg = 4 * g_func * g_prime - 6 * metric_vars.K * metric_vars.lapse * matter_vars.phi * g_prime + 2 * metric_vars.lapse * DA_div * g_prime + 2 * matter_vars.phi * shift_div * g_prime - 8 * matter_vars.phi * matter_vars.phi * g_prime * g_prime - 8 * g_func * matter_vars.phi * matter_vars.phi * g_prime2 + 4 * metric_vars.K * metric_vars.lapse * matter_vars.phi * matter_vars.phi * matter_vars.phi * g_prime2 - 4 * metric_vars.lapse * matter_vars.phi * matter_vars.phi * DA_div * g_prime2 + 4 * B_dot_X_DX * matter_vars.phi * g_prime2;
+
+
+
 
 }
 
