@@ -7,7 +7,7 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23293701"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/prod/cheap_single_GRMilijun_ProcaKerrBH_23293695"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -78,7 +78,7 @@ z_damping = 1.0
 ################################################## Grid parameters
 ##################################################
 
-N_full = 128
+N_full = 64
 L_full = 64
 
 # Max and min box sizes
@@ -143,7 +143,7 @@ num_extrapolating_vars = 0
 #################################################
 
 # dt will be dx*dt_multiplier on each grid level
-dt_multiplier = 0.2
+dt_multiplier = 0.3
 stop_time = 10000.0
 # max_steps = 4
 
