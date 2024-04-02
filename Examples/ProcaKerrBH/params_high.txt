@@ -7,7 +7,7 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/prod/high_single_GRMilijun_ProcaKerrBH_23293487"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/xxx"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -74,6 +74,12 @@ proca_mass = 0.4
 
 #constraint violation damping
 z_damping = 1.0
+
+#relaxation time of matter fields
+relaxation_time = 500
+
+#activate evolution of black hole, due to flux of matter across horizon
+bh_evolution = 1
 
 ################################################## Grid parameters
 ##################################################

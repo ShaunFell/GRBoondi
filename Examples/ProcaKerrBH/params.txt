@@ -1,13 +1,13 @@
-### EMKerrBH
+### ProcaKerrBH
 ###  params.txt
 
 ################################################## Filesystem parameters
 
 
-verbosity = 1
+verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23293701"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/xxx"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -51,10 +51,8 @@ activate_tagging_diagnostic = 0
 ##################################################
 
 max_level = 4
-max_level = 4
 
 #Since we use fixed grid tagging, we dont ever need to regrid
-regrid_interval = 0 0 0 0
 regrid_interval = 0 0 0 0
 
 ################################################## Initial Data parameters
@@ -78,7 +76,7 @@ proca_mass = 0.4
 z_damping = 1.0
 
 #relaxation time of matter fields
-relaxation_time = 0
+relaxation_time = 500
 
 #activate evolution of black hole, due to flux of matter across horizon
 bh_evolution = 1
@@ -87,7 +85,6 @@ bh_evolution = 1
 ##################################################
 
 N_full = 128
-L_full = 64
 L_full = 64
 
 # Max and min box sizes
@@ -119,7 +116,6 @@ isPeriodic = 0 0 0
 #sommerfeld outgoing-radiation condition and use z-symmetry of kerr background
 # see read_me for definition of hi and lo boundary
 hi_boundary = 1 1 1
-lo_boundary = 1 1 1
 lo_boundary = 1 1 1
 
 # if reflective boundaries selected, must set
@@ -190,8 +186,6 @@ num_points_theta = 37
 extraction_vars = Edot Jdot
 num_extraction_vars = 2
 
-integration_vars = rho rhoE rhoJ EMsquared
-num_integration_vars = 4
 integration_vars = rho rhoE rhoJ EMsquared
 num_integration_vars = 4
 
