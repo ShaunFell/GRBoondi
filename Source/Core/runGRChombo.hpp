@@ -5,7 +5,7 @@
 #include <iostream>
 
 // Our general includes
-#include "DefaultLevelFactory.hpp"
+#include "ProcaLevelFactory.hpp"
 #include "AMRInterpolator.hpp"
 #include "GRAMR.hpp"
 #include "GRParmParse.hpp"
@@ -37,7 +37,7 @@ int runGRChombo(int argc, char *argv[])
     // DefaultLevelFactor is templated over level_t, itself a template parameter
     // Setup the AMR object and initialize the grid
     GRAMR gr_amr;
-    DefaultLevelFactory<level_t> problem_level_factory(gr_amr, sim_params);
+    ProcaLevelFactory<level_t> problem_level_factory(gr_amr, sim_params);
     setupAMRObject(gr_amr, problem_level_factory);
 
     //setup interpolating object
