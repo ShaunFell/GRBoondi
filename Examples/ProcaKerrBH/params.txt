@@ -7,7 +7,7 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/GRMilijun_ProcaKerrBH_23287046"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23292285"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -50,10 +50,10 @@ activate_tagging_diagnostic = 0
 ################################################# AMR levels
 ##################################################
 
-max_level = 7
+max_level = 5
 
 #Since we use fixed grid tagging, we dont ever need to regrid
-regrid_interval = 0 0 0 0 0 0 0
+regrid_interval = 0 0 0 0 0
 
 ################################################## Initial Data parameters
 ##################################################
@@ -79,7 +79,7 @@ z_damping = 1.0
 ##################################################
 
 N_full = 128
-L_full = 256
+L_full = 64
 
 # Max and min box sizes
 max_box_size = 16
@@ -110,7 +110,7 @@ isPeriodic = 0 0 0
 #sommerfeld outgoing-radiation condition and use z-symmetry of kerr background
 # see read_me for definition of hi and lo boundary
 hi_boundary = 1 1 1
-lo_boundary = 1 1 2
+lo_boundary = 1 1 1
 
 # if reflective boundaries selected, must set
 # parity of all vars (in order given by UserVariables.hpp)
@@ -156,8 +156,6 @@ sigma = 0.3 #the default
 ################################################## Excision
 ##################################################
 
-inner_r = 1.141067359796659 #excision radius
-outer_r = 30
 
 ## percentage to excise within horizon
 # 1 = excise the entire region within r<r_s
@@ -172,7 +170,7 @@ activate_extraction = 1 # extraction of fluxes
 activate_integration = 1 # integration of densities
 
 num_extraction_radii = 2
-extraction_radii = 1.6 100
+extraction_radii = 1.6 30
 extraction_levels = 1 1
 num_points_phi = 24
 num_points_theta = 37
@@ -180,8 +178,8 @@ num_points_theta = 37
 extraction_vars = Edot Jdot
 num_extraction_vars = 2
 
-integration_vars = rhoE rhoJ EMsquared
-num_integration_vars = 3
+integration_vars = rho rhoE rhoJ EMsquared
+num_integration_vars = 4
 
 write_extraction = 0
 extraction_subpath = "extraction"
