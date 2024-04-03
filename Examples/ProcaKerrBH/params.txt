@@ -7,7 +7,7 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/GRMilijun_ProcaKerrBH_23291511"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23298252"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -50,10 +50,10 @@ activate_tagging_diagnostic = 0
 ################################################# AMR levels
 ##################################################
 
-max_level = 4
+max_level = 6
 
 #Since we use fixed grid tagging, we dont ever need to regrid
-regrid_interval = 0 0 0 0
+regrid_interval = 0 0 0 0 0 0
 
 ################################################## Initial Data parameters
 ##################################################
@@ -79,17 +79,17 @@ z_damping = 1.0
 relaxation_time = 1000
 
 #activate evolution of black hole, due to flux of matter across horizon
-bh_evolution = 1
+bh_evolution = 0
 
 ################################################## Grid parameters
 ##################################################
 
-N_full = 128
-L_full = 64
+N_full = 192
+L_full = 205
 
 # Max and min box sizes
-max_box_size = 16
-min_box_size = 16
+max_box_size = 32
+min_box_size = 32
 
 #for fixed grid tagging
 tag_buffer_size = 0
@@ -169,7 +169,7 @@ sigma = 0.3 #the default
 # 1 = excise the entire region within r<r_s
 # 0.97 = excise r < 0.97*r_s
 diagnostic_excision_width = 1.0
-evolution_excision_width = 0.97
+evolution_excision_width = 0.9
 
 ################################################## Extraction
 ##################################################

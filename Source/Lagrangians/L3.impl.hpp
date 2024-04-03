@@ -104,10 +104,11 @@ void L3<G3>::compute_emtensor_modification(
         X_dot_DX2[i] += gamma_UU[j][k] matter_vars.Avec[j] * DX[i][k];
     }
 
-    data_t phi_dot { compute_phi_dot(matter_vars, metric_vars, d1, d2, advec) };
+    data_t phi_dot { 0.  };
+    compute_phi_dot(phi_dot, matter_vars, metric_vars, d1, d2);
 
     //The lie derivative of the scalar part of the Proca field
-    data_t LNPhi { phi_dot / metric_vars.lapse };
+    data_t LNPhi { 1. / metric_vars.lapse * ( phi_dot - advec.phi) };
     
 
     base_emtensor.rho += 2 * m_params.alpha3 * g_prime * ( matter_vars.phi * E_dot_X + matter_vars.phi * matter_vars.phi * matter_vars.phi * metric_vars.K - matter_vars.phi * matter_vars.phi * DA_div + DX_dot_X_X + matter_vars.phi * matter_vars.phi * X_dot_Acc);
@@ -199,8 +200,9 @@ void L3<G3>::matter_rhs_modification(
     //Spatial part remains unchanged
 
     //Modify scalar part
-
-    total_rhs.phi +=  0;
+    data_t modified_phi_dot { 0. };
+    compute_phi_dot(modified_phi_dot, matter_vars, metric_vars, d1, d2);
+    total_rhs.phi +=  compute_phi_dot;
 
     
 };
@@ -214,8 +216,7 @@ void L3<G3>::compute_phi_dot(
     const vars_t<data_t> &matter_vars,
     const MetricVars<data_t> &metric_vars,
     const vars_t<Tensor<1,data_t>> &d1,
-    const diff2_vars_t<Tensor<2,data_t>> &d2,
-    const vars_t<data_t> &advec
+    const diff2_vars_t<Tensor<2,data_t>> &d2
 ) const
 {
     // compute time derivative of scalar part
@@ -239,12 +240,13 @@ void L3<G3>::compute_phi_dot(
     };
     
     // covariant derivative of shift vector D_i beta^j
+    //first index is shift index
     Tensor<2,data_t> DB;
     FOR2(i,j)
     {
-        DB[i][j] = metric_vars.d1_shift[j][i];
+        DB[j][i] = metric_vars.d1_shift[j][i];
         FOR1(k) { 
-            DB[i][j] += chris_phys[i][i][jk] * metric_vars.shift[k]; 
+            DB[i][j] += chris_phys[j][i][k] * metric_vars.shift[k]; 
             }
     }
 
@@ -287,27 +289,61 @@ void L3<G3>::compute_phi_dot(
     }
 
     //Covariant derivative of extrinsic curvature trace
-    Tensor<1,data_t> Dcurv;
+    Tensor<1,data_t> DK;
     FOR1(i)
     {
-        Dcurv[i] = - shift_div * metric_vars.d1_lapse[i] / metric_vars.lapse / metric_vars.lapse;
+        DK[i] = - shift_div * metric_vars.d1_lapse[i] / metric_vars.lapse / metric_vars.lapse;
         FOR1(j)
         {
-            Dcurv[i] += DDB[j][j][i] / metric_vars.lapse;
+            DK[i] += DDB[j][j][i] / metric_vars.lapse;
         }
     }
     
-    // X^i beta^j D_i X_j
-    data_t X_dot_B_DX { 0. };
-    FOR4(i,j,k,l)
+    //Second covariant derivative of lapse
+    Tensor<2,data_t> DD_lapse;
+    FOR2(i,j)
     {
-        B_dot_X_DX += gamma_UU[i][k] * gamma_UU[j][l] * matter_vars.Avec[i] * metric_vars.shift[j] * DA[l][k];
+        DD_lapse[j][i] = metric_vars.d2_lapse[j][i];
+
+        FOR(k)
+        {
+            DD_lapse[j][i] -= chris_phys[k][i][j] * metric_vars.d1_lapse[k];
+        }
     }
+
+   /*  //Covariant wave equation of lapse
+    Tensor<2,data_t> DDATrace;
+    FOR2(i,j)
+    {
+        DDATrace = gamma_UU[i][j] * DD_lapse[i][j];
+    } */
+
+    //Second covariant derivative of spatial vector
+    Tensor<2, Tensor<1,data_t>> DDA;
+    
 
     //X^i X_j D_i beta^j
 
     //constraint algebra term
     data_t CAlg = 4 * g_func * g_prime - 6 * metric_vars.K * metric_vars.lapse * matter_vars.phi * g_prime + 2 * metric_vars.lapse * DA_div * g_prime + 2 * matter_vars.phi * shift_div * g_prime - 8 * matter_vars.phi * matter_vars.phi * g_prime * g_prime - 8 * g_func * matter_vars.phi * matter_vars.phi * g_prime2 + 4 * metric_vars.K * metric_vars.lapse * matter_vars.phi * matter_vars.phi * matter_vars.phi * g_prime2 - 4 * metric_vars.lapse * matter_vars.phi * matter_vars.phi * DA_div * g_prime2 + 4 * B_dot_X_DX * matter_vars.phi * g_prime2;
+
+    //computed using mathematica   
+    data_t phi_dot   = 8*g_func*pow(g_prime,2)*pow(matter_vars.phi,2)*metric_vars.alpha + 2*g_func*g_prime*K*matter_vars.phi*pow(metric_vars.alpha,2) - 4*pow(g_prime,2)*K*pow(matter_vars.phi,3)*pow(metric_vars.alpha,2) + 8*g_func*g_prime2*matter_vars.phi*metric_vars.alpha*matter_vars.Avec[a]*matter_vars.Evec[a] + 8*pow(g_prime,2)*matter_vars.phi*metric_vars.alpha*matter_vars.Avec[b]*matter_vars.Evec[b] + 2*g_prime*K*pow(metric_vars.alpha,2)*matter_vars.Avec[c]*matter_vars.Evec[c] - 4*g_prime2*K*pow(matter_vars.phi,2)*pow(metric_vars.alpha,2)*matter_vars.Avec[c]*matter_vars.Evec[c] + 2*g_prime*matter_vars.phi*metric_vars.alpha*matter_vars.Evec[a]*metric_vars.d1_lapse[a];
+    data_t phi_dot += -2*g_prime*matter_vars.Avec[c]*matter_vars.Evec[c]*metric_vars.d1_lapse[b]*metric_vars.shift[b] - 2*g_prime*metric_vars.alpha*matter_vars.Evec[b]*metric_vars.shift[a]*DA[a][b] - 2*g_func*g_prime*matter_vars.phi*metric_vars.alpha*DB[a][a] - 2*g_prime*metric_vars.alpha*matter_vars.Avec[b]*matter_vars.Evec[b]*DB[d][d] - 2*g_prime*metric_vars.alpha*matter_vars.Avec[d]*metric_vars.shift[b]*DE[b][d] - 2*g_prime*pow(metric_vars.alpha,2)*d1.phi[a]*d1.phi[b]*gammaUU[a][b] + 4*g_prime2*pow(matter_vars.phi,2)*pow(metric_vars.alpha,2)*d1.phi[a]*d1.phi[b]*gammaUU[a][b] + 16*pow(g_prime,2)*matter_vars.phi*metric_vars.alpha*d1.phi[a]*matter_vars.Avec[b]*gammaUU[a][b];
+    data_t phi_dot +=16*g_func*g_prime2*matter_vars.phi*metric_vars.alpha*d1.phi[a]*matter_vars.Avec[b]*gammaUU[a][b] - 4*g_func*g_prime*metric_vars.alpha*DA[a][b]*gammaUU[a][b] + 4*pow(g_prime,2)*pow(matter_vars.phi,2)*pow(metric_vars.alpha,2)*DA[a][b]*gammaUU[a][b] + g_func*metric_vars.alpha*DD_lapse[b][a]*gammaUU[a][b] + 2*g_prime*pow(matter_vars.phi,2)*metric_vars.alpha*DD_lapse[b][a]*gammaUU[a][b] - 2*g_prime*matter_vars.phi*metric_vars.alpha*DA[b][c]*DB[a][c]*gammaUU[a][b] - 2*g_prime*metric_vars.alpha*d1.phi[a]*matter_vars.Avec[b]*DB[c][c]*gammaUU[a][b] + 4*g_prime*K*pow(metric_vars.alpha,2)*d1.phi[a]*matter_vars.Avec[c]*gammaUU[a][c];
+    data_t phi_dot += -8*g_prime2*K*pow(matter_vars.phi,2)*pow(metric_vars.alpha,2)*d1.phi[a]*matter_vars.Avec[c]*gammaUU[a][c] - 4*g_prime2*matter_vars.phi*metric_vars.alpha*d1.phi[a]*d1.phi[b]*matter_vars.Avec[c]*metric_vars.shift[b]*gammaUU[a][c] - 2*g_prime*d1.phi[a]*matter_vars.Avec[c]*metric_vars.d1_lapse[b]*metric_vars.shift[b]*gammaUU[a][c] + 2*g_prime*K*matter_vars.phi*pow(metric_vars.alpha,2)*DA[a][c]*gammaUU[a][c] - 8*pow(g_prime,2)*matter_vars.phi*matter_vars.Avec[c]*metric_vars.shift[b]*DA[b][a]*gammaUU[a][c] - 8*g_func*g_prime2*matter_vars.phi*matter_vars.Avec[c]*metric_vars.shift[b]*DA[b][a]*gammaUU[a][c];
+    data_t phi_dot += - 2*g_prime*K*metric_vars.alpha*matter_vars.Avec[c]*metric_vars.shift[b]*DA[b][a]*gammaUU[a][c] - 4*pow(g_prime,2)*matter_vars.phi*metric_vars.alpha*matter_vars.Avec[c]*metric_vars.shift[b]*DA[b][a]*gammaUU[a][c] + 4*g_prime2*K*pow(matter_vars.phi,2)*metric_vars.alpha*matter_vars.Avec[c]*metric_vars.shift[b]*DA[b][a]*gammaUU[a][c] - 8*pow(g_prime,2)*matter_vars.phi*matter_vars.Avec[b]*matter_vars.Avec[c]*DB[a][b]*gammaUU[a][c] - 2*g_prime*K*metric_vars.alpha*matter_vars.Avec[b]*matter_vars.Avec[c]*DB[a][b]*gammaUU[a][c] + 4*g_prime2*K*pow(matter_vars.phi,2)*metric_vars.alpha*matter_vars.Avec[b]*matter_vars.Avec[c]*DB[a][b]*gammaUU[a][c];
+    data_t phi_dot += - 2*g_prime*matter_vars.phi*metric_vars.alpha*DA[b][c]*DB[a][b]*gammaUU[a][c] + 2*g_prime*matter_vars.Avec[c]*metric_vars.shift[b]*DA[b][a]*DB[d][d]*gammaUU[a][c] + 2*g_prime*matter_vars.Avec[b]*matter_vars.Avec[c]*DB[a][b]*DB[d][d]*gammaUU[a][c] + 2*g_prime*matter_vars.Avec[d]*metric_vars.shift[b]*DA[b][c]*DB[a][c]*gammaUU[a][d] + 2*g_prime*matter_vars.Avec[d]*metric_vars.shift[b]*DA[c][a]*DB[b][c]*gammaUU[a][d] + 8*pow(g_prime,2)*pow(matter_vars.phi,2)*matter_vars.Avec[b]*metric_vars.d1_lapse[a]*gammaUU[b][a] + 8*g_func*g_prime2*pow(matter_vars.phi,2)*matter_vars.Avec[b]*metric_vars.d1_lapse[a]*gammaUU[b][a];
+    data_t phi_dot += - 2*g_prime*matter_vars.phi*matter_vars.Avec[b]*metric_vars.d1_lapse[a]*DB[c][c]*gammaUU[b][a] - 2*g_prime*metric_vars.alpha*d1.phi[b]*metric_vars.shift[a]*DA[a][c]*gammaUU[b][c] + 4*g_prime2*matter_vars.phi*pow(metric_vars.alpha,2)*matter_vars.Avec[d]*matter_vars.Evec[d]*DA[b][c]*gammaUU[b][c] + 2*g_prime*metric_vars.alpha*d1.phi[a]*metric_vars.shift[a]*DA[b][c]*gammaUU[b][c] + 8*g_prime2*matter_vars.phi*pow(metric_vars.alpha,2)*d1.phi[a]*matter_vars.Avec[d]*DA[b][c]*gammaUU[a][d]*gammaUU[b][c] - 8*g_prime2*matter_vars.phi*pow(metric_vars.alpha,2)*d1.phi[b]*matter_vars.Avec[d]*DA[c][a]*gammaUU[a][d]*gammaUU[b][c];
+    data_t phi_dot += 4*g_prime*metric_vars.alpha*matter_vars.Avec[d]*metric_vars.d1_lapse[b]*DA[c][a]*gammaUU[a][d]*gammaUU[b][c] - 4*g_prime2*metric_vars.alpha*matter_vars.Avec[c]*matter_vars.Avec[d]*matter_vars.Evec[c]*metric_vars.shift[f]*DA[f][b]*gammaUU[b][d] - 8*pow(g_prime,2)*metric_vars.alpha*matter_vars.Avec[c]*matter_vars.Avec[d]*DA[b][a]*gammaUU[a][c]*gammaUU[b][d] - 8*g_func*g_prime2*metric_vars.alpha*matter_vars.Avec[c]*matter_vars.Avec[d]*DA[b][a]*gammaUU[a][c]*gammaUU[b][d] + 4*g_prime2*K*matter_vars.phi*pow(metric_vars.alpha,2)*matter_vars.Avec[c]*matter_vars.Avec[d]*DA[b][a]*gammaUU[a][c]*gammaUU[b][d];
+    data_t phi_dot += 4*g_prime2*metric_vars.alpha*d1.phi[e]*matter_vars.Avec[c]*matter_vars.Avec[d]*metric_vars.shift[e]*DA[b][a]*gammaUU[a][c]*gammaUU[b][d] - 2*g_prime*pow(metric_vars.alpha,2)*DA[a][c]*DA[b][d]*gammaUU[a][c]*gammaUU[b][d] + 2*g_prime*pow(metric_vars.alpha,2)*DA[b][a]*DA[d][c]*gammaUU[a][c]*gammaUU[b][d] - 4*g_prime2*metric_vars.alpha*d1.phi[b]*matter_vars.Avec[c]*matter_vars.Avec[d]*metric_vars.shift[e]*DA[e][a]*gammaUU[a][c]*gammaUU[b][d] + 4*g_prime2*matter_vars.Avec[c]*matter_vars.Avec[d]*metric_vars.shift[e]*metric_vars.shift[f]*DA[e][a]*DA[f][b]*gammaUU[a][c]*gammaUU[b][d];
+    data_t phi_dot += 2*g_prime*matter_vars.phi*pow(metric_vars.alpha,2)*DK[a]*matter_vars.Avec[c]*gammaUU[c][a] + 4*g_prime*K*matter_vars.phi*metric_vars.alpha*matter_vars.Avec[c]*metric_vars.d1_lapse[a]*gammaUU[c][a] - 4*g_prime2*K*pow(matter_vars.phi,3)*metric_vars.alpha*matter_vars.Avec[c]*metric_vars.d1_lapse[a]*gammaUU[c][a] - 2*g_prime*d1.phi[b]*matter_vars.Avec[c]*metric_vars.d1_lapse[a]*metric_vars.shift[b]*gammaUU[c][a] - 2*g_prime*matter_vars.phi*matter_vars.Avec[c]*metric_vars.shift[b]*DD_lapse[b][a]*gammaUU[c][a] + 2*g_prime*metric_vars.alpha*d1.phi[b]*matter_vars.Avec[c]*DB[a][b]*gammaUU[c][a];
+    data_t phi_dot += - 2*g_prime*matter_vars.phi*metric_vars.d1_lapse[b]*metric_vars.shift[a]*DA[a][c]*gammaUU[c][b] - 8*g_func*g_prime2*matter_vars.phi*matter_vars.Avec[a]*matter_vars.Avec[c]*DB[b][a]*gammaUU[c][b] - 2*g_prime*metric_vars.alpha*matter_vars.Avec[d]*metric_vars.d1_lapse[a]*DA[b][c]*gammaUU[b][c]*gammaUU[d][a] + 4*g_prime2*pow(matter_vars.phi,2)*metric_vars.alpha*matter_vars.Avec[d]*metric_vars.d1_lapse[a]*DA[b][c]*gammaUU[b][c]*gammaUU[d][a] + 2*g_prime*matter_vars.Avec[d]*matter_vars.Avec[e]*metric_vars.shift[f]*(cd(-f)(gammaUU(-a)(-c))*DB[b][c] + cd(-f)(DB[b][c])*gammaUU(-a)(-c))*gammaUU[b][e]*gammaUU[d][a];
+    data_t phi_dot += 2*g_prime*matter_vars.Avec[c]*metric_vars.shift[a]*DA[a][b]*DB[d][c]*gammaUU[d][b] - 4*g_prime2*matter_vars.phi*matter_vars.Avec[c]*matter_vars.Avec[d]*metric_vars.d1_lapse[b]*metric_vars.shift[e]*DA[e][a]*gammaUU[a][c]*gammaUU[d][b] + 2*g_prime*metric_vars.shift[a]*metric_vars.shift[b]*DA[a][c]*DA[b][d]*gammaUU[d][c] + 4*g_prime2*matter_vars.Avec[b]*matter_vars.Avec[c]*matter_vars.Avec[d]*metric_vars.shift[f]*DA[f][a]*DB[e][b]*gammaUU[a][c]*gammaUU[d][e] - 4*g_prime2*matter_vars.phi*metric_vars.alpha*matter_vars.Avec[c]*matter_vars.Avec[d]*DA[e][b]*DB[a][c]*gammaUU[a][d]*gammaUU[e][b];
+    data_t phi_dot += -  4*g_prime2*matter_vars.phi*metric_vars.alpha*matter_vars.Avec[d]*metric_vars.shift[b]*DA[b][a]*DA[e][c]*gammaUU[a][d]*gammaUU[e][c] + 4*g_prime2*pow(metric_vars.alpha,2)*matter_vars.Avec[d]*matter_vars.Avec[e]*DA[c][a]*DA[f][b]*gammaUU[a][d]*gammaUU[b][e]*gammaUU[f][c] - 4*g_prime2*pow(metric_vars.alpha,2)*matter_vars.Avec[d]*matter_vars.Avec[e]*DA[b][a]*DA[f][c]*gammaUU[a][d]*gammaUU[b][e]*gammaUU[f][c] - 2*g_prime*pow(metric_vars.alpha,2)*matter_vars.Avec[d]*gammaUU[a][d]*gammaUU[b][c]*DDA[a][b][c] - 2*g_prime*matter_vars.phi*metric_vars.alpha*metric_vars.shift[a]*gammaUU[b][c]*DDA[b][a][c];
+    data_t phi_dot += 2*g_prime*pow(metric_vars.alpha,2)*matter_vars.Avec[d]*gammaUU[a][d]*gammaUU[b][c]*DDA[b][c][a] + 2*g_prime*matter_vars.Avec[c]*metric_vars.shift[b]*metric_vars.shift[d]*gammaUU[a][c]*DDA[d][b][a] - 2*g_prime*matter_vars.phi*metric_vars.alpha*matter_vars.Avec[b]*gammaUU[a][c]*DDB[a][c][b];
+
+
 
 
 

@@ -53,6 +53,7 @@ public:
         //Note: The conditions for this code block must match exactly the conditions for the flux calculation code block in BaseProcaFieldLevel.impl.hpp
         if (m_time >= m_p.relaxation_time && m_p.evolve_bh &&m_p.activate_extraction && m_level == min_level && at_course_timestep_on_any_level)
         {
+            pout() << "Performing BH evolution" << endl;    
 
             //get enums of variables we want to extract
             const std::vector<int> vars_to_extract = DiagnosticVariables::convert_pairs_to_enum(m_p.extraction_vars);
