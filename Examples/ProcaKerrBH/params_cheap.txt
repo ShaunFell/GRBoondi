@@ -1,5 +1,5 @@
-### EMKerrBH
-###  params.txt
+### ProcaKerrBH
+###  params_cheap.txt
 
 ################################################## Filesystem parameters
 
@@ -7,14 +7,14 @@
 verbosity = 1
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23296316"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23297885"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
 plot_prefix = "GeneralizedProcap_"
 
 #file to restart the simulation from
-#restart_file = GeneralizedProca_000003.3d.hdf5
+restart_file = GeneralizedProca_002200.3d.hdf5
 
 # HDF5files are written every dt = L/N*dt_multiplier*checkpoint_interval
 checkpoint_interval = 100
@@ -50,10 +50,10 @@ activate_tagging_diagnostic = 0
 ################################################# AMR levels
 ##################################################
 
-max_level = 7
+max_level = 3
 
 #Since we use fixed grid tagging, we dont ever need to regrid
-regrid_interval = 0 0 0 0 0 0 0
+regrid_interval = 0 0 0
 
 ################################################## Initial Data parameters
 ##################################################
@@ -85,7 +85,7 @@ bh_evolution = 0
 ##################################################
 
 N_full = 128
-L_full = 256
+L_full = 32
 
 # Max and min box sizes
 max_box_size = 32
@@ -144,7 +144,6 @@ extrapolation_order = 0
 num_extrapolating_vars = 0
 
 
-
 ################################################## Evolution parameters
 #################################################
 
@@ -162,9 +161,6 @@ sigma = 0.3 #the default
 ################################################## Excision
 ##################################################
 
-inner_r = 1.141067359796659 #excision radius
-outer_r = 30
-
 ## percentage to excise within horizon
 # 1 = excise the entire region within r<r_s
 # 0.97 = excise r < 0.97*r_s
@@ -178,7 +174,7 @@ activate_extraction = 1 # extraction of fluxes
 activate_integration = 1 # integration of densities
 
 num_extraction_radii = 2
-extraction_radii = 1.6 100
+extraction_radii = 1.6 14
 extraction_levels = 1 1
 num_points_phi = 24
 num_points_theta = 37
@@ -191,3 +187,4 @@ num_integration_vars = 3
 
 write_extraction = 0
 extraction_subpath = "extraction"
+

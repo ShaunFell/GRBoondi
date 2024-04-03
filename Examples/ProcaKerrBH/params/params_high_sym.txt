@@ -1,5 +1,5 @@
 ### ProcaKerrBH
-###  params_high.txt
+###  params_high_sym.txt
 
 ################################################## Filesystem parameters
 
@@ -7,7 +7,7 @@
 verbosity = 1
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/GRMilijun_ProcaKerrBH_23297200"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23298717"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -116,7 +116,7 @@ isPeriodic = 0 0 0
 #sommerfeld outgoing-radiation condition and use z-symmetry of kerr background
 # see read_me for definition of hi and lo boundary
 hi_boundary = 1 1 1
-lo_boundary = 1 1 1
+lo_boundary = 1 1 2
 
 # if reflective boundaries selected, must set
 # parity of all vars (in order given by UserVariables.hpp)
