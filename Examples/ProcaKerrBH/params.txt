@@ -7,7 +7,7 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/xxx"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/GRMilijun_ProcaKerrBH_23291511"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -23,8 +23,8 @@ checkpoint_interval = 100
 plot_interval = 20
 
 #plot variable names must match those in the DiagnosticVariables::DiagnosticVariables namespace
-num_plot_vars = 7
-plot_vars = Z Asquared rho rhoE gnn EMtrace EMsquared
+num_plot_vars = 6
+plot_vars = Z Asquared rho rhoE EMtrace EMsquared
 
 # subpaths - specific directories for hdf5, pout, extraction data
 # (these are created at runtime)
