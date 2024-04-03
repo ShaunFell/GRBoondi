@@ -7,7 +7,7 @@
 verbosity = 1
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/test_SymFactor"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23296316"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -50,10 +50,10 @@ activate_tagging_diagnostic = 0
 ################################################# AMR levels
 ##################################################
 
-max_level = 4
+max_level = 7
 
 #Since we use fixed grid tagging, we dont ever need to regrid
-regrid_interval = 0 0 0 0
+regrid_interval = 0 0 0 0 0 0 0
 
 ################################################## Initial Data parameters
 ##################################################
@@ -76,20 +76,20 @@ proca_mass = 0.4
 z_damping = 1.0
 
 #relaxation time of matter fields
-relaxation_time = 500
+relaxation_time = 10000
 
 #activate evolution of black hole, due to flux of matter across horizon
-bh_evolution = 1
+bh_evolution = 0
 
 ################################################## Grid parameters
 ##################################################
 
-N_full = 64
-L_full = 64
+N_full = 128
+L_full = 256
 
 # Max and min box sizes
-max_box_size = 16
-min_box_size = 16
+max_box_size = 32
+min_box_size = 32
 
 #for fixed grid tagging
 tag_buffer_size = 0
@@ -149,7 +149,7 @@ num_extrapolating_vars = 0
 #################################################
 
 # dt will be dx*dt_multiplier on each grid level
-dt_multiplier = 0.3
+dt_multiplier = 0.2
 stop_time = 10000.0
 # max_steps = 4
 
@@ -162,12 +162,14 @@ sigma = 0.3 #the default
 ################################################## Excision
 ##################################################
 
+inner_r = 1.141067359796659 #excision radius
+outer_r = 30
 
 ## percentage to excise within horizon
 # 1 = excise the entire region within r<r_s
 # 0.97 = excise r < 0.97*r_s
 diagnostic_excision_width = 1.0
-evolution_excision_width = 0.97
+evolution_excision_width = 0.9
 
 ################################################## Extraction
 ##################################################
@@ -176,7 +178,7 @@ activate_extraction = 1 # extraction of fluxes
 activate_integration = 1 # integration of densities
 
 num_extraction_radii = 2
-extraction_radii = 1.6 30
+extraction_radii = 1.6 100
 extraction_levels = 1 1
 num_points_phi = 24
 num_points_theta = 37
@@ -184,8 +186,8 @@ num_points_theta = 37
 extraction_vars = Edot Jdot
 num_extraction_vars = 2
 
-integration_vars = rho rhoE rhoJ EMsquared
-num_integration_vars = 4
+integration_vars = rhoE rhoJ EMsquared
+num_integration_vars = 3
 
 write_extraction = 0
 extraction_subpath = "extraction"
