@@ -35,7 +35,7 @@ public:
         BoxLoops::loop(initial_conditions, m_state_new, m_state_new, INCLUDE_GHOST_CELLS);
 
         //Excise within horizon
-        ExcisionEvolution<ProcaField, KerrSchild> excisor(m_dx, m_p.center, m_p.evolution_excision_width, kerr_schild);
+        ExcisionEvolution<ProcaField, KerrSchild> excisor(m_dx, m_p.center, 0.95, kerr_schild);
 
         //Loop over box cells and excise cells within horizon
         BoxLoops::loop(excisor, m_state_new, m_state_new, SKIP_GHOST_CELLS, disable_simd()); //disable SIMD for this loop since excision doesnt use SIMD

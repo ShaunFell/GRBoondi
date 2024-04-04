@@ -28,6 +28,7 @@ class KerrSchild
         double mass = 1.0;                      //!<< The mass of the BH
         std::array<double, CH_SPACEDIM> center; //!< The center of the BH
         double spin = 0.0;                      //!< The spin param a = J / M
+        bool need_2nd_derivs = false;
     };
 
     template <class data_t> using Vars = ADMFixedBGVars::Vars<data_t>;
@@ -163,6 +164,11 @@ class KerrSchild
             vars.K_tensor[i][j] *= 0.5 / vars.lapse;
         }
         vars.K = compute_trace(gamma_UU, vars.K_tensor);
+
+        if (m_params.need_2nd_derivs)
+        {
+            compute_2nd_derivatives(vars, coords);
+        }
 
     }
 
@@ -441,13 +447,11 @@ class KerrSchild
 
         // position relative to outer horizon - 1 indicates on horizon
         // less than one is within
-        const double outer_horizon =
-            (x * x + y * y) / (2.0 * M * r_plus) + z * z / r_plus / r_plus;
+        const double outer_horizon = sqrt((x * x + y * y) / (2.0 * M * r_plus) + z * z / r_plus / r_plus);
 
         // position relative to inner horizon - 1 indicates on horizon, less
         // than 1 is within
-        const double inner_horizon =
-            (x * x + y * y) / (2.0 * M * r_minus) + z * z / r_minus / r_minus;
+        const double inner_horizon = sqrt((x * x + y * y) / (2.0 * M * r_minus) + z * z / r_minus / r_minus);
 
         bool is_excised = false;
         // value less than 1 indicates we are within the horizon

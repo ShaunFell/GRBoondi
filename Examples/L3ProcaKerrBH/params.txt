@@ -61,18 +61,17 @@ regrid_threshold = 0.005
 kerr_mass = 1.0
 kerr_spin = 0.99
 kerr_spindir = 0 0 1
+kerr_need_2nd_derivs = 1
 
 # EM parameters
 initial_amplitude = 0.1
 
 #L2 lagrangian parameters
-L2_alpha = 1
+L3_alpha = 1
 
 #proca parameters
 proca_mass = 0.4
 
-#proca self interaction coupling
-self_interaction = 1.0
 
 #constraint violation damping
 z_damping = 1.0

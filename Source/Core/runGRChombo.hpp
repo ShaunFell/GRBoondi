@@ -31,6 +31,8 @@ int runGRChombo(int argc, char *argv[])
     GRParmParse pp(argc - 2, argv + 2, NULL, in_file);
     SimulationParameters sim_params(pp);
     pout() << "Symmetry factor of computational grid: " << sim_params.SymmetryFactor << endl;
+
+    
     
     if (sim_params.just_check_params)
         return 0;

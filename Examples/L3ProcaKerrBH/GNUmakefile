@@ -9,7 +9,7 @@
 
 GRMILIJUN_SOURCE = ../../Source
 
-ebase := Main_NonlinearProcaKerrBH
+ebase := Main_L3ProcaKerrBH
 
 LibNames := AMRTimeDependent AMRTools BoxTools
 
