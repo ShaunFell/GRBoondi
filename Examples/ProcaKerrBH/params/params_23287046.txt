@@ -1,5 +1,5 @@
-### ProcaKerrBH
-###  params_23287046.txt
+### EMKerrBH
+###  params.txt
 
 ################################################## Filesystem parameters
 

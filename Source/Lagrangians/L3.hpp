@@ -37,7 +37,7 @@ class L3
     public:
         struct params_t
         {
-            double alpha2;
+            double alpha3;
         };
 
     protected:
@@ -81,14 +81,14 @@ class L3
 
         template <class data_t, template <typename> class vars_t, template <typename> class diff2_vars_t>
         void compute_phi_dot(
+            data_t &phi_dot,
             const vars_t<data_t> &vars,
             const MetricVars<data_t> &metric_vars,
             const vars_t<Tensor<1,data_t>> &d1,
-            const diff2_vars_t<Tensor<2,data_t>> &d2,
-            const vars_t<data_t> &advec
+            const diff2_vars_t<Tensor<2,data_t>> &d2
         ) const ;
 
 };
 
-#include "L3_simp.impl.hpp"
+#include "L3.impl.hpp"
 #endif //L3_SIMP_H_INCLUDED

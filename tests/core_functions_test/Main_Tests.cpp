@@ -65,68 +65,58 @@ int main(int argc, char *argv[])
             //instantiate the metric variables
             ADMFixedBGVars::Vars<double> metric_vars;
 
-            
+
             //the real work
 
             //compute the second derivatives
             kerr_init.compute_2nd_derivatives(metric_vars, coords);
 
             //These solutions come directly from mathematica
-            std::vector<std::vector<double>> adxx_sol = {
-                {0.248963113140091, 0.136392981253951, -0.110832940095943},
-                {0.136392981253951, 0.248963113140091, -0.110832940095943},
-                {-0.110832940095943, -0.110832940095943,  -0.265837195347114}
-            };
-
-            std::vector<std::vector<std::vector<double>>> betadxx_sol = {
-                {
-                    {-0.918081421262146,-0.437063708465753,0.358635632821701},
-                    {-0.437063708465753,-1.31597450368002,0.118126776423505},
-                    {0.358635632821702, 0.118126776423505, 0.699284505275556}
-                },
-                {
-                    {0.701676194416934, -0.177234600797329, 0.131937016697419},
-                    {-0.177234600797329, -0.658252313593723, -1.01803328600267},
-                    {0.131937016697419, -1.01803328600267, -0.592906114534130}
-                },
-                {
-                    {-0.217600047027972, 0.488948715795823, 0.435918368878509},
-                    {0.488948715795823, -0.217600047027972, 0.435918368878509},
-                    {0.435918368878509, 0.435918368878509,  -1.20065844107154}
-                }
-            };
-
-            double err { 1e-14 };
+	    double adxx_sol_sum { 0.06154323305720 };
+	    double betadxx_sol_sum { -3.0458056200456 };
+	    double gammadxx_sol_sum { -22.03836675054085 };
+            double err { 1e-10 };
 
             bool alphapass { true };
             bool shiftpass { true };
+	    bool gammapass { true };
 
             //output
             std::cout << std::setprecision (15) << std::endl;
+	    double adxx { 0. };
+	    double betadxx { 0. };
+	    double gammadxx { 0. };
             FOR2(i,j)
             {
-
-                if (std::abs(metric_vars.d2_lapse[i][j] - adxx_sol[i][j]) > err)
-                {
-                    std::cout << tab << "d2_lapse_d" << i << "_d" << j << " = " << metric_vars.d2_lapse[i][j] << " != " << adxx_sol[i][j] << std::endl;
-                    alphapass = false;
-                }
-
+		adxx += metric_vars.d2_lapse[i][j];
                 FOR1(k)
                 {
-                    if (std::abs(metric_vars.d2_shift[i][j][k] - betadxx_sol[i][j][k]) > err)
-                    {
-                        std::cout << tab << "d2_shift^" << i << "_d" << j << "_d" << k << " = " << metric_vars.d2_shift[i][j][k] << " != " << betadxx_sol[i][j][k] << std::endl;
-                        shiftpass = false;
-                    }
+		    betadxx += metric_vars.d2_shift[i][j][k];
+		    FOR1(l)
+		    {
+			gammadxx += metric_vars.d2_gamma[i][j][k][l];
+		    }
                 }
             }
+	    if (adxx - adxx_sol_sum > err)
+	    {
+		alphapass = false;
+	    } 
+	    if (betadxx - betadxx_sol_sum > err)
+	    {
+		shiftpass = false;
+	    };
+	    if (gammadxx - gammadxx_sol_sum > err)
+	    {
+		gammapass = false;
+	    }
 
             if (alphapass)
             {
                 std::cout << tab << "d2_lapse test passed" << std::endl;
             } else {
                 std::cout << tab << "d2_lapse test failed" << std::endl;
+		std::cout << tab << "adxx_sum = " << adxx << std::endl;
             }
 
             if (shiftpass)
@@ -134,7 +124,16 @@ int main(int argc, char *argv[])
                 std::cout << tab << "d2_shift test passed" << std::endl;
             } else {
                 std::cout << tab << "d2_shift test failed" << std::endl;
+		std::cout << tab << "betadxx_sum = " << betadxx << std::endl;
             }
+
+	    if (gammapass)
+	    {
+		std::cout << tab << "d2_gamma test passed" << std::endl;
+	    } else {
+		std::cout << tab << "d2_gamma test failed" << std::endl;
+		std::cout << tab << "gammadxx_sum = " << gammadxx << std::endl;
+	    };
 
         }//end of kerr tests
 

@@ -12,7 +12,7 @@ This example sets the initial data to be a uniform magnetic field
 #include "Cell.hpp"
 #include "TensorAlgebra.hpp"
 #include "Tensor.hpp"
-#include "L2_simp.hpp"
+#include "L3.hpp"
 #include "ADMProcaVars.hpp"
 
 

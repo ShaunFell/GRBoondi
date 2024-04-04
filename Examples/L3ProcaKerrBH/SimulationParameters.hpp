@@ -24,6 +24,7 @@ class SimulationParameters : public ProcaSimulationParameters
             pp.load("kerr_mass", background_params.mass);
             pp.load("kerr_spin", background_params.spin);
             pp.load("kerr_center", background_params.center, center);
+            pp.load("kerr_need_2nd_derivs", background_params.need_2nd_derivs, false);
 
             //Initial EM field params
             pp.load("initial_amplitude", initial_conditions_params.init_amplitude);
@@ -36,9 +37,6 @@ class SimulationParameters : public ProcaSimulationParameters
 
             //constraint violation damping
             pp.load("z_damping", matter_params.vector_damping);
-
-            //self interaction coupling
-            pp.load("self_interaction", matter_params.self_interaction);
 
             //tagging criteria
             pp.load("activate_gnn_tagging", activate_gnn_tagging, false);
