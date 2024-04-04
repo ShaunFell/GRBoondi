@@ -69,8 +69,9 @@ class ProcaSimulationParameters : public ChomboParameters
         pp.load("sigma", sigma, 0.1);
 
         //excision 
-        pp.load("diagnostic_excision_width", diagnostic_excision_width, 0.97);
         pp.load("evolution_excision_width", evolution_excision_width, 0.97);
+        pp.load("diagnostic_inner_boundary", diagnostic_inner_boundary, 0.);
+        pp.load("diagnostic_outer_boundary", diagnostic_outer_boundary, 10000.);
 
         //tagging
         pp.load("initial_ratio", initial_ratio, 0.25);
@@ -104,10 +105,10 @@ class ProcaSimulationParameters : public ChomboParameters
     {
 
         check_parameter("grid_scaling", grid_scaling, grid_scaling>0, "Grid scaling parameter must be greater than zero");
-        check_parameter("evolution_excision_width", evolution_excision_width, evolution_excision_width <= diagnostic_excision_width, "Evolution excision width must be less than or equal to diagnostic excision width");
     }
 
-    double diagnostic_excision_width;
+    double diagnostic_inner_boundary;
+    double diagnostic_outer_boundary;
     double evolution_excision_width;
     double sigma;
     int nan_check;

@@ -164,9 +164,10 @@ sigma = 0.3 #the default
 ## percentage to excise within horizon
 # 1 = excise the entire region within r<r_s
 # 0.97 = excise r < 0.97*r_s
-diagnostic_excision_width = 1.0
-evolution_excision_width = 0.9
+evolution_excision_width = 0.855
 
+diagnostic_inner_boundary = 1.6
+diagnostic_outer_boundary = 46
 ################################################## Extraction
 ##################################################
 
