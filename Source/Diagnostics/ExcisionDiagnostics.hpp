@@ -26,14 +26,15 @@ class ExcisionDiagnostics
       const std::array<double, CH_SPACEDIM> m_center; //center of BH
         
       background_t m_background;
-      double m_buffer;
+      double m_inner_boundary;
+      double m_outer_boundary;
       
       using Vars = typename ADMProcaVars::MatterVars<double>;
 
   public:
 
         //constructor
-        ExcisionDiagnostics(background_t a_background, const double a_dx, const std::array<double, CH_SPACEDIM> a_center, double a_buffer=0.97): m_background{a_background}, m_dx{a_dx}, m_center{a_center}, m_buffer{a_buffer} {};
+        ExcisionDiagnostics(background_t a_background, const double a_dx, const std::array<double, CH_SPACEDIM> a_center, double a_inner_boundary, double a_outer_boundary): m_background{a_background}, m_dx{a_dx}, m_center{a_center}, m_inner_boundary{a_inner_boundary}, m_outer_boundary{a_outer_boundary} {};
 
         void compute(const Cell<double> current_cell) const
         {
@@ -43,8 +44,11 @@ class ExcisionDiagnostics
             //instance of matter variables
             Vars matter_vars;
 
+            double radius { coords.get_radius() };
+            bool exciseQ { radius < m_inner_boundary || radius > m_outer_boundary };
+
             // check if we're in horizon region, with a buffer
-            if (m_background.check_if_excised(coords, m_buffer) )
+            if ( exciseQ )
             {
                   //diagnostic variables have a corresponding enum, so we just pass the enum value to store_vars and iterate over all enums in DiagnosticVariables.hpp
                   //This allows for easy addition of new diagnostic variables
