@@ -10,6 +10,9 @@ L   =  ── ⋅ F  + α  ⋅ L
  gp     4               3    3
 
                             ^^ We calculate this term
+
+
+IMPORTANT: This code is still untested. Use at your own risk!
                        
 */
 
