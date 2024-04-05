@@ -26,7 +26,7 @@ public:
     virtual void initialData() override {
         
         //Initialize the initial conditions class
-        Initial_EM_Conditions initial_conditions(m_p.initial_conditions_params);
+        Initial_EM_Conditions initial_conditions(m_dx, m_p.initial_conditions_params, m_p.background_params);
 
         //Loop over box cells and assign initial EM field
         BoxLoops::loop(initial_conditions, m_state_new, m_state_new, INCLUDE_GHOST_CELLS);

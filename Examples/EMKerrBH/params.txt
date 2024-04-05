@@ -7,7 +7,7 @@
 verbosity = 1
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/test_EMFIeld"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_EMField_23310546"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -20,11 +20,11 @@ plot_prefix = "GeneralizedProcap_"
 checkpoint_interval = 100
 # set to 0 to turn off plot files (except at t=0 and t=stop_time)
 # set to -1 to never ever print plotfiles
-plot_interval = 1
+plot_interval = 20
 
 #plot variable names must match those in the DiagnosticVariables::DiagnosticVariables namespace
-num_plot_vars = 7
-plot_vars = Asquared rho rhoE gnn Z_out EMtrace EMsquared
+num_plot_vars = 4
+plot_vars = Z Asquared rhoE EMsquared
 
 # subpaths - specific directories for hdf5, pout, extraction data
 # (these are created at runtime)
@@ -43,48 +43,56 @@ print_progress_only_to_rank_0 = 0
 ################################################# constraint tagging
 ##################################################
 activate_ham_tagging = 0
+activate_extraction_tagging = 0
+activate_tagging_diagnostic = 0
 
 
 ################################################# AMR levels
 ##################################################
 
-max_level = 3
+#max level is the number of additional refinement levels. So max_level=4 --> 5 total levels
+max_level = 4
 
 #Since we use fixed grid tagging, we dont ever need to regrid
-regrid_interval = 0 0 0
+regrid_interval = 0 0 0 0
 
 ################################################## Initial Data parameters
 ##################################################
 
 # kerr params
 kerr_mass = 1.0
-kerr_spin = 0.9
+kerr_spin = 0.99
 kerr_spindir = 0 0 1
 
 # EM parameters
 initial_em_field = 0.1
 
+#constraint violation damping
+z_damping = 1.0
+
 ################################################## Grid parameters
 ##################################################
 
-N_full = 32
+N_full = 128
 L_full = 64
 
 # Max and min box sizes
-max_box_size = 16
-min_box_size = 16
+max_box_size = 32
+min_box_size = 32
+
+block_factor = 8
 
 #for fixed grid tagging
 tag_buffer_size = 0
 
 #grid spacing between refinement levels
-# grid_buffer_size = 16
+grid_buffer_size = 32
 # fill_ratio = 0.7
 # num_ghosts = 3
 # center = 256.0 256.0 256.0 # defaults to center of the grid
 
 #global scaling of refinement levels. Larger value equals larger refinement levels
-grid_scaling = 4
+grid_scaling = 1
 initial_ratio =0.25
 
 ################################################## Boundary Conditions parameters
@@ -109,7 +117,7 @@ lo_boundary = 3 3 2
 # 7     = odd xyz
 vars_parity            = 0 1 2 3 #proca field
                                     1 2 3 0 # electric field and z field
-vars_parity_diagnostic = 
+vars_parity_diagnostic = 0        #Asquared
                                             0 0 0  #rho rhoE rhoJ
                                             0        # chi
                                             0        # gnn
@@ -120,22 +128,19 @@ vars_parity_diagnostic =
 
 # if sommerfeld boundaries selected, must select
 # non zero asymptotic values
-num_nonzero_asymptotic_vars = 5
-nonzero_asymptotic_vars = chi h11 h22 h33 lapse
-nonzero_asymptotic_values = 1.0 1.0 1.0 1.0 1.0
+num_nonzero_asymptotic_vars = 0
 
 # if you are using extrapolatin BC:
 extrapolation_order = 1
-num_extrapolating_vars = 7
-extrapolating_vars = phi Evec1 Evec2 Evec3 Avec1 Avec2 Avec3
-
+num_extrapolating_vars = 8
+extrapolating_vars = phi Avec1 Avec2 Avec3 Evec1 Evec2 Evec3 Z
 
 
 ################################################## Evolution parameters
 #################################################
 
 # dt will be dx*dt_multiplier on each grid level
-dt_multiplier = 0.2
+dt_multiplier = 0.1
 stop_time = 10000.0
 # max_steps = 4
 
@@ -148,13 +153,16 @@ sigma = 0.3 #the default
 ################################################## Excision
 ##################################################
 
-inner_r = 1.1
-outer_r = 30
-
 ## percentage to excise within horizon
 # 1 = excise the entire region within r<r_s
 # 0.97 = excise r < 0.97*r_s
-excision_width=1 
+evolution_excision_width = 0.855
+
+diagnostic_inner_boundary = 1.6
+diagnostic_outer_boundary = 30
+
+num_diagnostic_excision_vars = 5
+diagnostic_excision_vars = rho rhoE rhoJ rhoLinMom sourceLinMom
 
 ################################################## Extraction
 ##################################################
@@ -163,16 +171,17 @@ activate_extraction = 1 # extraction of fluxes
 activate_integration = 1 # integration of densities
 
 num_extraction_radii = 2
-extraction_radii = 1.2 30
-extraction_levels = 0 0
+extraction_radii = 1.6 30
+extraction_levels = 1 1
 num_points_phi = 24
 num_points_theta = 37
 
 extraction_vars = Edot Jdot
-num_extraction_vars = 3
+num_extraction_vars = 2
 
 integration_vars = rhoE rhoJ EMsquared
 num_integration_vars = 3
 
 write_extraction = 0
 extraction_subpath = "extraction"
+
