@@ -73,8 +73,7 @@ class Initial_Proca_Conditions
             const data_t coords_z = coords.z;
 
             //Calculate conformal factor
-            data_t chi = TensorAlgebra::compute_determinant_sym(metric_vars.gamma);
-            chi = pow(chi, -1.0 / 3.0);
+            data_t detgamma = TensorAlgebra::compute_determinant_sym(metric_vars.gamma);
 
 
             // the Kerr Schild radius r
@@ -87,7 +86,7 @@ class Initial_Proca_Conditions
             data_t r0_BL { 1.0 / (m_matter_params.mass * alpha) };
 
             //set non-zero grid variables
-            mattervars.Avec[0] = m_params.init_amplitude * pow(chi, 3.) * exp(-radius / r0_BL);
+            mattervars.Avec[0] = m_params.init_amplitude * exp(-radius / r0_BL) / detgamma;
 
             //export to grid
             current_cell.store_vars(mattervars);
