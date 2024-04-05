@@ -24,17 +24,19 @@ class ExcisionDiagnostics
   protected:
       const double m_dx; //grid spacing
       const std::array<double, CH_SPACEDIM> m_center; //center of BH
-        
+      const std::vector<int> m_vars_to_excise;
+
       background_t m_background;
       double m_inner_boundary;
       double m_outer_boundary;
+
       
       using Vars = typename ADMProcaVars::MatterVars<double>;
 
   public:
 
         //constructor
-        ExcisionDiagnostics(background_t a_background, const double a_dx, const std::array<double, CH_SPACEDIM> a_center, double a_inner_boundary, double a_outer_boundary): m_background{a_background}, m_dx{a_dx}, m_center{a_center}, m_inner_boundary{a_inner_boundary}, m_outer_boundary{a_outer_boundary} {};
+        ExcisionDiagnostics(background_t a_background, const double a_dx, const std::array<double, CH_SPACEDIM> a_center, double a_inner_boundary, double a_outer_boundary, std::vector<int> a_vars_to_excise): m_background{a_background}, m_dx{a_dx}, m_center{a_center}, m_inner_boundary{a_inner_boundary}, m_outer_boundary{a_outer_boundary}, m_vars_to_excise{a_vars_to_excise} {};
 
         void compute(const Cell<double> current_cell) const
         {
@@ -50,9 +52,9 @@ class ExcisionDiagnostics
             // check if we're in horizon region, with a buffer
             if ( exciseQ )
             {
-                  //diagnostic variables have a corresponding enum, so we just pass the enum value to store_vars and iterate over all enums in DiagnosticVariables.hpp
-                  //This allows for easy addition of new diagnostic variables
-                  for ( int diag_var {0}; diag_var < NUM_DIAGNOSTIC_VARS; diag_var++)
+                  //diagnostic variables have a corresponding enum, so we just pass the enum value to store_vars and iterate over the user-specified variables
+                  //This allows for easy addition of new diagnostic variables we want to excise
+                  for ( int diag_var: m_vars_to_excise)
                   {
                       current_cell.store_vars(0.0, diag_var);
                   }

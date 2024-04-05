@@ -172,6 +172,9 @@ evolution_excision_width = 0.855
 diagnostic_inner_boundary = 1.6
 diagnostic_outer_boundary = 46
 
+num_diagnostic_excision_vars = 5
+diagnostic_excision_vars = rho rhoE rhoJ rhoLinMom sourceLinMom
+
 ################################################## Extraction
 ##################################################
 

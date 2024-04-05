@@ -88,6 +88,9 @@ class ProcaSimulationParameters : public ChomboParameters
         //load integration variables
         UserVariables::load_vars_to_vector(pp, "integration_vars", "num_integration_vars", integration_vars,num_integration_vars);
 
+        //load diagnostic variables to excise
+        UserVariables::load_vars_to_vector(pp, "diagnostic_excision_vars", "num_diagnostic_excision_vars", diagnostic_excision_vars,num_diagnostic_excision_vars);
+
         //boundary conditions
         boundary_params.read_params(pp);
         //symmetry factor
@@ -120,6 +123,9 @@ class ProcaSimulationParameters : public ChomboParameters
 
     int num_integration_vars;
     std::vector<std::pair<int, VariableType>> integration_vars;
+
+    int num_diagnostic_excision_vars{0};
+    std::vector<std::pair<int, VariableType>> diagnostic_excision_vars;
 
     bool activate_integration;
     bool activate_ham_tagging;

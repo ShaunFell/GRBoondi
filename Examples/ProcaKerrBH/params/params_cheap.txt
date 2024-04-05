@@ -7,14 +7,14 @@
 verbosity = 1
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23297885"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/test_NewExcision"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
 plot_prefix = "GeneralizedProcap_"
 
 #file to restart the simulation from
-restart_file = GeneralizedProca_002200.3d.hdf5
+#restart_file = GeneralizedProca_002200.3d.hdf5
 
 # HDF5files are written every dt = L/N*dt_multiplier*checkpoint_interval
 checkpoint_interval = 100
@@ -168,6 +168,9 @@ evolution_excision_width = 0.855
 
 diagnostic_inner_boundary = 1.6
 diagnostic_outer_boundary = 46
+
+num_diagnostic_excision_vars = 5
+diagnostic_excision_vars = rho rhoE rhoJ rhoLinMom sourceLinMom
 
 ################################################## Extraction
 ##################################################
