@@ -35,10 +35,10 @@ class DefaultG
             data_t A_squared { - vars.phi * vars.phi };
             FOR2(i,j)
             {
-                A_squared += vars.Avec[i] * vars.Avec[i] * gamma_UU[i][j];
+                A_squared += vars.Avec[i] * vars.Avec[j] * gamma_UU[i][j];
             }
 
-            g_fun =0.5 * m_params.mass * m_params.mass * A_squared;
+            g_fun = 0.5 * m_params.mass * m_params.mass * A_squared;
             g_prime = 0.5 * m_params.mass * m_params.mass; 
             g_prime2 = 0.;
         }

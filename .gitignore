@@ -28,4 +28,8 @@ ipo_out.optrpt
 *.code-workspace
 *.vscode
 
+PostProcessing/movies/*
+PostProcessing/plots/*
+
+
 Doxygen/html
