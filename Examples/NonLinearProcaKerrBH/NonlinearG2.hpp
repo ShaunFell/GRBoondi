@@ -36,7 +36,7 @@ class NonlinearG2
             data_t A_squared { - vars.phi * vars.phi };
             FOR2(i,j)
             {
-                A_squared += vars.Avec[i] * vars.Avec[i] * gamma_UU[i][j];
+                A_squared += vars.Avec[i] * vars.Avec[j] * gamma_UU[i][j];
             }
 
             data_t mass { m_params.mass };

@@ -44,13 +44,6 @@ void BaseProcaFieldLevel<background_t, proca_t>::prePlotLevel()
         m_state_new, m_state_diagnostics, EXCLUDE_GHOST_CELLS
         );
 
-    //excise the diagnostics within the excision zone
-    const std::vector<int> vars_to_excise= DiagnosticVariables::convert_pairs_to_enum(m_p.diagnostic_excision_vars);
-    ExcisionDiagnostics<proca_t,background_t> excisor(background_init, m_dx, m_p.center, m_p.diagnostic_inner_boundary, m_p.diagnostic_outer_boundary, vars_to_excise);
-
-    //excise within the excision zone
-    BoxLoops::loop(excisor,m_state_diagnostics, m_state_diagnostics, SKIP_GHOST_CELLS, disable_simd());
-
     // add any other computations from the user here
     additionalPrePlotLevel();
 

@@ -7,7 +7,7 @@
 verbosity = 1
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23310125"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_23320213"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -65,7 +65,7 @@ kerr_spin = 0.99
 kerr_spindir = 0 0 1
 
 # EM parameters
-initial_amplitude = 0.1
+initial_amplitude = -0.1
 
 #L2 lagrangian parameters
 L2_alpha = 1
@@ -143,7 +143,7 @@ vars_parity_diagnostic = 0        #Asquared
 num_nonzero_asymptotic_vars = 0
 
 # if you are using extrapolatin BC:
-extrapolation_order = 0
+extrapolation_order = 1
 num_extrapolating_vars = 0
 
 
@@ -152,7 +152,7 @@ num_extrapolating_vars = 0
 
 # dt will be dx*dt_multiplier on each grid level
 dt_multiplier = 0.2
-stop_time = 10000.0
+stop_time = 20000.0
 # max_steps = 4
 
 nan_check = 1
@@ -185,7 +185,7 @@ num_extraction_radii = 2
 extraction_radii = 1.6 46
 extraction_levels = 1 1
 num_points_phi = 24
-num_points_theta = 37
+num_points_theta = 36
 
 extraction_vars = Edot Jdot
 num_extraction_vars = 2
