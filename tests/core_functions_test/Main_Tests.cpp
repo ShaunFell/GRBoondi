@@ -2,6 +2,7 @@
 // background includes
 #include "KerrSchild.hpp"
 #include "ADMFixedBGVars.hpp"
+#include "KerrSchildFixedBG.hpp"
 
 //GRChombo includes
 #include "Cell.hpp"
@@ -35,7 +36,7 @@ int main(int argc, char *argv[])
         {
             std::cout << "\n\n KerrSchild test:" << std::endl;
 
-            double dx { 1.0 };
+            double dx { 1e-3 };
 
             //initialize an IntVect object
             IntVect intvect;
@@ -67,73 +68,59 @@ int main(int argc, char *argv[])
 
 
             //the real work
+            //init reference class
+            KerrSchildFixedBG::params_t ref_params = {kerr_params.mass, kerr_params.center, kerr_params.spin};
+            KerrSchildFixedBG kerr_ref (ref_params, dx);
 
-            //compute the second derivatives
-            kerr_init.compute_2nd_derivatives(metric_vars, coords);
-
-            //These solutions come directly from mathematica
-	    double adxx_sol_sum { 0.06154323305720 };
-	    double betadxx_sol_sum { -3.0458056200456 };
-	    double gammadxx_sol_sum { -22.03836675054085 };
-            double err { 1e-10 };
-
-            bool alphapass { true };
-            bool shiftpass { true };
-	    bool gammapass { true };
-
-            //output
-            std::cout << std::setprecision (15) << std::endl;
-	    double adxx { 0. };
-	    double betadxx { 0. };
-	    double gammadxx { 0. };
-            FOR2(i,j)
+            //Excision test
             {
-		adxx += metric_vars.d2_lapse[i][j];
-                FOR1(k)
+               //setup container objects for testing excision code
+                std::vector<double> ref_excision;
+                std::vector<double> my_excision;
+                IntVect excision_intvect(1.,1.,1.);
+
+                //First check BH params match
+                if (kerr_init.m_params.mass != kerr_ref.m_params.mass)
                 {
-		    betadxx += metric_vars.d2_shift[i][j][k];
-		    FOR1(l)
-		    {
-			gammadxx += metric_vars.d2_gamma[i][j][k][l];
-		    }
+                    std::cout << "Mass test failed" << std::endl;
                 }
-            }
-	    if (adxx - adxx_sol_sum > err)
-	    {
-		alphapass = false;
-	    } 
-	    if (betadxx - betadxx_sol_sum > err)
-	    {
-		shiftpass = false;
-	    };
-	    if (gammadxx - gammadxx_sol_sum > err)
-	    {
-		gammapass = false;
-	    }
+                if (kerr_init.m_params.spin != kerr_ref.m_params.spin)
+                {
+                    std::cout << "Spin test failed" << std::endl;
+                }
 
-            if (alphapass)
-            {
-                std::cout << tab << "d2_lapse test passed" << std::endl;
-            } else {
-                std::cout << tab << "d2_lapse test failed" << std::endl;
-		std::cout << tab << "adxx_sum = " << adxx << std::endl;
-            }
+                bool ExcisionPass { true };
+                double buffer {0.9554};
+                for (int i {0}; i<3/dx; i++)
+                {
+                    excision_intvect[0] = 1.0;
+                    excision_intvect[1] = 1.0;
+                    excision_intvect[2] += i;
 
-            if (shiftpass)
-            {
-                std::cout << tab << "d2_shift test passed" << std::endl;
-            } else {
-                std::cout << tab << "d2_shift test failed" << std::endl;
-		std::cout << tab << "betadxx_sum = " << betadxx << std::endl;
-            }
+                    Box box(IntVect(0,0,0), IntVect(8,8,8));
+                    FArrayBox fab_in(box,3);
+                    FArrayBox fab_out(box,3);
+                    auto box_pointers = BoxPointers{fab_in, fab_out};
+                    Cell<double> current_cell(excision_intvect, box_pointers);
+                    const Coordinates<double> coords(current_cell, dx, kerr_params.center);
+                    bool kerr_ref_excise_result { kerr_ref.excise(current_cell)<buffer };
+                    bool kerr_init_excise_result { kerr_init.check_if_excised(coords,buffer)  };
+                    if (kerr_ref_excise_result != kerr_init_excise_result)
+                    {
+                        
+                        std::cout << "Excision test failed" << std::endl;
+                        std::cout << "Coordinate location: " << coords << std::endl;
+                        std::cout << "kerr reference output: " << kerr_ref_excise_result << std::endl;
+                        std::cout << "kerr my output: " << kerr_init_excise_result << std::endl;
+                        ExcisionPass = false;
+                    }
 
-	    if (gammapass)
-	    {
-		std::cout << tab << "d2_gamma test passed" << std::endl;
-	    } else {
-		std::cout << tab << "d2_gamma test failed" << std::endl;
-		std::cout << tab << "gammadxx_sum = " << gammadxx << std::endl;
-	    };
+                }
+                std::cout << "Excision result: " << ExcisionPass << std::endl;
+            }
+            
+
+           
 
         }//end of kerr tests
 

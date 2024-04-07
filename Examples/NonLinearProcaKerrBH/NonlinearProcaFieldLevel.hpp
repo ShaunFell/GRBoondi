@@ -85,13 +85,11 @@ public:
             //Loop over the box cells and compute the constraint on the grid
             BoxLoops::loop(constraint, m_state_new, m_state_diagnostics, SKIP_GHOST_CELLS);
 
-            //Excise within horizon
-            // Note: we use diagnostic_excision_width, since we usually set this to outside the horizon,
-            // and this is the part we really care about
-            ExcisionDiagnostics<ProcaField, KerrSchild> excisor (kerr_schild, m_dx, m_p.center, m_p.diagnostic_excision_width);
+            const std::vector<int> vars_to_excise= DiagnosticVariables::convert_pairs_to_enum(m_p.diagnostic_excision_vars);
+            ExcisionDiagnostics<proca_t,background_t> excisor(background_init, m_dx, m_p.center, m_p.diagnostic_inner_boundary, m_p.diagnostic_outer_boundary,vars_to_excise);
 
-            //Loop over the box cells and excise within the horizon
-            BoxLoops::loop(excisor, m_state_diagnostics, m_state_diagnostics, SKIP_GHOST_CELLS, disable_simd()); //disable SIMD for this loop since excision doesnt use SIMD
+            //excise within the excision zone
+            BoxLoops::loop(excisor,m_state_diagnostics, m_state_diagnostics, SKIP_GHOST_CELLS, disable_simd());
         };
     }; //end of preTagCells method
 
