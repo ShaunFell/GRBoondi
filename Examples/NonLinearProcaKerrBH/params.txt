@@ -164,7 +164,6 @@ outer_r = 30
 ## percentage to excise within horizon
 # 1 = excise the entire region within r<r_s
 # 0.97 = excise r < 0.97*r_s
-diagnostic_excision_width = 1.0
 evolution_excision_width = 0.97
 
 ################################################## Extraction

@@ -49,7 +49,7 @@ class ProcaSquared
         
 
             data_t Asquared;
-            Asquared = -matter_vars.phi*matter_vars.phi;
+            Asquared = -matter_vars.phi * matter_vars.phi;
             FOR2(i,j)
             {
                 Asquared += gamma_UU[i][j] *matter_vars.Avec[i]*matter_vars.Avec[j];
