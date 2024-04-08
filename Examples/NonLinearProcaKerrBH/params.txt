@@ -4,10 +4,10 @@
 ################################################## Filesystem parameters
 
 
-verbosity = 1
+verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/GRMilijun_NonlinearProcaKerrBH_23284538"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/GRBoondi_NonlinearProcaKerrBH_23284538"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -20,7 +20,7 @@ plot_prefix = "GeneralizedProcap_"
 checkpoint_interval = 100
 # set to 0 to turn off plot files (except at t=0 and t=stop_time)
 # set to -1 to never ever print plotfiles
-plot_interval = 1
+plot_interval = 20
 
 #plot variable names must match those in the DiagnosticVariables::DiagnosticVariables namespace
 num_plot_vars = 7
@@ -63,7 +63,7 @@ kerr_spin = 0.99
 kerr_spindir = 0 0 1
 
 # EM parameters
-initial_amplitude = 0.1
+initial_amplitude = -0.1
 
 #L2 lagrangian parameters
 L2_alpha = 1
@@ -80,18 +80,20 @@ z_damping = 1.0
 ################################################## Grid parameters
 ##################################################
 
-N_full = 128
-L_full = 64
+N_full = 240
+L_full = 96
 
 # Max and min box sizes
-max_box_size = 16
-min_box_size = 16
+max_box_size = 40
+min_box_size = 40
+
+block_factor = 8
 
 #for fixed grid tagging
 tag_buffer_size = 0
 
 #grid spacing between refinement levels
-# grid_buffer_size = 32
+grid_buffer_size = 32
 # fill_ratio = 0.7
 # num_ghosts = 3
 # center = 256.0 256.0 256.0 # defaults to center of the grid
@@ -136,7 +138,7 @@ vars_parity_diagnostic = 0        #Asquared
 num_nonzero_asymptotic_vars = 0
 
 # if you are using extrapolatin BC:
-extrapolation_order = 0
+extrapolation_order = 1
 num_extrapolating_vars = 0
 
 
@@ -152,19 +154,22 @@ stop_time = 10000.0
 nan_check = 1
 
 # coefficient for KO numerical dissipation
-sigma = 0.4 #the default
+sigma = 0.3 #the default
 
 
 ################################################## Excision
 ##################################################
 
-inner_r = 1.141067359796659 #excision radius
-outer_r = 30
-
 ## percentage to excise within horizon
 # 1 = excise the entire region within r<r_s
 # 0.97 = excise r < 0.97*r_s
-evolution_excision_width = 0.97
+evolution_excision_width = 0.855
+
+diagnostic_inner_boundary = 1.6
+diagnostic_outer_boundary = 46
+
+num_diagnostic_excision_vars = 5
+diagnostic_excision_vars = rho rhoE rhoJ rhoLinMom sourceLinMom
 
 ################################################## Extraction
 ##################################################
@@ -173,7 +178,7 @@ activate_extraction = 1 # extraction of fluxes
 activate_integration = 1 # integration of densities
 
 num_extraction_radii = 2
-extraction_radii = 1.2 30
+extraction_radii = 1.6 46
 extraction_levels = 1 1
 num_points_phi = 24
 num_points_theta = 37
@@ -181,8 +186,8 @@ num_points_theta = 37
 extraction_vars = Edot Jdot
 num_extraction_vars = 2
 
-integration_vars = rhoE rhoJ EMsquared
-num_integration_vars = 3
+integration_vars = rho rhoE rhoJ EMsquared
+num_integration_vars = 4
 
 write_extraction = 0
 extraction_subpath = "extraction"

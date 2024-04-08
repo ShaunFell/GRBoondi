@@ -1,4 +1,4 @@
-/* GRMilijun 2024
+/* GRBoondi 2024
  */
 
 #ifndef FLUXEXTRACTION_HPP_
