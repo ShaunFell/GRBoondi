@@ -248,7 +248,6 @@ def setup_slice_plot(variableToPlot, plotbounds, setplotbounds) :
 	SetSaveWindowAttributes(SaveWindowAtts)
 	SaveWindow()
 
-
 def PlotFiles():
 	"""
 	Find all the plot files and return them as list of absolute path strings
