@@ -1,3 +1,20 @@
+/* GRBoondi 2024
+ * Please refer to LICENSE in GRBoondi's root directory.
+ */
+
+/*
+This class computes the various charges and fluxes most common to GRBoondi simulations
+Current calculated quantities:
+    - Conserved energy density
+    - Eulerian energy density
+    - Conserved angular momentum density (along z-axis)
+    - Flux of conserved energy density
+    - Flux of conserved angular momentum density
+    - Trace of energy-momentum tensor
+    - Square of energy-momentum tensor
+
+See https://arxiv.org/pdf/2104.13420.pdf for definition of conserved quantities
+*/
 #ifndef DIAGNOSTIC_H_INCLUDED
 #define DIAGNOSTIC_H_INCLUDED
 

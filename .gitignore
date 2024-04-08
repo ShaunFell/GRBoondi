@@ -31,5 +31,7 @@ ipo_out.optrpt
 PostProcessing/movies/*
 PostProcessing/plots/*
 
+.PrivateNotes.md
+
 
 Doxygen/html

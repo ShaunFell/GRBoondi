@@ -1,6 +1,9 @@
 /* GRChombo
  * Copyright 2012 The GRChombo collaboration.
  * Please refer to LICENSE in GRChombo's root directory.
+ *
+ * Modified by GRBoondi 2024
+ * Please refer to LICENSE in GRBoondi's root directory.
  */
 
 #ifndef KERRSCHILD_HPP_

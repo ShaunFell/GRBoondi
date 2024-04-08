@@ -1,3 +1,7 @@
+/* GRBoondi 2024
+ * Please refer to LICENSE in GRBoondi's root directory.
+ */
+
 #if !defined(L2_SIMP_H_INCLUDED)
 #error "This file should only be included through BaseProcaFieldLevel.hpp"
 #endif
@@ -102,7 +106,7 @@ void L2<G2>::matter_rhs_modification(
                                   2 * metric_vars.lapse * dVddA / gnn * 2 * matter_vars.phi *
                                       matter_vars.Avec[i] * d1.phi[j]);
             
-            //Modify electric part
+    //Modify electric part
             total_rhs.Evec[i] +=  2 * metric_vars.lapse * dVdA * gamma_UU[i][j] * matter_vars.Avec[j];
 
             FOR2(k, l)

@@ -1,3 +1,18 @@
+/* GRBoondi 2024
+ * Please refer to LICENSE in GRBoondi's root directory.
+ */
+ 
+ /* 
+    Base class for the Proca field. Must be inherited by the Proca field class defined by the user
+
+ NOTE:
+        We use the method of 'Curiously Recurring Template Pattern' to allow arbitrary templated modifications
+        to the theory
+        https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern
+
+        This allows us to use virtual functions that can be specified by derived classes.
+        e.g. see ProcaKerrBH Example
+*/
 #ifndef BASEPROCAFIELD_H_INCLUDED
 #define BASEPROCAFIELD_H_INCLUDED
 
@@ -32,16 +47,6 @@ class BaseProcaField
 
         template <class data_t>
         using Diff2MatterVars = ADMProcaVars::Diff2MatterVars<data_t>;
-
-            
-        /* NOTE:
-        We use the method of 'Curiously Recurring Template Pattern' to allow arbitrary templated modifications
-        to the theory
-        https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern
-
-        This allows us to use virtual functions that can be specified by derived classes.
-        e.g. see ProcaKerrBH Example
-        */
 
         template <class data_t, template <typename> class vars_t, template <typename> class diff2_vars_t>
         emtensor_t<data_t> compute_emtensor(

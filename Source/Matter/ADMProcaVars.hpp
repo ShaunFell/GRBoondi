@@ -1,3 +1,6 @@
+/* GRBoondi 2024
+ * Please refer to LICENSE in GRBoondi's root directory.
+ */
 
 #ifndef ADMPROCAVARS_HPP_
 #define ADMPROCAVARS_HPP_

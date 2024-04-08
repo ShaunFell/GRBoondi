@@ -1,4 +1,10 @@
+/* GRBoondi 2024
+ * Please refer to LICENSE in GRBoondi's root directory.
+ */
 
+/*
+    Implementation file for BaseProcaFieldLevel.hpp
+*/
 #if !defined(BASEPROCAFIELDLEVEL_H_INCLUDED)
 #error "This file should only be included through BaseProcaFieldLevel.hpp"
 #endif
@@ -26,10 +32,14 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificAdvance()
 template <class background_t, class proca_t>
 void BaseProcaFieldLevel<background_t, proca_t>::prePlotLevel()
 {
-   
+   //Fill a ghosts cells. Important if we want to calculate derivatives
     fillAllGhosts(); 
+
+    //initialize background and Proca classes
     background_t background_init { m_p.background_params, m_dx };
     proca_t proca_field(background_init, m_p.matter_params);
+
+    //diagnostic class to calculated various quantities
     ProcaSquared<background_t> Asquared(m_dx, m_p.center, background_init);
     ChargesFluxes<proca_t, background_t> EM(background_init,m_dx, proca_field, m_p.center);
     DampingFieldDiagnostic z_field_diagnostic{};
@@ -44,6 +54,8 @@ void BaseProcaFieldLevel<background_t, proca_t>::prePlotLevel()
         m_state_new, m_state_diagnostics, EXCLUDE_GHOST_CELLS
         );
 
+    //Excise diagnostics within the excision zone.
+    //Variables to excise defined by user
     const std::vector<int> vars_to_excise= DiagnosticVariables::convert_pairs_to_enum(m_p.diagnostic_excision_vars);
     ExcisionDiagnostics<proca_t,background_t> diag_excisor(background_init, m_dx, m_p.center, m_p.diagnostic_inner_boundary, m_p.diagnostic_outer_boundary,vars_to_excise);
 
@@ -63,7 +75,7 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificEvalRHS(GRLevelData &a_
                                 const double a_time)
 {
 
-    //Calculate right hand side with matter_t = ProcaField
+    //Calculate right hand side
     background_t background_init { m_p.background_params, m_dx };
     proca_t proca_field(background_init, m_p.matter_params);
     
@@ -86,6 +98,7 @@ void BaseProcaFieldLevel<background_t, proca_t>::computeTaggingCriterion(FArrayB
 {
     CH_TIME("BaseProcaFieldLevel::computeTaggingCriterion");
 
+    //Basic tagging class
     TaggingCriterion tagger(m_dx, m_level, m_p.grid_scaling*m_p.L, m_p.initial_ratio, m_p.center, m_p.extraction_params, m_p.activate_extraction, m_p.activate_ham_tagging, m_p.activate_extraction_tagging);
 
     BoxLoops::loop(tagger, current_state_diagnostics, tagging_criterion);

@@ -1,3 +1,7 @@
+/* GRBoondi 2024
+ * Please refer to LICENSE in GRBoondi's root directory.
+ */
+
 /*
 This tagging criterion is a generic criterion that uses a fixed grid, but can also deal with flux extraction in the outer region of the simulation
 */
@@ -37,6 +41,8 @@ class TaggingCriterion
                                   {
                                   };
 
+    //Fixed grid criteria. Grid levels are determined by their distance from the user-defined center of the grid.
+    //Overall scaling and initial scaling are determined by the user
     template <class data_t> 
     data_t FixedGridTagging(Cell<data_t> current_cell) const
     {
@@ -54,6 +60,7 @@ class TaggingCriterion
         return criterion;
     }
 
+    //Extraction tagging. We want to have a fine enough resolution at the extraction surface
     template <class data_t>
     data_t ExtractionTagging(Cell<data_t> current_cell) const
     {
@@ -80,7 +87,8 @@ class TaggingCriterion
     }
 
 
-
+    //The compute function called by BoxLoops
+    //Computes each criteria, then combines them into a single criterion and stores to grid
     template <class data_t> 
     void compute(Cell<data_t> current_cell) const
     {
@@ -92,6 +100,7 @@ class TaggingCriterion
         //then run Extraction tagging
         data_t ExtractionTaggingCriterion { ExtractionTagging(current_cell) };
 
+        //Combine criteria
         data_t criterion { simd_max(FixedGridsTaggingCriterion, ExtractionTaggingCriterion) };
 
         // Write back into the flattened Chombo box. If Diagnostic is turned on, then write to c_Tagging_Diagnostic
