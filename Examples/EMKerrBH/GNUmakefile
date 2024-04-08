@@ -7,7 +7,7 @@
 # CHOMBO_HOME := Please set the CHOMBO_HOME locally (e.g. export CHOMBO_HOME=... in bash)
 # GRCHOMBO_SOURCE := Set locally (e.g. export GRCHOMBO_SOURCE=path/to/GRChombo/Source in bash)
 
-GRMILIJUN_SOURCE = ../../Source
+GRBoondi_SOURCE = ../../Source
 
 ebase := Main_EMKerrBH
 
@@ -19,9 +19,9 @@ src_dirs := $(GRCHOMBO_SOURCE)/utils \
             $(GRCHOMBO_SOURCE)/TaggingCriteria  \
             $(GRCHOMBO_SOURCE)/GRChomboCore  \
             $(GRCHOMBO_SOURCE)/AMRInterpolator  \
-            $(GRMILIJUN_SOURCE)/Background  \
-            $(GRMILIJUN_SOURCE)/Matter \
-			$(GRMILIJUN_SOURCE)/Diagnostics \
-			$(GRMILIJUN_SOURCE)/Core
+            $(GRBoondi_SOURCE)/Background  \
+            $(GRBoondi_SOURCE)/Matter \
+			$(GRBoondi_SOURCE)/Diagnostics \
+			$(GRBoondi_SOURCE)/Core
 
 include $(CHOMBO_HOME)/mk/Make.test

@@ -43,6 +43,12 @@ class SimulationParameters : public ProcaSimulationParameters
             //tagging criteria
             pp.load("activate_gnn_tagging", activate_gnn_tagging, false);
 
+            //relaxation time of matter field into superradiant growth
+            pp.load("relaxation_time", relaxation_time, 0.0);
+
+            //turn on black hole evolution
+            pp.load("bh_evolution", evolve_bh, false);
+
 
         }
 
@@ -57,6 +63,9 @@ class SimulationParameters : public ProcaSimulationParameters
 
         //tagging criteria
         bool activate_gnn_tagging;
+
+        double relaxation_time;
+        bool evolve_bh;
 
 };
 

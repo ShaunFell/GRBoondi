@@ -1,13 +1,13 @@
-## ProcaKerrBH
+### ProcaKerrBH
 ###  params_high_sym.txt
 
 ################################################## Filesystem parameters
 
 
-verbosity = 0
+verbosity = 1
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/rep_dev_GRBoondi_ProcaKerrBH_23328979"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRBoondi_ProcaKerrBH_23328810"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -195,3 +195,4 @@ num_integration_vars = 4
 
 write_extraction = 0
 extraction_subpath = "extraction"
+

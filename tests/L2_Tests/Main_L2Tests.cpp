@@ -37,7 +37,7 @@
 int main(int argc, char *argv[])
 {
     std::cout << std::string(10, '#') << std::endl;
-    std::cout << "Running GRMilijun tests" << std::endl;
+    std::cout << "Running GRBoondi tests" << std::endl;
     std::cout << "current tests: L2 tests" << std::endl;
     std::cout << std::string(10, '#') << std::endl;
 
