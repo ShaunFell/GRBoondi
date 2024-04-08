@@ -26,7 +26,10 @@ time.table.*
 ipo_out.optrpt
 
 *.code-workspace
+GRBoondi.code-workspace
 *.vscode
+
+.wiki/
 
 PostProcessing/movies/*
 PostProcessing/plots/*
