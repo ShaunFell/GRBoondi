@@ -1,3 +1,7 @@
+/* GRBoondi 2024
+ * Please refer to LICENSE in GRBoondi's root directory.
+ */
+
 /*
 implementation file for ProcaField.hpp
 */

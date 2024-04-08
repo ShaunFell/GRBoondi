@@ -1,6 +1,5 @@
-/* GRChombo
- * Copyright 2012 The GRChombo collaboration.
- * Please refer to LICENSE in GRChombo's root directory.
+/* GRBoondi 2024
+ * Please refer to LICENSE in GRBoondi's root directory.
  */
 
 #ifndef EXCISIONDIAGNOSTICS_HPP_
@@ -13,11 +12,12 @@
 #include "VarsTools.hpp"
 #include "simd.hpp"
 
-#include "DiagnosticVariables.hpp" //we need NUM_DIAGNOSTIC_VARS
+#include "DiagnosticVariables.hpp"
 #include "ADMProcaVars.hpp"
 
-//! Does excision for fixed BG BH solutions
-//! Note that it is does not using simd so one must set disable_simd()
+// Performs excision for a fixed BG
+// Zone of excision is defined by m_inner_boundary and m_outer_boundary (user-specified)
+// Note: This doesn't use simd, so must pass disable_simd() in BoxLoops::loop
 template <class matter_t, class background_t>
 class ExcisionDiagnostics
 {

@@ -1,6 +1,9 @@
 /* GRChombo
  * Copyright 2012 The GRChombo collaboration.
  * Please refer to LICENSE in GRChombo's root directory.
+ *
+ * Modified by GRBoondi 2024
+ * Please refer to LICENSE in GRBoondi's root directory.
  */
 
 #ifndef ADMFIXEDBGVARS_HPP_
@@ -37,6 +40,7 @@ template <class data_t> struct Vars
     Tensor<1, Tensor<1,data_t>> d1_shift;
     Tensor<2, Tensor<1, data_t>> d1_gamma;
 
+    // Optional second derivatives of the vars
     Tensor<2, data_t> d2_lapse;
     Tensor<1, Tensor<2,data_t>> d2_shift;
     Tensor<2, Tensor<2,data_t>> d2_gamma;

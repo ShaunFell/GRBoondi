@@ -1,6 +1,6 @@
-/* GRBoondi 2024
-*/
-
+/* GRBoondi
+ * Please refer to LICENSE in GRBoondi's root directory.
+ */
 #ifndef DATACONTAINER_HPP_INCLUDED
 #define DATACONTAINER_HPP_INCLUDED
 

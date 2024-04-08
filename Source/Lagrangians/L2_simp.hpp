@@ -1,36 +1,31 @@
+/* GRBoondi 2024
+ * Please refer to LICENSE in GRBoondi's root directory.
+ */
+
 #ifndef L2_SIMP_H_INCLUDED
 #define L2_SIMP_H_INCLUDED
 
 
 /*
-This file calculates to the modifications to the equations of motion and energy momentum tensor coming from the second generalized Proca lagrangian
+This class calculates to the modifications to the equations of motion and energy momentum tensor coming from the second generalized Proca lagrangian, 
+which is just an arbitrary function.
 
           -1      2          
 L   =  ── ⋅ F  + α  ⋅ L 
  gp     4               2    2
 
                             ^^ We calculate this term
-                       
+
+NOTE: we assume G2 to be purely a function of the square of the Proca field, and not of the field strength tensor. The full theory is a function of both, however
+the resulting equations are extremely unwieldy. Since we add virtual functions to the ProcaField class which can account for arbitrary modifications to the field equations and energy momentum 
+tensor, the user can freely specify any modifications they want.               
 */
-
-
 
 #include "ADMFixedBGVars.hpp"
 #include "ADMProcaVars.hpp"
 #include "BaseProcaField.hpp"
 #include "TensorAlgebra.hpp"
 #include "DefaultG.hpp"
-
-/*
-This class calculates to the modifications to the equations of motion and energy momentum tensor coming from the second generalized Proca lagrangian, 
-which is just an arbitrary function.
-
-NOTE: we assume G2 to be purely a function of the square of the Proca field, and not of the field strength tensor. The full theory is a function of both, however
-we simplify things. Since we add virtual functions to the ProcaField class which can account for arbitrary modifications to the field equations and energy momentum 
-tensor, the user can freely specify any modifications they want.
-
-NOTE: This assumes the theory is L = -1/4 F^2 + alpha2 * L_2 with no other modifications due to higher lagrangians
-*/
 
 
 template <class G2 = DefaultG>

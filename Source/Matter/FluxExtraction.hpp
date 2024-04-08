@@ -1,19 +1,17 @@
 /* GRBoondi 2024
+ * Please refer to LICENSE in GRBoondi's root directory.
  */
 
+/*
+    Class integrates quantities over user-defined spheres
+*/
 #ifndef FLUXEXTRACTION_HPP_
 #define FLUXEXTRACTION_HPP_
 
 #include "SphericalExtraction.hpp"
 #include "DiagnosticVariables.hpp"
 #include "DataContainer.hpp"
-//!  The class allows extraction of the values of the flux components on
-//!  spheroidal shells at specified radii, and integration over those shells
-/*!
-   The class allows the user to extract data from the grid for the flux
-   components over spheroidal shells at specified radii. The values may then be
-   written to an output file, or integrated across the surfaces.
-*/
+
 class FluxExtraction : public SphericalExtraction
 {
     using Container = DataContainer<std::vector<double>>;

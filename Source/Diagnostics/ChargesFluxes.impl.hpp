@@ -1,4 +1,6 @@
-
+/* GRBoondi 2024
+ * Please refer to LICENSE in GRBoondi's root directory.
+ */
 
 #if !defined(DIAGNOSTIC_H_INCLUDED)
 #error "This file should only be included through ChargesFluxes.hpp"

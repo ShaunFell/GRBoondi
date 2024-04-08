@@ -1,3 +1,7 @@
+/* GRBoondi
+ * Please refer to LICENSE in GRBoondis's root directory.
+ */
+ 
 #ifndef DEFAULTBACKGROUND_HPP_
 #define DEFAULTBACKGROUND_HPP_
 

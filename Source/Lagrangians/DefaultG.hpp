@@ -1,3 +1,12 @@
+/* GRBoondi 2024
+ * Please refer to LICENSE in GRBoondi's root directory.
+ */
+
+ /*
+    This class is the default value for the G functions in generalized Proca
+    G(X^2) = A^{m}A_{m}
+ */
+
 #ifndef DEFAULT_G_HPP
 #define DEFAULT_G_HPP
 

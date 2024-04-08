@@ -1,3 +1,11 @@
+/* GRBoondi 2024
+ * Please refer to LICENSE in GRBoondi's root directory.
+ */
+
+ /*
+    Base level class for the Proca field.
+ */
+
 #ifndef BASEPROCAFIELDLEVEL_H_INCLUDED
 #define BASEPROCAFIELDLEVEL_H_INCLUDED
 
@@ -47,10 +55,9 @@ class BaseProcaFieldLevel : public GRAMRLevel
 {
 
     friend class DefaultLevelFactory<BaseProcaFieldLevel<background_t, proca_t>>;
-    //inherit constructors from GRAMRLevel;
-    /* using GRAMRLevel::GRAMRLevel; */
 
     //Define own constructor with non-const SimulationParameters
+    //Allows for dynamical modifications of parameters during execution
     public:
     BaseProcaFieldLevel(GRAMR &gr_amr, SimulationParameters &a_p, int a_verbosity) : GRAMRLevel(gr_amr, a_p, a_verbosity)
     {
@@ -73,7 +80,7 @@ class BaseProcaFieldLevel : public GRAMRLevel
 #endif
 
     virtual void specificEvalRHS(GRLevelData &a_soln, GRLevelData &a_rhs,
-                                    const double a_time); //RHS routines used at each RK4 step
+                                    const double a_time); //RHS routines used at each RK4 step. e.g. calculate the time derivatives
     
 
     virtual void preTagCells() override {}; //things to do before tagging cells (e.g. filling ghosts)
