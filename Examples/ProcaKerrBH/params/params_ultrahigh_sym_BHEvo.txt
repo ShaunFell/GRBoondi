@@ -1,5 +1,5 @@
-### EMKerrBH
-###  params.txt
+## ProcaKerrBH
+###  params_high_sym.txt
 
 ################################################## Filesystem parameters
 
@@ -7,7 +7,7 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/GRBoondi_ProcaKerrBH_23287046"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_ultrares_GRMilijun_ProcaKerrBH_BHEvo_23352516"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -50,10 +50,11 @@ activate_tagging_diagnostic = 0
 ################################################# AMR levels
 ##################################################
 
-max_level = 7
+#max level is the number of additional refinement levels. So max_level=4 --> 5 total levels
+max_level = 4
 
 #Since we use fixed grid tagging, we dont ever need to regrid
-regrid_interval = 0 0 0 0 0 0 0
+regrid_interval = 0 0 0 0
 
 ################################################## Initial Data parameters
 ##################################################
@@ -64,7 +65,7 @@ kerr_spin = 0.99
 kerr_spindir = 0 0 1
 
 # EM parameters
-initial_amplitude = 0.1
+initial_amplitude = -0.1
 
 #L2 lagrangian parameters
 L2_alpha = 1
@@ -75,15 +76,23 @@ proca_mass = 0.4
 #constraint violation damping
 z_damping = 1.0
 
+#relaxation time of matter fields
+relaxation_time = 500
+
+#activate evolution of black hole, due to flux of matter across horizon
+bh_evolution = 1
+
 ################################################## Grid parameters
 ##################################################
 
-N_full = 128
-L_full = 256
+N_full = 320
+L_full = 96
 
 # Max and min box sizes
 max_box_size = 32
 min_box_size = 32
+
+block_factor = 8
 
 #for fixed grid tagging
 tag_buffer_size = 0
@@ -134,9 +143,8 @@ vars_parity_diagnostic = 0        #Asquared
 num_nonzero_asymptotic_vars = 0
 
 # if you are using extrapolatin BC:
-extrapolation_order = 0
+extrapolation_order = 1
 num_extrapolating_vars = 0
-
 
 
 ################################################## Evolution parameters
@@ -156,13 +164,16 @@ sigma = 0.3 #the default
 ################################################## Excision
 ##################################################
 
-inner_r = 1.141067359796659 #excision radius
-outer_r = 30
-
 ## percentage to excise within horizon
 # 1 = excise the entire region within r<r_s
 # 0.97 = excise r < 0.97*r_s
-evolution_excision_width = 0.9
+evolution_excision_width = 0.855
+
+diagnostic_inner_boundary = 1.6
+diagnostic_outer_boundary = 46
+
+num_diagnostic_excision_vars = 5
+diagnostic_excision_vars = rho rhoE rhoJ rhoLinMom sourceLinMom
 
 ################################################## Extraction
 ##################################################
@@ -171,7 +182,7 @@ activate_extraction = 1 # extraction of fluxes
 activate_integration = 1 # integration of densities
 
 num_extraction_radii = 2
-extraction_radii = 1.6 100
+extraction_radii = 1.6 46
 extraction_levels = 1 1
 num_points_phi = 24
 num_points_theta = 37
@@ -179,8 +190,8 @@ num_points_theta = 37
 extraction_vars = Edot Jdot
 num_extraction_vars = 2
 
-integration_vars = rhoE rhoJ EMsquared
-num_integration_vars = 3
+integration_vars = rho rhoE rhoJ EMsquared
+num_integration_vars = 4
 
 write_extraction = 0
 extraction_subpath = "extraction"

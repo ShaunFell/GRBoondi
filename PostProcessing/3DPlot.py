@@ -4,7 +4,7 @@
 ## NOTE: you will need ffmpeg installed to make the movie
 #
 
-import glob, os, sys, configparser
+import glob, os, sys, configparser, re
 import numpy as np
 
 ## Load config file
@@ -31,7 +31,6 @@ def verbPrint(*objects):
 
 verbPrint("Verbosity: ", config["Header"].getint("verbosity",0))
 
-
 def setup_engine():
 	"""
 	Create the engine  for plotting
@@ -42,23 +41,43 @@ def setup_engine():
 	if useparallel:
 		host = config["EngineConfig"].get("host", "localhost")
 		print("Running in parallel on host: ", host)
-	
+
+		#Parse config options for engine
 		num_procs = config["EngineConfig"].get("number_processes", 1)
 		num_nodes = config["EngineConfig"].get("number_nodes", 1)
 		partition_name = config["EngineConfig"].get("partition")
 		job_cmd = config["EngineConfig"].get("job_cmd", "srun")
 		time_limit = config["EngineConfig"].get("time_limit", "01:00:00")
 		job_name = config["EngineConfig"].get("job_name", "3DPlot")
-		add_sub_args = config["EngineConfig"].get("additional_sub_args", "")
+		add_sub_args = config["EngineConfig"].get("additional_launch_args", "")
+		use_gpus = config["EngineConfig"].getboolean("use_gpus", 0)
+		ngpus_per_node = config["EngineConfig"].get("ngpus_per_node", "1")
 
+		#create argument tuple
 		arg = ("-l", job_cmd, "-n", job_name, "-p", partition_name, "-np", num_procs, "-nn", num_nodes, "-t", time_limit, "-la", add_sub_args)
+
+		#if gpus requested, add appropriate arguments to list
+		if use_gpus:
+			slurm_gpu_submission = "--gres=gpu:{0}".format(ngpus_per_node)
+			add_sub_args += " {0}".format(slurm_gpu_submission)
+			arg = arg[:-2] + ("-la", add_sub_args,)
+			arg = arg + ("-hw_accel",)
+			arg = arg + ("-n-gpus-per-node", ngpus_per_node,)
+		
 
 		#Submit the job
 		OpenComputeEngine(host, arg)
 
-def setup_slice_plot(variableToPlot, plotbounds, setplotbounds) :
+
+
+def setup_slice_plot(variableToPlot, plotbounds, setplotbounds):
+	"""
+	This is where the real magic happens. Create all the data for the plot
+	"""
 	# annotation settings
 	AnnotationAtts = AnnotationAttributes()
+
+    ## Grab annotation settings from config file, with defaults
 	axes3dvisible = config["AnnotationConfig"].getint('axes3Dvisible', 1)
 	verbPrint("Axes3d visible: ", str(axes3dvisible))
 	userinfoflag = config["AnnotationConfig"].getint('userInfoFlag', 0)
@@ -80,7 +99,7 @@ def setup_slice_plot(variableToPlot, plotbounds, setplotbounds) :
 	triadflag = config["AnnotationConfig"].getint('triadFlag', 0)
 	verbPrint("triadFlag: " , str(triadflag))
 
-
+	## Set the annotation attributes
 	AnnotationAtts.axes3D.visible = axes3dvisible
 	AnnotationAtts.userInfoFlag = userinfoflag
 	AnnotationAtts.databaseInfoFlag = databaseinfoflag
@@ -92,200 +111,127 @@ def setup_slice_plot(variableToPlot, plotbounds, setplotbounds) :
 	AnnotationAtts.axes3D.bboxFlag = bboxflag
 	AnnotationAtts.axes3D.triadFlag = triadflag
 	SetAnnotationAttributes(AnnotationAtts)
+
+
+
+	#Add a volume plot
+
+	AddPlot("Volume", variableToPlot,1,1)
+	VolumeAtts = VolumeAttributes()
+	plotscaling = config["VolumeConfig"].get("plotscaling", fallback = "Linear").title()
+	verbPrint("plot scaling: ",  plotscaling)
+	VolumeAtts.scaling = getattr(VolumeAtts, plotscaling) #Get the plot scaling attribute
+
+	VolumeAtts.lightingFlag = config["VolumeConfig"].getboolean('lightingFlag', 1)
+	VolumeAtts.legendFlag =   config["VolumeConfig"].getboolean('legendFlag', 1)
+	VolumeAtts.opacityAttenuation = config["VolumeConfig"].getint('opacityAttenuation', 1)
+	opacitymode = config["VolumeConfig"].get("opacityMode", fallback = "freeform").title()
+	verbPrint("opacityMode: ",  opacitymode)
+	VolumeAtts.opacityMode  = getattr(VolumeAtts, opacitymode+"Mode") #get the opacity mode attribute
 	
-	# save settings
-	InvertBackgroundColor()
-	"""saveAtts = SaveWindowAttributes()
-	saveformat = config["Output"].get("fileform", fallback = "png").upper()
+	# add opacity scaling for variable data
+	## set domain of width 256 and height 256-1
+	domain = np.linspace(0,255,256) 
+	#create the opacity using the piecewise function
+	low = 255*config["VolumeConfig"].getfloat("ramp_min", 0)
+	high = 255*config["VolumeConfig"].getfloat("ramp_max", 1)
+	# add opacity ramp to the volume plot
+	opacityramp =  tuple(np.piecewise(domain, [domain<low, ((domain>=low) & (domain<=high)), domain>high], [0, lambda x: 255*(x - low)/(high-low), 255]))
+	verbPrint("opacity ramp: ",  opacityramp)
+	VolumeAtts.freeformOpacity = opacityramp #set the tuple as the opacity ramp
 
-	saveAtts.format = getattr(saveAtts, saveformat)
-	saveAtts.resConstraint = saveAtts.NoConstraint
-	saveAtts.width = 1280
-	saveAtts.height = 620
-	SetSaveWindowAttributes(saveAtts) 
-	"""
-	
-	
-	# add pseudocolour plot
-	AddPlot("Pseudocolor", variableToPlot, 1, 1)
-	PseudocolorAtts = PseudocolorAttributes()
-	plotscaling = config["PlotConfig"].get("plotscaling", fallback = "Linear").lower()
-	if plotscaling == "linear":
-		PseudocolorAtts.scaling = PseudocolorAtts.Linear
-	elif plotscaling == "log":
-		PseudocolorAtts.scaling = PseudocolorAtts.Log
-	elif plotscaling == "skew":
-		PseudocolorAtts.scaling = PseudocolorAtts.Skew
-	else:
-		print("Unknown plot scaling: " + plotscaling, "\n setting to default: linear")
-		PseudocolorAtts.scaling = PseudocolorAtts.Linear
+	VolumeAtts.useColorVarMin = config["VolumeConfig"].getboolean('useColorVarMin', 0)
+	VolumeAtts.colorVarMin = config["VolumeConfig"].getfloat('colorVarMin', 0)
+	VolumeAtts.useColorVarMax = config["VolumeConfig"].getboolean('useColorVarMax', 0)
+	VolumeAtts.colorVarMax = config["VolumeConfig"].getfloat('colorVarMax', 0)
+	VolumeAtts.useOpacityVarMin = config["VolumeConfig"].getboolean('useOpacityVarMin', 0)
+	VolumeAtts.opacityVarMin = config["VolumeConfig"].getfloat('opacityVarMin', 0)
+	VolumeAtts.useOpacityVarMax = config["VolumeConfig"].getboolean('useOpacityVarMax', 0)
+	VolumeAtts.opacityVarMax = config["VolumeConfig"].getfloat('opacityVarMax', 0)
 
-	PseudocolorAtts.skewFactor = 1
-     # limitsMode =  OriginalData, CurrentPlot
-	PseudocolorAtts.limitsMode = PseudocolorAtts.OriginalData
-	verbPrint("Setting plot bounds: ", setplotbounds)
-	verbPrint("Plot Bounds lower: ", plotbounds[0], " upper: ", plotbounds[1])
-	PseudocolorAtts.minFlag = setplotbounds
-	PseudocolorAtts.min = plotbounds[0]
-	PseudocolorAtts.maxFlag = setplotbounds
-	PseudocolorAtts.max = plotbounds[1]
-	PseudocolorAtts.colorTableName = config["PlotConfig"].get("colortable", fallback = "viridis") #Color table name
-	PseudocolorAtts.invertColorTable = config["PlotConfig"].getint("invert_color_table", fallback = 0) #Invert the color scale
-     # opacityType = ColorTable, FullyOpaque, Constant, Ramp, VariableRange
-	PseudocolorAtts.opacityType = PseudocolorAtts.FullyOpaque 
-	PseudocolorAtts.smoothingLevel = 0
-     # centering = Natural, Nodal, Zonal
-	centering = config["PlotConfig"].get("centering", fallback = "Natural")
-	if centering == "Natural":
-		PseudocolorAtts.centering = PseudocolorAtts.Natural
-	elif centering == "Nodal":
-		PseudocolorAtts.centering = PseudocolorAtts.Nodal
-	elif centering == "Zonal":
-		PseudocolorAtts.centering = PseudocolorAtts.Zonal
+	rendertype = config["VolumeConfig"].get("rendererType", fallback = "default").title()
+	if rendertype == "Raycasting": rendertype = "RayCasting" 
+	if rendertype == "Raycastingintegration": rendertype = "RayCastingIntegration"
+	if rendertype == "Raycastingslivr": rendertype = "RayCastingSLIVR" 
+	if rendertype == "Raycastingospray": rendertype = "RayCastingOSPRay" 
+	verbPrint("Renderer type: ", rendertype)
+	VolumeAtts.rendererType = getattr(VolumeAtts, rendertype) #get the rendering type attribute
 
-	SetPlotOptions(PseudocolorAtts)
-	
-	# slice the pseudocolour plot
-	AddOperator("Slice", 1)
-	SliceAtts = SliceAttributes()
+	sampling = config["VolumeConfig"].get("sampling", fallback = "rasterization").title()
+	verbPrint("Sampling: ", sampling)
+	VolumeAtts.sampling = getattr(VolumeAtts, sampling) #get the sampling attribute
 
-	origintype = config["SliceConfig"].get("origin_type", fallback = "Intercept")
-	verbPrint("Origin type: ", origintype)
+	lowgradientlightingreduc = config["VolumeConfig"].get("lowGradientLightingReduction", fallback = "Lower").title()
+	verbPrint("Low gradient lighting reduction: ", lowgradientlightingreduc)
+	VolumeAtts.lowGradientLightingReduction = getattr(VolumeAtts, lowgradientlightingreduc) #get the low gradient lighting reduction attribute
 
-	if origintype=="Point":
-			SliceAtts.originType = SliceAtts.Point
-	elif origintype	== "Intercept":
-			SliceAtts.originType = SliceAtts.Intercept
-	elif origintype == "Percent":
-			SliceAtts.originType = SliceAtts.Percent
-	elif origintype == "Zone":
-			SliceAtts.originType = SliceAtts.Zone
-	elif origintype == "Node":
-			SliceAtts.originType = SliceAtts.Node
-
-	originpoint = tuple(np.float64(config["SliceConfig"]["origin"].split()))
-	verbPrint("Slice plane origin: ", originpoint)
-	SliceAtts.originPoint = originpoint
-     # axisType = XAxis, YAxis, ZAxis, Arbitrary, ThetaPhi
-	axistype = config["SliceConfig"].get("axistype", fallback = "ZAxis").lower()
-	if axistype == "zaxis":
-		SliceAtts.axisType = SliceAtts.ZAxis
-	elif axistype == "yaxis":
-		SliceAtts.axisType = SliceAtts.YAxis
-	elif axistype == "xaxis":
-		SliceAtts.axisType = SliceAtts.XAxis
-	elif axistype == "arbitrary":
-		SliceAtts.axisType = SliceAtts.Arbitrary
-	elif axistype == "thetaphi":
-		SliceAtts.axisType = SliceAtts.ThetaPhi
-
-	#normal vector for slice surface
-	slicenormalvec = tuple(np.float64(config["SliceConfig"]["normal_vec"].split()))
-	verbPrint("Normal vector: ", slicenormalvec)
-	SliceAtts.normal = slicenormalvec
-	SliceAtts.project2d = 1
-	SliceAtts.flip = 0
-	SetOperatorOptions(SliceAtts, 1)
-
-	if config["MeshConfig"].getboolean("activatemesh", 0):
-		AddPlot("Mesh", "Mesh",1,1)
-		#Mesh attributes
-		MeshAtts = MeshAttributes()
-		MeshAtts.opacity = config["MeshConfig"].getfloat("meshopacity",1.0)
-		meshcolor = tuple(np.int64(config["MeshConfig"]["meshcolor"].split()))
-		verbPrint("Mesh color: ", meshcolor)
-		MeshAtts.meshColor = meshcolor
-		SetPlotOptions(MeshAtts)
+	VolumeAtts.samplesPerRay = config["VolumeConfig"].getint('samplesPerRay', 1)
+	#set the above attributes to the plot options
+	SetPlotOptions(VolumeAtts)
 
 
 	# plot all levels
 	silr = SILRestriction()
 	silr.TurnOnAll()
-	SetPlotSILRestriction(silr ,1)
-	
-	# Ok, draw the plot now!
-	DrawPlots()
-	
-	# set the zoom
-	View2DAtts = View2DAttributes()
-	windowcoords = (
-		config["ViewConfig"].getfloat("plot_u_min"),
-		config["ViewConfig"].getfloat("plot_u_max"),
-		config["ViewConfig"].getfloat("plot_v_min"),
-		config["ViewConfig"].getfloat("plot_v_max") 
-		)
-	viewportcoords = tuple(np.float64(config["ViewConfig"]["viewportcoords"].split()))
-	verbPrint("Window coordinates: ", windowcoords)
-	verbPrint("View port coords: " , viewportcoords)
-	
-	View2DAtts.windowCoords = windowcoords
-	View2DAtts.viewportCoords = viewportcoords
-	View2DAtts.fullFrameActivationMode = View2DAtts.Off  # On, Off, Auto
-	View2DAtts.fullFrameAutoThreshold = 100
-	
-	xscaling = config["PlotConfig"].get("xscaling", fallback = "Linear")
-	yscaling = config["PlotConfig"].get("yscaling", fallback = "Linear")
-	
-	#set x and y scaling 
-	if xscaling == "Linear":
-			View2DAtts.xScale = View2DAtts.LINEAR 
-	elif xscaling == "Log":
-			View2DAtts.xScale = View2DAtts.LOG
-	elif xscaling == "Skew":
-			View2DAtts.xScale = View2DAtts.SKEW 
-	if yscaling == "Linear":
-			View2DAtts.yScale = View2DAtts.LINEAR
-	elif yscaling == "Log":
-			View2DAtts.yScale = View2DAtts.LOG
-	elif yscaling == "Skew":
-			View2DAtts.yScale = View2DAtts.SKEW
+	SetPlotSILRestriction(silr,1)
 
-	View2DAtts.windowValid = 1
-	SetView2D(View2DAtts)
-	
-	# Please save me! (to disk)
+	# Phew, now we can finally draw the plots!
+	DrawPlots()
+
+	# set the zoom
+	View3DAtts = View3DAttributes()
+	viewnormal = tuple(np.float64(config["ViewConfig"].get("viewNormal", "0 0 1").split()))
+	focus = tuple(np.float64(config["ViewConfig"].get("focus", "0 0 0").split()))
+	viewup = tuple(np.float64(config["ViewConfig"].get("viewUp", "0 1 0").split()))
+	View3DAtts.viewNormal = viewnormal
+	View3DAtts.focus = focus
+	View3DAtts.viewUp = viewup
+	View3DAtts.viewAngle = config["ViewConfig"].getint("viewAngle", 30)
+	View3DAtts.parallelScale = config["ViewConfig"].getfloat("parallelScale", 1.0)
+	View3DAtts.nearPlane = config["ViewConfig"].getfloat("nearPlane", -0.1)
+	View3DAtts.farPlane = config["ViewConfig"].getfloat("farPlane", 0.1)
+	View3DAtts.imagePan = tuple(np.float64(config["ViewConfig"].get("imagePan", "0 0").split()))
+	View3DAtts.imageZoom = config["ViewConfig"].getfloat("imageZoom", 1.0)
+	View3DAtts.perspective = config["ViewConfig"].getint("perspective", 1)
+	View3DAtts.eyeAngle = config["ViewConfig"].getint("eyeAngle", 0)
+	View3DAtts.centerOfRotationSet = config["ViewConfig"].getint("centerOfRotationSet", 0)
+	View3DAtts.centerOfRotation = tuple(np.float64(config["ViewConfig"].get("centerOfRotation", "0 0 0").split()))
+	View3DAtts.axis3DScaleFlag = config["ViewConfig"].getboolean("axis3DScaleFlag", 0)
+	View3DAtts.axis3DScales = tuple(np.float64(config["ViewConfig"].get("axis3DScales", "1 1 1").split()))
+	View3DAtts.shear = tuple(np.float64(config["ViewConfig"].get("shear", "0 0 0").split()))
+	View3DAtts.windowValid = config["ViewConfig"].getboolean("windowValid", 1)
+	SetView3D(View3DAtts)
+
+
+
+	#Please save me! (to disk)
+	InvertBackgroundColor()
 	SaveWindowAtts = SaveWindowAttributes()
 	SaveWindowAtts.outputToCurrentDirectory = 0
 	SaveWindowAtts.outputDirectory = plotpath
 	SaveWindowAtts.fileName = str(variableToPlot)
 	SaveWindowAtts.family = 1
-  
+
+	#Set the output format
 	outformat = config["Output"].get("fileform", fallback = "PNG").upper()
-	if outformat == "png":
-			SaveWindowAtts.format = SaveWindowAtts.PNG
-	elif outformat == "JPG":
-			SaveWindowAtts.format = SaveWindowAtts.JPG
-	elif outformat == "TIF":
-			SaveWindowAtts.format = SaveWindowAtts.TIFF
-	elif outformat == "BMP":
-			SaveWindowAtts.format = SaveWindowAtts.BMP
-	elif outformat == "PS":
-			SaveWindowAtts.format = SaveWindowAtts.POSTSCRIPT
-	elif outformat == "EPS":
-			SaveWindowAtts.format = SaveWindowAtts.POSTSCRIPT
-	elif outformat == "PPM":
-			SaveWindowAtts.format = SaveWindowAtts.PPM
-	elif outformat == "RGB":
-			SaveWindowAtts.format = SaveWindowAtts.RGB
-	elif outformat == "STL":
-			SaveWindowAtts.format = SaveWindowAtts.STL
-	elif outformat == "EXR":
-			SaveWindowAtts.format = SaveWindowAtts.EXR
-	elif outformat == "ULTRA":
-			SaveWindowAtts.format = SaveWindowAtts.ULTRA
-	elif outformat == "VTK":
-			SaveWindowAtts.format = SaveWindowAtts.VTK
-	elif outformat == "PLY":
-			SaveWindowAtts.format = SaveWindowAtts.PLY
+	verbPrint("File format: ", outformat)
+	SaveWindowAtts.format = getattr(SaveWindowAtts, outformat)
 
-
+	#Set the resolution
 	SaveWindowAtts.width = np.float64(config["Output"].get("width", fallback = 1024))
 	SaveWindowAtts.height = np.float64(config["Output"].get("height", fallback = 1024))
 	SaveWindowAtts.quality = np.float64(config["Output"].get("quality", fallback = 80))
 	# resConstraint = NoConstraint, EqualWidthHeight, ScreenProportions
 	SaveWindowAtts.resConstraint = SaveWindowAtts.NoConstraint 
+
+	#save the window attributes
 	SetSaveWindowAttributes(SaveWindowAtts)
+
+	#execute the window save
 	SaveWindow()
+
+
+
 
 def PlotFiles():
 	"""
@@ -298,6 +244,7 @@ def PlotFiles():
 		raise SystemError("No Plot Files Found!")
 	return plot_files
 
+
 def MultipleDatabase():
 	""" Flag that tells us if theres multiple files
 	"""
@@ -309,6 +256,7 @@ def MultipleDatabase():
 		print("Opening single plot file")
 		return False
 
+
 def make_slice_plots(variableToPlot, hdf5files, setplotbounds, plotbounds) :
 	""" Do that actual plotting, iterating over all the files for a given variable
 	"""
@@ -316,14 +264,16 @@ def make_slice_plots(variableToPlot, hdf5files, setplotbounds, plotbounds) :
 	# open all the hdf5 files.
 	# create a database object if there is more than one
 	if MultipleDatabase():
+		if config["Header"]["use_plot_range"]:
+			timeindex = config["Header"].getint("plot_range", 0)
+		else:
+			timeindex = 0
 		filename_prefix = os.path.join(config["Header"]["hdf5_path"], config["Header"]["plot_header"])
-		OpenDatabase(filename_prefix + "*" + ".3d.hdf5 database", 0)
+		OpenDatabase(filename_prefix + "*" + ".3d.hdf5 database", timeindex)
 	else:
 		OpenDatabase(PlotFiles()[0], 0)
 
 	# create the plot
-	hdf5file = hdf5files[0]
-	print("Setup and plot first slice from file : " + hdf5file)
 	setup_slice_plot(variableToPlot, plotbounds, setplotbounds)
 	
 	# iterate over all hdf5 files, and create a new plot for each
@@ -389,6 +339,14 @@ def main():
 		print("I've finished!")
 	
 	os.remove("./visitlog.py")
+	closedatabasesuccess = CloseDatabase()
+	closeenginesuccess = CloseComputeEngine()
+
+	if not closedatabasesuccess:
+		raise ValueError("Could not close the database")
+	if not closeenginesuccess:
+		raise ValueError("Could not close the compute engine")
+
 	exit()
 
 if __visit_script_file__ == __visit_source_file__:

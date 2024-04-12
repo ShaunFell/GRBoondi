@@ -7,7 +7,7 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/GRBoondi_NonlinearProcaKerrBH_23284538"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/GRMilijun_NonlinearProcaKerrBH_23367484"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -76,12 +76,6 @@ self_interaction = 1.0
 
 #constraint violation damping
 z_damping = 1.0
-
-#relaxation time of matter fields
-relaxation_time = 500
-
-#activate evolution of black hole, due to flux of matter across horizon
-bh_evolution = 1
 
 ################################################## Grid parameters
 ##################################################
