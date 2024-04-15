@@ -15,6 +15,7 @@ config.read(sys.argv[1])
 
 plotpath = config["Output"]["output_plot_path"]
 moviepath = config["Output"]["output_movie_path"]
+overwrite_plots = config["Output"].getboolean("overwrite_plots",0)
 
 if not os.path.exists(plotpath):
 	os.mkdir(plotpath)
@@ -321,9 +322,20 @@ def make_slice_plots(variableToPlot, hdf5files, setplotbounds, plotbounds) :
 	else:
 		OpenDatabase(PlotFiles()[0], 0)
 
+	#Determine starting point, if overwrite deactivated
+	for i in range(1, len(hdf5files)):
+		firstfilename = str(variableToPlot) + ('%04d' % i)
+		firstfilepath =  os.path.join(plotpath, firstfilename +"."+ config["Output"].get("fileform").lower())
+		if not overwrite_plots and os.path.exists(firstfilepath):
+			verbPrint("Plot already exists. Skipping...")
+			TimeSliderNextState() # Advance to next state
+			continue
+		else:
+			# file doesnt exist, so we should start the plotting here
+			TimeSliderNextState()
+			break
+
 	# create the plot
-	hdf5file = hdf5files[0]
-	print("Setup and plot first slice from file : " + hdf5file)
 	setup_slice_plot(variableToPlot, plotbounds, setplotbounds)
 	
 	# iterate over all hdf5 files, and create a new plot for each
@@ -331,11 +343,12 @@ def make_slice_plots(variableToPlot, hdf5files, setplotbounds, plotbounds) :
 	for i in range(1, len(hdf5files)):
 		savename = str(variableToPlot) + ('%04d' % i)
 		save_abs_path = os.path.join(plotpath, savename +"."+ config["Output"].get("fileform").lower())
-		overwrite_plots = config["Output"].getboolean("overwrite_plots",0)
-
+		
+		
 		#if the plot already exists and overwrite disabled, skip
 		if not overwrite_plots and os.path.exists(save_abs_path): 
 			verbPrint("Plot already exists. Skipping...")
+			TimeSliderNextState() # Advance to next state
 			continue
 
 		print("Plotting file " + hdf5files[i])
@@ -383,7 +396,7 @@ def main():
 		#make a movie if asked
 		if MultipleDatabase() & config["Output"].getint("make_movie", fallback = 0):
 			print ("Making a movie...")
-			cmd = 'ffmpeg -r ' + str(config["Output"].get("movie_framerate", fallback = "5")) + '-f image2 -s 1920x1080 -i ' + plotpath +"/"+ plotvar + '%04d.png -vcodec libx264 -crf 25 -pix_fmt yuv420p ' +moviepath +"/"+ plotvar+ '.mp4'
+			cmd = 'ffmpeg -r ' + str(config["Output"].get("movie_framerate", fallback = "5")) + '-s 1920x1080 -i ' + plotpath +"/"+ plotvar + '%04d.png -vcodec libx264 -crf 25 -pix_fmt yuv420p ' +moviepath +"/"+ plotvar+ '.mp4'
 			os.system(cmd)
 
 		print("I've finished!")
