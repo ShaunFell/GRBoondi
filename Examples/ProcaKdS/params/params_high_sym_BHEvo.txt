@@ -1,5 +1,5 @@
-### NonlinearProca
-###  params.txt
+## ProcaKerrBH
+###  params_high_sym.txt
 
 ################################################## Filesystem parameters
 
@@ -7,7 +7,7 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/GRMilijun_NonlinearProcaKerrBH_Evo_23332966"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_GRMilijun_ProcaKerrBH_Evo_23365477"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -42,17 +42,19 @@ print_progress_only_to_rank_0 = 0
 
 ################################################# constraint tagging
 ##################################################
-activate_gnn_tagging = 1
+activate_ham_tagging = 0
+activate_extraction_tagging = 0
+activate_tagging_diagnostic = 0
 
 
 ################################################# AMR levels
 ##################################################
 
+#max level is the number of additional refinement levels. So max_level=4 --> 5 total levels
 max_level = 4
 
 #Since we use fixed grid tagging, we dont ever need to regrid
-regrid_interval = 0 50 10 5
-regrid_threshold = 0.005
+regrid_interval = 0 0 0 0
 
 ################################################## Initial Data parameters
 ##################################################
@@ -70,9 +72,6 @@ L2_alpha = 1
 
 #proca parameters
 proca_mass = 0.4
-
-#proca self interaction coupling
-self_interaction = 1.0
 
 #constraint violation damping
 z_damping = 1.0
@@ -146,7 +145,6 @@ num_nonzero_asymptotic_vars = 0
 # if you are using extrapolatin BC:
 extrapolation_order = 1
 num_extrapolating_vars = 0
-
 
 
 ################################################## Evolution parameters

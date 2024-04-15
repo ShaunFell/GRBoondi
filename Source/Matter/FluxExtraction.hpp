@@ -14,7 +14,7 @@
 
 class FluxExtraction : public SphericalExtraction
 {
-    using Container = DataContainer<std::vector<double>>;
+    using Container = TimeDataContainer<std::vector<double>>;
     protected:
         std::vector<int> m_vars_to_extract;// vector storing the variables we wish to integrate over the spheres
         Container& m_flux_container; //container 

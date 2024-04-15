@@ -99,8 +99,8 @@ class BaseProcaFieldLevel : public GRAMRLevel
      //note: Since these are in the level class, each level instance will have its own copy of these
     //              but since the fluxes and integrals are calculated on only a single level (usually m_level=0), 
     //              only that level will contain the actual results
-    DataContainer<std::vector<double>> m_flux_container{}; //default initialize
-    DataContainer<double> m_integral_container{};
+    TimeDataContainer<std::vector<double>> m_flux_container{}; //default initialize
+    TimeDataContainer<double> m_integral_container{};
 
     
 };
