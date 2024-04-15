@@ -102,7 +102,7 @@ class KerrdeSitter
 
         // lapse
         data_t lapse_2{(delta_r * delta_theta * rho2) /
-                       (2 * Theta * Theta * Gamma)};
+                       (Theta * Theta * Gamma)};
         metric_vars.lapse = sqrt(lapse_2);
 
         // shift
@@ -222,11 +222,11 @@ class KerrdeSitter
 
                 metric_vars.gamma[i][j] = 0;
 
-                FOR1(k)
+                FOR2(k, l)
                 {
-                    metric_vars.gamma[i][j] += jacobian_BL_to_Cart[i][k] *
-                                               jacobian_BL_to_Cart[j][k] *
-                                               spherical_gamma[k][j];
+                    metric_vars.gamma[i][j] += jacobian_BL_to_Cart[k][i] *
+                                               jacobian_BL_to_Cart[l][j] *
+                                               spherical_gamma[k][l];
                 }
             }
         }
@@ -298,6 +298,35 @@ class KerrdeSitter
         {
             metric_vars.K += gamma_UU[i][j] * metric_vars.K_tensor[i][j];
         }
+
+        // debugging
+        std::cout << "spherical_shift: " << spherical_shift[0] << " "
+                  << spherical_shift[1] << " " << spherical_shift[2]
+                  << std::endl;
+        std::cout << "cart_to_spherical_jacobian:" << jacobian_Cart_to_BL[0][0]
+                  << " " << jacobian_Cart_to_BL[0][1] << " "
+                  << jacobian_Cart_to_BL[0][2] << "\n "
+                  << jacobian_Cart_to_BL[1][0] << " "
+                  << jacobian_Cart_to_BL[1][1] << " "
+                  << jacobian_Cart_to_BL[1][2] << "\n "
+                  << jacobian_Cart_to_BL[2][0] << " "
+                  << jacobian_Cart_to_BL[2][1] << " "
+                  << jacobian_Cart_to_BL[2][2] << std::endl;
+        std::cout << "spherical_gamma:" << spherical_gamma[0][0] << " "
+                  << spherical_gamma[0][1] << " " << spherical_gamma[0][2]
+                  << "\n " << spherical_gamma[1][0] << " "
+                  << spherical_gamma[1][1] << " " << spherical_gamma[1][2]
+                  << "\n " << spherical_gamma[2][0] << " "
+                  << spherical_gamma[2][1] << " " << spherical_gamma[2][2]
+                  << std::endl;
+
+        std::cout << "gamma: " << metric_vars.gamma[0][0] << " "
+                  << metric_vars.gamma[0][1] << " " << metric_vars.gamma[0][2]
+                  << "\n " << metric_vars.gamma[1][0] << " "
+                  << metric_vars.gamma[1][1] << " " << metric_vars.gamma[1][2]
+                  << "\n " << metric_vars.gamma[2][0] << " "
+                  << metric_vars.gamma[2][1] << " " << metric_vars.gamma[2][2]
+                  << std::endl;
     }
 
     // Ultimate values referenced from arXiv:1011.0479v1
