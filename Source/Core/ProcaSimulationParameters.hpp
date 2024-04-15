@@ -6,11 +6,11 @@
 #define PROCASIMULATIONPARAMETERS_HPP_
 
 // General includes
+#include "BoundaryConditions.hpp"
 #include "ChomboParameters.hpp"
 #include "GRParmParse.hpp"
 #include "UserVariables.hpp"
 #include "VariableType.hpp"
-#include "BoundaryConditions.hpp"
 
 // Proca specific includes:
 #include "BaseProcaField.hpp"
@@ -28,19 +28,22 @@ class ProcaSimulationParameters : public ChomboParameters
     /// Read parameters from the parameter file
     void read_params(GRParmParse &pp)
     {
-        //filenames
+        // filenames
         pp.load("integrals_filename", integrals_filename);
 
-
-        //extraction params
-        pp.load("num_extraction_radii", extraction_params.num_extraction_radii, 0);
-        pp.load("extraction_radii", extraction_params.extraction_radii, extraction_params.num_extraction_radii);
+        // extraction params
+        pp.load("num_extraction_radii", extraction_params.num_extraction_radii,
+                0);
+        pp.load("extraction_radii", extraction_params.extraction_radii,
+                extraction_params.num_extraction_radii);
         pp.load("extraction_level", extraction_params.extraction_levels, 1, 0);
         pp.load("num_points_phi", extraction_params.num_points_phi, 25);
         pp.load("num_points_theta", extraction_params.num_points_theta, 37);
         pp.load("extraction_center", extraction_params.center, center);
         pp.load("write_extraction", extraction_params.write_extraction, false);
-        pp.load("fluxintegrals_filename", extraction_params.integral_file_prefix, std::string("flux_integrals"));
+        pp.load("fluxintegrals_filename",
+                extraction_params.integral_file_prefix,
+                std::string("flux_integrals"));
         std::string extraction_path;
         if (pp.contains("extraction_subpath"))
         {
@@ -52,51 +55,59 @@ class ProcaSimulationParameters : public ChomboParameters
         }
         else
             extraction_path = data_path;
-        
+
         extraction_params.data_path = data_path;
         extraction_params.extraction_path = extraction_path;
         pp.load("extraction_file_prefix",
-                    extraction_params.extraction_file_prefix,
-                    std::string("Weyl4_extraction_"));
-        
+                extraction_params.extraction_file_prefix,
+                std::string("Weyl4_extraction_"));
 
         pp.load("activate_extraction", activate_extraction, false);
         pp.load("activate_integration", activate_integration, false);
 
-        //grid parameters
+        // grid parameters
         pp.load("nan_check", nan_check, 1);
         pp.load("sigma", sigma, 0.1);
 
-        //excision 
+        // excision
         pp.load("evolution_excision_width", evolution_excision_width, 0.97);
         pp.load("diagnostic_inner_boundary", diagnostic_inner_boundary, 0.);
         pp.load("diagnostic_outer_boundary", diagnostic_outer_boundary, 10000.);
 
-        //tagging
+        // tagging
         pp.load("initial_ratio", initial_ratio, 0.25);
-        pp.load("activate_extraction_tagging", activate_extraction_tagging, false);
+        pp.load("activate_extraction_tagging", activate_extraction_tagging,
+                false);
         pp.load("grid_scaling", grid_scaling, 1.);
         pp.load("regrid_threshold", regrid_threshold, 0.5);
 
-        //linear momentum direction
+        // linear momentum direction
         pp.load("linear_momentum_dir", linear_momentum_dir, 0);
 
-        //load extraction variables
-        UserVariables::load_vars_to_vector(pp, "extraction_vars", "num_extraction_vars", extraction_vars,num_extraction_vars);
+        // load extraction variables
+        UserVariables::load_vars_to_vector(
+            pp, "extraction_vars", "num_extraction_vars", extraction_vars,
+            num_extraction_vars);
 
-        //load integration variables
-        UserVariables::load_vars_to_vector(pp, "integration_vars", "num_integration_vars", integration_vars,num_integration_vars);
+        // load integration variables
+        UserVariables::load_vars_to_vector(
+            pp, "integration_vars", "num_integration_vars", integration_vars,
+            num_integration_vars);
 
-        //load diagnostic variables to excise
-        UserVariables::load_vars_to_vector(pp, "diagnostic_excision_vars", "num_diagnostic_excision_vars", diagnostic_excision_vars,num_diagnostic_excision_vars);
+        // load diagnostic variables to excise
+        UserVariables::load_vars_to_vector(
+            pp, "diagnostic_excision_vars", "num_diagnostic_excision_vars",
+            diagnostic_excision_vars, num_diagnostic_excision_vars);
 
-        //boundary conditions
+        // boundary conditions
         boundary_params.read_params(pp);
-        //symmetry factor
+        // symmetry factor
         FOR(dir)
         {
-            if (boundary_params.lo_boundary[dir] == BoundaryConditions::REFLECTIVE_BC || 
-            boundary_params.hi_boundary[dir] == BoundaryConditions::REFLECTIVE_BC)
+            if (boundary_params.lo_boundary[dir] ==
+                    BoundaryConditions::REFLECTIVE_BC ||
+                boundary_params.hi_boundary[dir] ==
+                    BoundaryConditions::REFLECTIVE_BC)
             {
                 SymmetryFactor *= 2;
             }
@@ -106,7 +117,8 @@ class ProcaSimulationParameters : public ChomboParameters
     void check_params()
     {
 
-        check_parameter("grid_scaling", grid_scaling, grid_scaling>0, "Grid scaling parameter must be greater than zero");
+        check_parameter("grid_scaling", grid_scaling, grid_scaling > 0,
+                        "Grid scaling parameter must be greater than zero");
     }
 
     double diagnostic_inner_boundary;
@@ -132,20 +144,18 @@ class ProcaSimulationParameters : public ChomboParameters
     bool activate_extraction;
     double grid_scaling;
 
-    double initial_ratio; 
+    double initial_ratio;
 
     double regrid_threshold;
 
-    //linear momentum direction
+    // linear momentum direction
     int linear_momentum_dir;
-
 
     // Boundary conditions
     BoundaryConditions::params_t boundary_params; // set boundaries in each dir
-    double SymmetryFactor {1.0}; // 1.0 for non-reflective boundary conditions, 2.0 for 1 symmetry, 4.0 for 2 symmetries, and 8.0 for 3
-
-
-
+    double SymmetryFactor{
+        1.0}; // 1.0 for non-reflective boundary conditions, 2.0 for 1
+              // symmetry, 4.0 for 2 symmetries, and 8.0 for 3
 };
 
 #endif /* PROCASIMULATIONPARAMETERS_HPP_ */

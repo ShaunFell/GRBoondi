@@ -14,19 +14,22 @@ implementation file for ProcaField.hpp
 #define BASEPROCAFIELD_IMPL_H_INCLUDED
 
 template <class background_t, class modification_t>
-template <class data_t, template <typename> class vars_t, template <typename> class diff2_vars_t>
-emtensor_t<data_t> BaseProcaField<background_t, modification_t>::compute_emtensor(
-    const vars_t<data_t> &matter_vars, //the value fo the variables
+template <class data_t, template <typename> class vars_t,
+          template <typename> class diff2_vars_t>
+emtensor_t<data_t>
+BaseProcaField<background_t, modification_t>::compute_emtensor(
+    const vars_t<data_t> &matter_vars, // the value fo the variables
     const MetricVars<data_t> &metric_vars,
-    const vars_t<Tensor<1, data_t>> &d1, //value of 1st derivs
-    const diff2_vars_t<Tensor<2, data_t>> &d2, //2nd derivs
-    const vars_t<data_t> &advec //value of the beta^i d_i(var) terms
+    const vars_t<Tensor<1, data_t>> &d1,       // value of 1st derivs
+    const diff2_vars_t<Tensor<2, data_t>> &d2, // 2nd derivs
+    const vars_t<data_t> &advec // value of the beta^i d_i(var) terms
 ) const
 {
     emtensor_t<data_t> out;
 
-    auto gamma_UU { TensorAlgebra::compute_inverse_sym(metric_vars.gamma) };
-    auto chris_ULL { TensorAlgebra::compute_christoffel(metric_vars.d1_gamma, gamma_UU).ULL };
+    auto gamma_UU{TensorAlgebra::compute_inverse_sym(metric_vars.gamma)};
+    auto chris_ULL{
+        TensorAlgebra::compute_christoffel(metric_vars.d1_gamma, gamma_UU).ULL};
 
     // D_i A_j  3-covariant derivative of spatial covector
     Tensor<2, data_t> DA;
@@ -42,7 +45,11 @@ emtensor_t<data_t> BaseProcaField<background_t, modification_t>::compute_emtenso
 
     // Electric Field Norm
     data_t Enorm{0};
-    FOR2(i, j) { Enorm += metric_vars.gamma[i][j] * matter_vars.Evec[i] * matter_vars.Evec[j]; };
+    FOR2(i, j)
+    {
+        Enorm +=
+            metric_vars.gamma[i][j] * matter_vars.Evec[i] * matter_vars.Evec[j];
+    };
 
     /////Components of EM tensor
 
@@ -51,7 +58,7 @@ emtensor_t<data_t> BaseProcaField<background_t, modification_t>::compute_emtenso
     FOR4(i, j, k, l)
     {
         out.rho += 1. / 2. * gamma_UU[k][i] * gamma_UU[l][j] * DA[i][j] *
-                DA_antisym[k][l];
+                   DA_antisym[k][l];
     };
 
     // Eulerian Momentum //Checked. Agrees with Mathematica notebook.
@@ -71,13 +78,15 @@ emtensor_t<data_t> BaseProcaField<background_t, modification_t>::compute_emtenso
         FOR2(l, k)
         {
             out.Sij[i][j] +=
-                -metric_vars.gamma[i][l] * metric_vars.gamma[j][k] * matter_vars.Evec[l] * matter_vars.Evec[k] +
+                -metric_vars.gamma[i][l] * metric_vars.gamma[j][k] *
+                    matter_vars.Evec[l] * matter_vars.Evec[k] +
                 gamma_UU[k][l] * DA_antisym[i][l] * DA_antisym[j][k];
 
             FOR2(m, n)
             {
-                out.Sij[i][j] += - 0.5 * metric_vars.gamma[i][j] * gamma_UU[m][l] *
-                                gamma_UU[n][k] * DA[m][n] * DA_antisym[l][k];
+                out.Sij[i][j] += -0.5 * metric_vars.gamma[i][j] *
+                                 gamma_UU[m][l] * gamma_UU[n][k] * DA[m][n] *
+                                 DA_antisym[l][k];
             };
         };
     };
@@ -86,31 +95,34 @@ emtensor_t<data_t> BaseProcaField<background_t, modification_t>::compute_emtenso
     out.S = 0.0;
     FOR2(i, j) { out.S += out.Sij[i][j] * gamma_UU[i][j]; };
 
-    //add modifications ala CRTP
-    static_cast<const modification_t*>(this)->compute_emtensor_modification(out, matter_vars, metric_vars, d1, d2, advec);
+    // add modifications ala CRTP
+    static_cast<const modification_t *>(this)->compute_emtensor_modification(
+        out, matter_vars, metric_vars, d1, d2, advec);
 
     return out;
 };
 
-
 template <class background_t, class modification_t>
-template <class data_t, template <typename> class vars_t, template <typename> class diff2_vars_t, template <typename> class rhs_vars_t>
+template <class data_t, template <typename> class vars_t,
+          template <typename> class diff2_vars_t,
+          template <typename> class rhs_vars_t>
 void BaseProcaField<background_t, modification_t>::matter_rhs(
-    rhs_vars_t<data_t> &total_rhs, //RHS terms for all vars
-    const vars_t<data_t> &matter_vars, //the value fo the variables
+    rhs_vars_t<data_t> &total_rhs,     // RHS terms for all vars
+    const vars_t<data_t> &matter_vars, // the value fo the variables
     const MetricVars<data_t> &metric_vars,
-    const vars_t<Tensor<1, data_t>> &d1, //value of 1st derivs
-    const diff2_vars_t<Tensor<2, data_t>> &d2, //2nd derivs
-    const vars_t<data_t> &advec //value of the beta^i d_i(var) terms
+    const vars_t<Tensor<1, data_t>> &d1,       // value of 1st derivs
+    const diff2_vars_t<Tensor<2, data_t>> &d2, // 2nd derivs
+    const vars_t<data_t> &advec // value of the beta^i d_i(var) terms
 ) const
 {
 
-    // calculate conformal contravariant metric and conformal christoffel symbols
-    const Tensor<2, data_t> gamma_UU = TensorAlgebra::compute_inverse(metric_vars.gamma);
+    // calculate conformal contravariant metric and conformal christoffel
+    // symbols
+    const Tensor<2, data_t> gamma_UU =
+        TensorAlgebra::compute_inverse(metric_vars.gamma);
     const Tensor<3, data_t> chris_phys =
         TensorAlgebra::compute_christoffel(metric_vars.d1_gamma, gamma_UU).ULL;
 
-      
     // covariant derivative of spatial part of Proca field
     Tensor<2, data_t> DA;
     FOR2(i, j)
@@ -122,32 +134,38 @@ void BaseProcaField<background_t, modification_t>::matter_rhs(
     // evolution equations for spatial part of vector field (index down)
     FOR1(i)
     {
-        total_rhs.Avec[i] =
-            -metric_vars.lapse * d1.phi[i] - matter_vars.phi * metric_vars.d1_lapse[i] + advec.Avec[i];
+        total_rhs.Avec[i] = -metric_vars.lapse * d1.phi[i] -
+                            matter_vars.phi * metric_vars.d1_lapse[i] +
+                            advec.Avec[i];
 
         FOR1(j)
         {
-            total_rhs.Avec[i] += -metric_vars.lapse * metric_vars.gamma[i][j] * matter_vars.Evec[j] +
-                                 matter_vars.Avec[j] * metric_vars.d1_shift[j][i];
+            total_rhs.Avec[i] +=
+                -metric_vars.lapse * metric_vars.gamma[i][j] *
+                    matter_vars.Evec[j] +
+                matter_vars.Avec[j] * metric_vars.d1_shift[j][i];
         };
     };
 
     // evolution equations for Electric vector field (index up)
     FOR1(i)
     {
-        total_rhs.Evec[i] = metric_vars.lapse * metric_vars.K * matter_vars.Evec[i] + advec.Evec[i];
+        total_rhs.Evec[i] =
+            metric_vars.lapse * metric_vars.K * matter_vars.Evec[i] +
+            advec.Evec[i];
 
         FOR1(j)
         {
-            total_rhs.Evec[i] += - matter_vars.Evec[j] * metric_vars.d1_shift[i][j];
+            total_rhs.Evec[i] +=
+                -matter_vars.Evec[j] * metric_vars.d1_shift[i][j];
         }
 
         FOR3(j, k, l)
         {
-            total_rhs.Evec[i] += gamma_UU[j][k] * gamma_UU[i][l] * (
-                                    metric_vars.d1_lapse[j] * ( d1.Avec[k][l] - d1.Avec[l][k] ) +
-                                    metric_vars.lapse * ( d2.Avec[k][l][j] - d2.Avec[l][k][j] )
-                                );
+            total_rhs.Evec[i] +=
+                gamma_UU[j][k] * gamma_UU[i][l] *
+                (metric_vars.d1_lapse[j] * (d1.Avec[k][l] - d1.Avec[l][k]) +
+                 metric_vars.lapse * (d2.Avec[k][l][j] - d2.Avec[l][k][j]));
 
             FOR1(m)
             {
@@ -159,16 +177,17 @@ void BaseProcaField<background_t, modification_t>::matter_rhs(
         };
     };
 
-    // Evolution equations for phi field totally depend on the theory, so we leave is up to the user to specify them for their model
+    // Evolution equations for phi field totally depend on the theory, so we
+    // leave is up to the user to specify them for their model
     total_rhs.phi = 0.;
 
-    // Evolution for auxiliary Z field is also left up to the user in how they want to add damping terms
+    // Evolution for auxiliary Z field is also left up to the user in how they
+    // want to add damping terms
     total_rhs.Z = 0.;
 
-    //add modifications ala CRTP
-    static_cast<const modification_t*>(this)->matter_rhs_modification(total_rhs, matter_vars, metric_vars, d1, d2, advec);
+    // add modifications ala CRTP
+    static_cast<const modification_t *>(this)->matter_rhs_modification(
+        total_rhs, matter_vars, metric_vars, d1, d2, advec);
 };
-
-
 
 #endif // BASEPROCAFIELD_IMPL_H_INCLUDED

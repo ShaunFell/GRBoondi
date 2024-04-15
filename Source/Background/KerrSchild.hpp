@@ -166,7 +166,6 @@ class KerrSchild
             vars.K_tensor[i][j] *= 0.5 / vars.lapse;
         }
         vars.K = compute_trace(gamma_UU, vars.K_tensor);
-
     }
 
   protected:
@@ -204,7 +203,7 @@ class KerrSchild
         Tensor<1, data_t> drhodx;
         FOR1(i) { drhodx[i] = x_vec[i] / rho; }
 
-        //compute drdx
+        // compute drdx
         Tensor<1, data_t> drdx;
         FOR1(i)
         {
@@ -215,10 +214,10 @@ class KerrSchild
                      (drhodx[i] * rho * (rho2 - a2) +
                       delta(i, 2) * 2.0 * a2 * z));
         }
-        
+
         Tensor<1, data_t> dcosthetadx;
         FOR1(i) { dcosthetadx[i] = -z / r2 * drdx[i] + delta(i, 2) / r; }
-     
+
         // work out dHdx
         FOR1(i)
         {
@@ -234,12 +233,14 @@ class KerrSchild
             // first the el_x comp
             dldx[0][i] =
                 (x_vec[0] * drdx[i] + r * delta(i, 0) + a * delta(i, 1) -
-                 2.0 * r * drdx[i] * (r * x_vec[0] + a * x_vec[1]) / (r2 + a2)) /
+                 2.0 * r * drdx[i] * (r * x_vec[0] + a * x_vec[1]) /
+                     (r2 + a2)) /
                 (r2 + a2);
             // now the el_y comp
             dldx[1][i] =
                 (x_vec[1] * drdx[i] + r * delta(i, 1) - a * delta(i, 0) -
-                 2.0 * r * drdx[i] * (r * x_vec[1] - a * x_vec[0]) / (r2 + a2)) /
+                 2.0 * r * drdx[i] * (r * x_vec[1] - a * x_vec[0]) /
+                     (r2 + a2)) /
                 (r2 + a2);
             // now the el_z comp
             dldx[2][i] = -x_vec[2] * drdx[i] / r2 + delta(i, 2) / r;
@@ -247,13 +248,13 @@ class KerrSchild
 
         // then dltdi
         FOR1(i) { dltdx[i] = 0.0; }
-
     }
 
   public:
     // used to decide when to excise - ie when within the horizon of the BH
     // note that this is not templated over data_t
-    bool check_if_excised(const Coordinates<double> &coords, double buffer = 0.97) const
+    bool check_if_excised(const Coordinates<double> &coords,
+                          double buffer = 0.97) const
     {
         // black hole params - mass M and spin a
         const double M = m_params.mass;
@@ -263,23 +264,26 @@ class KerrSchild
         const double y = coords.y;
         const double z = coords.z;
 
-        //compute inner and outer Boyer-Lindquist horizon radii
+        // compute inner and outer Boyer-Lindquist horizon radii
         const double r_plus = BL_outer_horizon();
         const double r_minus = BL_inner_horizon();
 
         // position relative to outer horizon - 1 indicates on horizon
         // less than one is within
-        const double outer_horizon = (x * x + y * y) / (2.0 * M * r_plus) + z * z / r_plus / r_plus;
+        const double outer_horizon =
+            (x * x + y * y) / (2.0 * M * r_plus) + z * z / r_plus / r_plus;
 
         // position relative to inner horizon - 1 indicates on horizon, less
         // than 1 is within
-        const double inner_horizon = (x * x + y * y) / (2.0 * M * r_minus) + z * z / r_minus / r_minus;
+        const double inner_horizon =
+            (x * x + y * y) / (2.0 * M * r_minus) + z * z / r_minus / r_minus;
 
         bool is_excised = false;
         // value less than 1 indicates we are within the horizon
-/*         if (sqrt(outer_horizon) <  buffer|| sqrt(inner_horizon) < 1.0 / buffer)
- */     
-        if (sqrt(outer_horizon) < buffer)   
+        /*         if (sqrt(outer_horizon) <  buffer|| sqrt(inner_horizon) < 1.0
+         * / buffer)
+         */
+        if (sqrt(outer_horizon) < buffer)
         {
             is_excised = true;
         }
@@ -293,7 +297,7 @@ class KerrSchild
         const double a = m_params.spin;
         const double a2 = a * a;
         const double r_plus = M + sqrt(M * M - a2);
-        
+
         return r_plus;
     }
 
@@ -304,7 +308,7 @@ class KerrSchild
         const double a = m_params.spin;
         const double a2 = a * a;
         const double r_minus = M - sqrt(M * M - a2);
-        
+
         return r_minus;
     }
 };
