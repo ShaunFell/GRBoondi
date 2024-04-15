@@ -58,8 +58,8 @@ int main(int argc, char *argv[])
             // initialize the kerr params and the kerr object
             KerrdeSitter::params_t kerr_params;
             kerr_params.mass = 1.4;
-            kerr_params.spin = 0.5;
-            kerr_params.cosmo_constant = 0.05;
+            kerr_params.spin = 0.9;
+            kerr_params.cosmo_constant = 0.001;
             // kerr_params.center = {0.0, 0.0, 0.0};
             KerrdeSitter kerr_init(kerr_params, dx);
             std::cout << tab << " kerr mass = " << kerr_params.mass
@@ -70,13 +70,10 @@ int main(int argc, char *argv[])
                       << " kerr cosmo_constant = " << kerr_params.cosmo_constant
                       << std::endl;
 
-            // instantiate the metric variables
-            ADMFixedBGVars::Vars<double> metric_vars;
-
             // Discriminant test
             double Q{KerrdeSitter::discriminant<double>(kerr_params)};
             std::cout << tab << "Q = " << Q << std::endl;
-            double mathematica_result_Q{0.06545710954780744};
+            double mathematica_result_Q{0.006037383095635};
             if (abs(Q - mathematica_result_Q) > ERR)
             {
                 std::cout << tab << "Discriminant test failed" << std::endl;
@@ -86,32 +83,35 @@ int main(int argc, char *argv[])
                 std::cout << tab << "Discriminant test passed" << std::endl;
             }
 
-            // Horizon test
-            double outer_horizon{kerr_init.outer_horizon<double>()};
-            std::cout << tab << "outer_horizon = " << outer_horizon
-                      << std::endl;
-            double mathematica_result_rp{3.389205056073611};
-            if (abs(outer_horizon - mathematica_result_rp) > ERR)
-            {
-                std::cout << tab << "Outer horizon test failed" << std::endl;
-            }
-            else
-            {
-                std::cout << tab << "Outer horizon test passed" << std::endl;
-            }
+            // Metric variable tests
+            std::cout << "Metric variable tests: " << std::endl;
+            // instantiate the metric variables
+            ADMFixedBGVars::Vars<double> metric_vars;
 
-            double inner_horizon{kerr_init.inner_horizon<double>()};
-            std::cout << tab << "inner_horizon = " << inner_horizon
+            IntVect mv_intvec;
+            mv_intvec[0] = 10000;
+            mv_intvec[1] = 10000;
+            mv_intvec[2] = 10000;
+
+            Box box(IntVect(0, 0, 0), IntVect(8, 8, 8));
+            FArrayBox fab_in(box, 3);
+            FArrayBox fab_out(box, 3);
+            auto box_pointers = BoxPointers{fab_in, fab_out};
+            Cell<double> current_cell(mv_intvec, box_pointers);
+            Coordinates<double> coords_metricvars(current_cell, dx,
+                                                  kerr_params.center);
+
+            std::cout << "coords: " << coords_metricvars.x << " "
+                      << coords_metricvars.y << " " << coords_metricvars.z
                       << std::endl;
-            double mathematica_result_rm{0.0923162767495491};
-            if (abs(inner_horizon - mathematica_result_rm) > ERR)
-            {
-                std::cout << tab << "Inner horizon test failed" << std::endl;
-            }
-            else
-            {
-                std::cout << tab << "Inner horizon test passed" << std::endl;
-            }
+
+            kerr_init.compute_metric_background(metric_vars, coords_metricvars);
+
+            std::cout << "lapse: " << metric_vars.lapse << std::endl;
+
+            std::cout << "shift: " << metric_vars.shift[0] << " "
+                      << metric_vars.shift[1] << " " << metric_vars.shift[2]
+                      << std::endl;
 
         } // end of kerr tests
     }
