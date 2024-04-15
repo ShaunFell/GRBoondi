@@ -11,7 +11,7 @@ code, which makes use of the Chombo library for adaptive mesh refinement.
 
 
 ## Getting started
-See the wiki pages
+See the [[wiki pages|https://github.com/ShaunFell/GRBoondi/wiki]]
 
 ## Contributing
 We welcome feedback, bug reports, and contributions. Please consult the repo owner for contributions and feel free to open pull requests. For coding style, please see the GRChombo repo wiki.
