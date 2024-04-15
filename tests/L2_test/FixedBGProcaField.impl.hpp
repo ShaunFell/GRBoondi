@@ -38,13 +38,13 @@ emtensor_t<data_t> FixedBGProcaField<potential_t>::compute_emtensor(
         FOR1(k) { DA[i][j] += -chris_phys_ULL[k][i][j] * vars.Avec[k]; }
     }
 
-    double d1Asum {0.};
+    double d1Asum{0.};
     FOR2(i, j) { d1Asum += d1.Avec[i][j]; };
 
-    double chris_sum {0.};
+    double chris_sum{0.};
     FOR3(i, j, k) { chris_sum += chris_phys_ULL[i][j][k]; };
 
-    double DASum {0.};
+    double DASum{0.};
     FOR2(i, j) { DASum += DA[i][j]; }
     std::cout << "test DASum: " << DASum << std::endl;
     std::cout << "test d1Asum: " << d1Asum << std::endl;
@@ -101,8 +101,8 @@ emtensor_t<data_t> FixedBGProcaField<potential_t>::compute_emtensor(
         }
     }
 
-    double Enorm {0.};
-    FOR2(i,j)
+    double Enorm{0.};
+    FOR2(i, j)
     {
         Enorm += vars.Evec[i] * vars.Evec[j] * metric_vars.gamma[i][j];
     }

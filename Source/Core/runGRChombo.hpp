@@ -9,35 +9,34 @@
 #include <iostream>
 
 // Our general includes
-#include "ProcaLevelFactory.hpp"
 #include "AMRInterpolator.hpp"
 #include "GRAMR.hpp"
 #include "GRParmParse.hpp"
 #include "MultiLevelTask.hpp"
+#include "ProcaLevelFactory.hpp"
 #include "SetupFunctions.hpp"
 
-//defaults
-#include "DefaultBackground.hpp"
+// defaults
 #include "BaseProcaField.hpp"
+#include "DefaultBackground.hpp"
 
-// Problem specific includes. These must be defined in the problems root directory. E.g. EMKerrBH defines these
-#include "BaseProcaFieldLevel.hpp" 
+// Problem specific includes. These must be defined in the problems root
+// directory. E.g. EMKerrBH defines these
+#include "BaseProcaFieldLevel.hpp"
 #include "SimulationParameters.hpp"
 
 // Main run function templated over level class
 
-template <class level_t>
-int runGRChombo(int argc, char *argv[])
+template <class level_t> int runGRChombo(int argc, char *argv[])
 {
     // Load the parameter file and construct the SimulationParameter class
     // To add more parameters edit the SimulationParameters file.
     char *in_file = argv[1];
     GRParmParse pp(argc - 2, argv + 2, NULL, in_file);
     SimulationParameters sim_params(pp);
-    pout() << "Symmetry factor of computational grid: " << sim_params.SymmetryFactor << endl;
+    pout() << "Symmetry factor of computational grid: "
+           << sim_params.SymmetryFactor << endl;
 
-    
-    
     if (sim_params.just_check_params)
         return 0;
 
@@ -47,19 +46,20 @@ int runGRChombo(int argc, char *argv[])
     ProcaLevelFactory<level_t> problem_level_factory(gr_amr, sim_params);
     setupAMRObject(gr_amr, problem_level_factory);
 
-    //setup interpolating object
+    // setup interpolating object
     AMRInterpolator<Lagrange<4>> interpolator(
         gr_amr, sim_params.origin, sim_params.dx, sim_params.boundary_params,
         sim_params.verbosity);
-    gr_amr.set_interpolator(&interpolator); // also sets puncture_tracker interpolator
+    gr_amr.set_interpolator(
+        &interpolator); // also sets puncture_tracker interpolator
 
-    //setup timing routine
+    // setup timing routine
     using Clock = std::chrono::steady_clock;
     using Minutes = std::chrono::duration<double, std::ratio<60, 1>>;
     std::chrono::time_point<Clock> start_time = Clock::now();
 
-    // We want to calculate the charges and fluxes at t = 0 
-    //call the PostTimeStep right now!!!!
+    // We want to calculate the charges and fluxes at t = 0
+    // call the PostTimeStep right now!!!!
     pout() << "Running initial PostTimeStep" << endl;
     auto task = [](GRAMRLevel *level)
     {
@@ -71,10 +71,9 @@ int runGRChombo(int argc, char *argv[])
 
     // call 'now' really now
     MultiLevelTaskPtr<> call_task(task);
-    call_task.execute(gr_amr);  
+    call_task.execute(gr_amr);
 
-
-    //go go go !!!!!! Run simulation
+    // go go go !!!!!! Run simulation
     gr_amr.run(sim_params.stop_time, sim_params.max_steps);
 
     auto now = Clock::now();

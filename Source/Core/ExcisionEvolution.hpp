@@ -6,17 +6,16 @@
 #ifndef EXCISIONEVOLUTION_HPP_
 #define EXCISIONEVOLUTION_HPP_
 
+#include "ADMProcaVars.hpp"
 #include "Cell.hpp"
 #include "Coordinates.hpp"
 #include "GRInterval.hpp"
 #include "Tensor.hpp"
 #include "UserVariables.hpp" //This files needs NUM_VARS - total number of components
 #include "VarsTools.hpp"
-#include "ADMProcaVars.hpp"
 
 //! Does excision for fixed BG solutions
-template <class matter_t, class background_t> 
-class ExcisionEvolution
+template <class matter_t, class background_t> class ExcisionEvolution
 {
     // Use matter_t class
     using Vars = typename ADMProcaVars::MatterVars<double>;
@@ -30,8 +29,8 @@ class ExcisionEvolution
 
   public:
     ExcisionEvolution(const double a_dx,
-                      const std::array<double, CH_SPACEDIM> a_center, double a_buffer,
-                      background_t a_background)
+                      const std::array<double, CH_SPACEDIM> a_center,
+                      double a_buffer, background_t a_background)
         : m_dx(a_dx), m_deriv(m_dx), m_center(a_center), m_buffer(a_buffer),
           m_background(a_background)
     {
@@ -39,12 +38,12 @@ class ExcisionEvolution
 
     void compute(const Cell<double> current_cell) const
     {
-        //where are we?!
+        // where are we?!
         const Coordinates<double> coords(current_cell, m_dx, m_center);
 
-        //check if we're inside buffered horizon region
+        // check if we're inside buffered horizon region
         bool is_excised = m_background.check_if_excised(coords, m_buffer);
-        
+
         if (is_excised)
         {
             // the matter rhs vars within the excision zone
@@ -55,7 +54,7 @@ class ExcisionEvolution
             current_cell.store_vars(vars);
         } // else do nothing
 
-        //Excise Z field right at horizon since it can derive errors
+        // Excise Z field right at horizon since it can derive errors
         bool is_excised_Z = m_background.check_if_excised(coords, 1.0);
         if (is_excised_Z)
         {

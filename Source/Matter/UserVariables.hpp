@@ -10,17 +10,17 @@
 /// This enum gives the index of every variable stored in the grid
 enum
 {
-    c_phi, //scalar part of proca field
+    c_phi, // scalar part of proca field
 
-    c_Avec1, //spatial part of proca field
+    c_Avec1, // spatial part of proca field
     c_Avec2,
     c_Avec3,
 
-    c_Evec1, //conjugate momentum of proca field
+    c_Evec1, // conjugate momentum of proca field
     c_Evec2,
     c_Evec3,
 
-    c_Z, //auxiliary scalar field
+    c_Z, // auxiliary scalar field
 
     NUM_VARS
 };
@@ -34,8 +34,7 @@ static const std::array<std::string, NUM_VARS> variable_names = {
 
     "Evec1", "Evec2", "Evec3",
 
-    "Z"
-    };
+    "Z"};
 
 } // namespace UserVariables
 

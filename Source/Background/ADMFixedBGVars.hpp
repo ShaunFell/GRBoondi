@@ -13,7 +13,7 @@
 #include "UserVariables.hpp"
 #include "VarsTools.hpp"
 
-//struct for the 3+1 decomposed form of the matter stress-energy tensor
+// struct for the 3+1 decomposed form of the matter stress-energy tensor
 template <class data_t> struct emtensor_t
 {
     Tensor<2, data_t> Sij; //!< S_ij = T_ij
@@ -37,13 +37,13 @@ template <class data_t> struct Vars
     Tensor<2, data_t> gamma;
 
     Tensor<1, data_t> d1_lapse;
-    Tensor<1, Tensor<1,data_t>> d1_shift;
+    Tensor<1, Tensor<1, data_t>> d1_shift;
     Tensor<2, Tensor<1, data_t>> d1_gamma;
 
     // Optional second derivatives of the vars
     Tensor<2, data_t> d2_lapse;
-    Tensor<1, Tensor<2,data_t>> d2_shift;
-    Tensor<2, Tensor<2,data_t>> d2_gamma;
+    Tensor<1, Tensor<2, data_t>> d2_shift;
+    Tensor<2, Tensor<2, data_t>> d2_gamma;
 };
 
 }; // namespace ADMFixedBGVars

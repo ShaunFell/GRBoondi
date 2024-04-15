@@ -10,7 +10,6 @@
 #include "DimensionDefinitions.hpp"
 #include "TensorAlgebra.hpp"
 
-
 template <class data_t> struct ricci_t
 {
     Tensor<2, data_t> LL; // Ricci with two indices down

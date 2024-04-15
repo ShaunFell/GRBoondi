@@ -8,21 +8,20 @@ enum holding diagnostic variables
 #ifndef DIAGNOSTICVARIABLES_HPP
 #define DIAGNOSTICVARIABLES_HPP
 
-#include <array>
-#include <vector>
-#include <string>
 #include <algorithm> // for std::find
+#include <array>
+#include <string>
+#include <vector>
 
 #include "VariableType.hpp" //GRChombo include
 
 enum
 {
     c_Asquared,
-    
+
     c_rho,
     c_rhoE,
     c_rhoJ,
-
 
     c_chi,
 
@@ -33,7 +32,7 @@ enum
     c_EM_trace,
     c_EM_squared,
 
-    c_rhoLinMom, 
+    c_rhoLinMom,
     c_sourceLinMom,
 
     // variables to be extracted on a surface
@@ -46,48 +45,42 @@ enum
 
 namespace DiagnosticVariables
 {
-    static const std::array<std::string, NUM_DIAGNOSTIC_VARS> variable_names = {
+static const std::array<std::string, NUM_DIAGNOSTIC_VARS> variable_names = {
 
-        "Asquared",
+    "Asquared",
 
-        "rho",
-        "rhoE",
-        "rhoJ",
+    "rho", "rhoE", "rhoJ",
 
+    "chi",
 
-        "chi",
+    "gnn",
 
-        "gnn",
+    "Z_out",
 
-        "Z_out",
+    "EMtrace", "EMsquared",
 
-        "EMtrace",
-        "EMsquared",
+    "rhoLinMom", "sourceLinMom",
 
-        "rhoLinMom",
-        "sourceLinMom",
+    // variables to be extracted on a surface
+    "Edot", "Jdot", "fluxLinMom"};
 
-        // variables to be extracted on a surface
-        "Edot",
-        "Jdot",
-        "fluxLinMom"
-    };
-
-    template <typename T>
-    static const std::vector<T> convert_pairs_to_enum (std::vector<std::pair<T, VariableType>> a_plot_pairs)
+template <typename T>
+static const std::vector<T>
+convert_pairs_to_enum(std::vector<std::pair<T, VariableType>> a_plot_pairs)
+{
+    std::vector<T> enum_array;
+    for (int i = 0; i < a_plot_pairs.size(); i++)
     {
-        std::vector<T> enum_array;
-        for (int i = 0; i < a_plot_pairs.size(); i++)
-        {
-            enum_array.push_back(a_plot_pairs[i].first);
-        }
-        return enum_array;
+        enum_array.push_back(a_plot_pairs[i].first);
     }
-
-    static bool is_variable_to_extract(int var, std::vector<int> var_to_plot)
-    {
-        return std::find(var_to_plot.begin(), var_to_plot.end(), var) != var_to_plot.end();
-    }
+    return enum_array;
 }
+
+static bool is_variable_to_extract(int var, std::vector<int> var_to_plot)
+{
+    return std::find(var_to_plot.begin(), var_to_plot.end(), var) !=
+           var_to_plot.end();
+}
+} // namespace DiagnosticVariables
 
 #endif /* DIAGNOSTICVARIABLES_HPP */
