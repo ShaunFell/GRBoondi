@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
             KerrdeSitter::params_t kerr_params;
             kerr_params.mass = 1.4;
             kerr_params.spin = 0.9;
-            kerr_params.cosmo_constant = 0.001;
+            kerr_params.cosmo_constant = 0.003;
             // kerr_params.center = {0.0, 0.0, 0.0};
             KerrdeSitter kerr_init(kerr_params, dx);
             std::cout << tab << " kerr mass = " << kerr_params.mass
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
             // Discriminant test
             double Q{KerrdeSitter::discriminant<double>(kerr_params)};
             std::cout << tab << "Q = " << Q << std::endl;
-            double mathematica_result_Q{0.006037383095635};
+            double mathematica_result_Q{0.0175359611526745};
             if (abs(Q - mathematica_result_Q) > ERR)
             {
                 std::cout << tab << "Discriminant test failed" << std::endl;
@@ -112,6 +112,48 @@ int main(int argc, char *argv[])
             std::cout << "shift: " << metric_vars.shift[0] << " "
                       << metric_vars.shift[1] << " " << metric_vars.shift[2]
                       << std::endl;
+
+            std::cout << "gamma: " << metric_vars.gamma[0][0] << " "
+                      << metric_vars.gamma[0][1] << " "
+                      << metric_vars.gamma[0][2] << "\n "
+                      << metric_vars.gamma[1][0] << " "
+                      << metric_vars.gamma[1][1] << " "
+                      << metric_vars.gamma[1][2] << "\n "
+                      << metric_vars.gamma[2][0] << " "
+                      << metric_vars.gamma[2][1] << " "
+                      << metric_vars.gamma[2][2] << std::endl;
+
+            std::cout << "metric_vars.d1_lapse: " << metric_vars.d1_lapse[0]
+                      << " " << metric_vars.d1_lapse[1] << " "
+                      << metric_vars.d1_lapse[2] << std::endl;
+
+            std::cout << "metric_vars.d1_shift: " << metric_vars.d1_shift[0][0]
+                      << " " << metric_vars.d1_shift[0][1] << " "
+                      << metric_vars.d1_shift[0][2] << std::endl
+                      << metric_vars.d1_shift[1][0] << " "
+                      << metric_vars.d1_shift[1][1] << " "
+                      << metric_vars.d1_shift[1][2] << std::endl
+                      << metric_vars.d1_shift[2][0] << " "
+                      << metric_vars.d1_shift[2][1] << " "
+                      << metric_vars.d1_shift[2][2] << std::endl;
+
+            std::cout << "metric_vars.d1_gamma: "<<std::endl;
+            FOR2(i, j)
+            {
+                FOR1(k)
+                {
+                    std::cout << "  d1_gamma[" << i << "][" << j << "][" << k
+                              << "] = " << metric_vars.d1_gamma[i][j][k];
+                }
+                std::cout << std::endl;
+            }
+
+            std::cout << "metric_vars.k_tensor: " << std::endl;
+            FOR2(i,j)
+            {
+                std::cout << "  k_tensor[" << i << "][" << j << "]= " << metric_vars.K_tensor[i][j];
+                std::cout << std::endl;
+            }
 
         } // end of kerr tests
     }

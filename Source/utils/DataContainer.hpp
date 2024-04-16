@@ -16,7 +16,7 @@ template <typename data_type> class TimeDataContainer
   private:
     // vector of pairs, first member is the time data and second the derived
     // data
-    std::vector<std::pair<data_type, std::vector<data_type>>> m_data_history;
+    std::vector<std::pair<double, std::vector<data_type>>> m_data_history;
 
     // current length of m_data_history
     int m_current_size;
@@ -26,20 +26,20 @@ template <typename data_type> class TimeDataContainer
         : m_current_size{0}, m_data_history{} {}; // default constructor
 
     // constructor to initialize container with a single data point
-    TimeDataContainer(data_type time, std::vector<data_type> data)
+    TimeDataContainer(double time, std::vector<data_type> data)
         : m_current_size{1}, m_data_history{{time, data}} {};
 
     // method to add a single new data point
-    void update(data_type time, std::vector<data_type> data_point)
+    void update(double time, std::vector<data_type> data_point)
     {
         m_data_history.push_back({time, data_point});
         m_current_size += 1;
     }
 
     // method to grab array of time coordinates
-    std::vector<data_type> get_time_data() const
+    std::vector<double> get_time_data() const
     {
-        std::vector<data_type> time_data;
+        std::vector<double> time_data;
         for (int i = 0; i < m_current_size; i++)
         {
             time_data.push_back(m_data_history[i].first);
