@@ -7,17 +7,17 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/ultrares_GRMilijun_ProcaKerrBH_BHEvo_23352514"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRBoondi/testing/ultrares_GRMilijun_ProcaKerrBH_BHEvo_23352514"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
 plot_prefix = "GeneralizedProcap_"
 
 #file to restart the simulation from
-#restart_file = GeneralizedProca_000003.3d.hdf5
+restart_file = GeneralizedProca_028000.3d.hdf5
 
 # HDF5files are written every dt = L/N*dt_multiplier*checkpoint_interval
-checkpoint_interval = 200
+checkpoint_interval = 2000
 # set to 0 to turn off plot files (except at t=0 and t=stop_time)
 # set to -1 to never ever print plotfiles
 plot_interval = 20

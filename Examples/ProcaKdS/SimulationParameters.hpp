@@ -7,14 +7,22 @@
 #include "ProcaField.hpp"
 #include "ProcaSimulationParameters.hpp"
 
+//For interpolating the BH horizon
+#include "SimpleDataReader.hpp"
+#include "DataManipulation.hpp"
+
 class SimulationParameters : public ProcaSimulationParameters
 {
 
   public:
     SimulationParameters(GRParmParse &pp) : ProcaSimulationParameters(pp)
     {
+        pout() << "Reading simulation parameters" << std::endl;
         read_params(pp);
         check_params();
+
+        pout() << "Computing BH horizon" << std::endl;
+        compute_bh_horizon();
     }
 
     void read_params(GRParmParse &pp)
@@ -55,6 +63,30 @@ class SimulationParameters : public ProcaSimulationParameters
                                 c_Jdot, vars_to_extract),
                         "If you want to evolve the black hole, you must turn "
                         "on extraction of Edot and Jdot");
+    }
+
+    void compute_bh_horizon()
+    {
+        SimpleDataReader<double> reader {"KerrdeSitter_rPlus.dat"};
+        DataContainer<double> data = reader.get_data();
+
+        pout() << "Interpolating BH horizon" << std::endl;
+
+        std::vector<std::vector<double>> coords {data.get_coords()};
+        std::vector<double> horizon_values {data.get_data()};
+
+        std::vector<double> query_point { background_params.cosmo_constant, background_params.spin };
+
+        std::pair< std::vector<double>, std::vector<std::vector<double>> > nearest_3_neighbors { DataManipulation::find_nearest_neighbors(coords, query_point, 3) };
+
+        std::vector<double> point1 { nearest_3_neighbors.second[0][0], nearest_3_neighbors.second[0][1] , horizon_values[nearest_3_neighbors.first[0]] };
+        std::vector<double> point2 { nearest_3_neighbors.second[1][0], nearest_3_neighbors.second[1][1] , horizon_values[nearest_3_neighbors.first[1]] };
+        std::vector<double> point3 { nearest_3_neighbors.second[2][0], nearest_3_neighbors.second[2][1] , horizon_values[nearest_3_neighbors.first[2]] };
+
+        double interpolated_horizon { DataManipulation::lin_interp_2d(point1, point2, point3, query_point) };
+
+        pout() << "Interpolated horizon value: " << interpolated_horizon << std::endl;
+        background_params.r_plus = interpolated_horizon;
     }
 
     // parameters of kerr bh

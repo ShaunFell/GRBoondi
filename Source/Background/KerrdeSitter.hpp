@@ -94,66 +94,55 @@ class KerrdeSitter
         data_t rho2{r2 + spin2 * cos_theta2};
         data_t Theta{1 + CC / 3 * spin2};
         data_t Lambda_r{1 - CC / 3 * r2};
-        data_t Gamma{delta_theta * (r2 + spin2) * (r2 + spin2) -
-                     delta_r * spin2 * sin_theta2};
+        data_t Gamma{2 * M * r * delta_theta + rho2 * Theta * Lambda_r};
         data_t Upsilon{delta_theta * (r2 + spin2) - delta_r};
+        data_t spin2r2 { spin2 + r2};   
 
         // Compute the 3+1 metric variables
 
-        // lapse
-        data_t lapse_2{(delta_r * delta_theta * rho2) /
-                       (Theta * Theta * Gamma)};
+        // lapse        
+        data_t lapse_2{ delta_theta * Lambda_r * Lambda_r * rho2 / Gamma };
         metric_vars.lapse = sqrt(lapse_2);
 
         // shift
         Tensor<1, data_t> spherical_shift;
-        spherical_shift[0] = 0.;
+        data_t denominator { 2 * spin2 * M * r * sin_theta2 * Lambda_r + Theta * ( 2 * M * r + (spin2 + r2) * Lambda_r ) * rho2  };
+        spherical_shift[0] = 2 * M * r * ( spin2 + r2 ) * delta_theta * Lambda_r / denominator;
         spherical_shift[1] = 0.;
-        spherical_shift[2] = -spin * Upsilon / Gamma;
+        spherical_shift[2] = - 2 * spin * M * r * delta_theta * Lambda_r / denominator;
 
         // spatial metric
         Tensor<2, data_t> spherical_gamma;
-        spherical_gamma[0][0] = rho2 / delta_r;
+        spherical_gamma[0][0] = rho2 * ( 2 * M * r + spin2r2 * Lambda_r) / (Lambda_r * Lambda_r * spin2r2 * spin2r2);
         spherical_gamma[1][1] = rho2 / delta_theta;
-        spherical_gamma[2][2] = sin_theta2 * Gamma / (Theta * Theta * rho2);
+        spherical_gamma[2][2] = sin_theta2 * ( spin2r2 * Theta + 2 * spin2 * M * r * sin_theta2 / rho2 ) / (Theta * Theta) ;
         spherical_gamma[0][1] = 0.;
-        spherical_gamma[0][2] = 0.;
+        spherical_gamma[0][2] = - 2 * spin * M * r * sin_theta2 / ( spin2 * Theta * Lambda_r + r2 * Theta * Lambda_r );
         spherical_gamma[1][0] = 0.;
         spherical_gamma[1][2] = 0.;
-        spherical_gamma[2][0] = 0.;
+        spherical_gamma[2][0] = spherical_gamma[0][2];
         spherical_gamma[2][1] = 0.;
 
         // Now the 1st derivatives
 
         // first derivative of the metric variables
-        data_t delta_r_dr{-2 / 3 *
-                          (3 * M + r * (-3 + spin2 * CC + 2 * r2 * CC))};
-        data_t delta_theta_dtheta{-2 / 3 * spin2 * CC * cos_theta * sin_theta};
-        data_t rho2_dr{2 * r};
-        data_t rho2_dtheta{-2 * spin2 * cos_theta * sin_theta};
-        data_t Lambda_r_dr{-2 / 3 * r * CC};
+        data_t delta_r_dr{-2. / 3. * (3. * M + r * (- 3. + spin2 * CC + 2. * r2 * CC))};
+        data_t delta_theta_dtheta{- 2. / 3. * spin2 * CC * cos_theta * sin_theta};
+        data_t rho2_dr{2. * r};
+        data_t rho2_dtheta{-2. * spin2 * cos_theta * sin_theta};
+        data_t Lambda_r_dr{-2. / 3. * r * CC};
+        data_t Gamma_dr { 2. * M * delta_theta + rho2_dr * Theta * Lambda_r + rho2 * Theta * Lambda_r_dr };
+        data_t Gamma_dtheta {  2. * M * r * delta_theta_dtheta + rho2_dtheta * Theta * Lambda_r };
 
         // First derivatives of lapse
         Tensor<1, data_t> dlapse_dr;
         // derivative of lapse w.r.t r
-        dlapse_dr[0] =
-            -(delta_theta /
-              (2 * metric_vars.lapse * Theta * Theta * Gamma * Gamma)) *
-            (-8 * spin2 * r * sin_theta2 * delta_r * Upsilon -
-             delta_theta * delta_r_dr * (r2 + spin2) * (r2 + spin2) * 2 * rho2 +
-             2 * delta_r * rho2_dr * Gamma);
+        dlapse_dr[0] = delta_theta * Lambda_r / (2. * Gamma * Gamma * metric_vars.lapse) * ( - Lambda_r * rho2 * Gamma_dr + Gamma * ( 2. * rho2 * Lambda_r_dr + Lambda_r * rho2_dr));
         // derivative of lapse w.r.t theta
-        dlapse_dr[1] =
-            (-delta_r /
-             (2 * Theta * Theta * Gamma * Gamma * metric_vars.lapse)) *
-            (8 * spin2 * (r2 + spin2) * (r2 + spin2) * sin_theta * cos_theta *
-                 delta_theta * delta_theta +
-             2 * spin2 * delta_r * delta_theta * sin_theta * cos_theta *
-                 (2 * rho2 - 4 * r2 - r * spin2) +
-             2 * spin2 * sin_theta2 * delta_r * rho2 * delta_theta_dtheta +
-             2 * delta_theta * Gamma * rho2_dtheta);
+        dlapse_dr[1] = Lambda_r * Lambda_r / (2. * Gamma * Gamma * metric_vars.lapse) * ( - delta_theta * rho2 * Gamma_dtheta + Gamma * ( rho2 * delta_theta_dtheta + delta_theta * rho2_dtheta));
         // derivative of lapse w.r.t. phi
         dlapse_dr[2] = 0.;
+
 
         // First derivatives of the shift
         Tensor<1, Tensor<1, data_t>> dshift_dr;
@@ -161,42 +150,35 @@ class KerrdeSitter
         FOR2(i, j) { dshift_dr[i][j] = 0; };
         // Set the only 2 non-zero components
         // derivative w.r.t. r
-        dshift_dr[2][0] = (spin * delta_theta) / (Gamma * Gamma) *
-                          (-2 * r * delta_r * (rho2 + r2 + spin2) +
-                           (r2 + spin2) * (rho2 * delta_r_dr +
-                                           2 * r * delta_theta * (r2 + spin2)));
-        // derivative w.r.t. theta
-        dshift_dr[2][1] = (spin * delta_r) / (Gamma * Gamma) *
-                          (-2 * spin2 * sin_theta * cos_theta * Upsilon +
-                           (r2 + spin2) * delta_theta_dtheta *
-                               (r2 + spin2 - spin2 * sin_theta2));
+        dshift_dr[0][0] = 2 * M * delta_theta * ( 2. * M * r2 * spin2r2 * Theta * rho2 * Lambda_r_dr + 
+                                                                            2. * M * r2 * Theta * Lambda_r * ( 2. * r * rho2 - spin2r2 * rho2_dr) + 
+                                                                            Lambda_r * Lambda_r * (4. * spin2 * M * r2 * r * sin_theta2 + spin2r2 * spin2r2 * Theta * (rho2 - r * rho2_dr)));
+        dshift_dr[0][0] *= 1. / denominator / denominator;
+        dshift_dr[0][1] = 2. * M * r * spin2r2 * Lambda_r * ( delta_theta_dtheta * ( Theta * rho2 * (2. * M * r + spin2r2 * Lambda_r) + 2 * spin2 * M * r * Lambda_r * sin_theta2) + delta_theta * ( - 2. * spin2 * M * r * Lambda_r * 2. * sin_theta * cos_theta - Theta * rho2_dtheta * (2 * M * r + Lambda_r * spin2r2 ) ) );
+        dshift_dr[0][1] *= 1. / denominator / denominator;
+        dshift_dr[2][0] = 2. * spin * M * delta_theta * Theta * ( rho2 * ( Lambda_r * Lambda_r * (r2 - spin2) - 2. * M * r2 * Lambda_r_dr ) + r * Lambda_r * rho2_dr * (2. * M * r + Lambda_r * spin2r2 ) );
+        dshift_dr[2][0] *= 1. / denominator / denominator;
+        dshift_dr[2][1] = 2. * spin * M * r * Lambda_r * ( - delta_theta_dtheta * ( Theta * rho2 * ( 2. * M * r + Lambda_r * spin2r2) + 2. * spin2 * M * r * Lambda_r * sin_theta2 ) + delta_theta * ( 4. * spin2 * M * r * Lambda_r * cos_theta * sin_theta + Theta * rho2_dtheta * ( 2 * M * r + Lambda_r * spin2r2 ) ) );
+        dshift_dr[2][1] *= 1. / denominator / denominator;
+
 
         // First derivatives of the spatial metric
         Tensor<2, Tensor<1, data_t>> dgamma_dr;
         // Zero initialize
         FOR3(i, j, k) { dgamma_dr[i][j][k] = 0; }
         // derivative w.r.t. r
-        dgamma_dr[0][0][0] = (1. / (delta_r * delta_r)) *
-                             (-rho2 * delta_r_dr + delta_r * rho2_dr);
+        dgamma_dr[0][0][0] = rho2 * ( 2 * Lambda_r * ( M * (spin2 - 3 * r2) - r * Lambda_r * spin2r2 ) - spin2r2 * Lambda_r_dr * ( 4 * M * r + spin2r2 * Lambda_r ) ) + spin2r2 * Lambda_r * rho2_dr * (2 * M * r + spin2r2 * Lambda_r);    
+        dgamma_dr[0][0][0] *= 1. / (Lambda_r * Lambda_r * Lambda_r * spin2r2 * spin2r2 * spin2r2);
+        dgamma_dr[0][2][0] = 2 * spin * M * sin_theta2 * ( Lambda_r * (r2 - spin2) + r * Lambda_r_dr * spin2r2) / ( Lambda_r * Lambda_r * Theta * spin2r2 * spin2r2 );
         dgamma_dr[1][1][0] = rho2_dr / delta_theta;
-        dgamma_dr[2][2][0] = (1. / (Theta * Theta * rho2 * rho2)) *
-                             ((r2 + spin2) * sin_theta2 * delta_theta *
-                                  (4 * r * rho2 - (r2 + spin2) * rho2_dr) +
-                              spin2 * sin_theta2 * sin_theta2 *
-                                  (delta_r * rho2_dr - rho2 * delta_r_dr));
-        // derivative w.r.t. theta
-        dgamma_dr[0][0][1] = rho2_dtheta / delta_r;
-        dgamma_dr[1][1][1] =
-            (1. / (delta_theta * delta_theta)) *
-            (delta_theta * rho2_dtheta - rho2 * delta_theta_dtheta);
-        dgamma_dr[2][2][1] =
-            (1. / (Theta * Theta * rho2 * rho2)) *
-            (spin2 * sin_theta2 * sin_theta * delta_r *
-                 (-4 * rho2 * cos_theta + sin_theta * rho2_dtheta) +
-             (r2 + spin2) * (r2 + spin2) * sin_theta *
-                 (rho2 * (2 * cos_theta * delta_theta +
-                          sin_theta * delta_theta_dtheta) -
-                  sin_theta * delta_theta * rho2_dtheta));
+        dgamma_dr[2][0][0] = dgamma_dr[0][2][0];
+        dgamma_dr[2][2][0] = (sin_theta2 / Theta / Theta ) * ( 2 * r * Theta + (2 * spin2 * M * sin_theta2 * ( rho2 - r * rho2_dr) ) / rho2 / rho2 );
+        //derivative w.r.t. theta
+        dgamma_dr[0][0][1] = rho2_dtheta * (2 * M * r + Lambda_r * spin2r2 ) / (Lambda_r * Lambda_r * spin2r2 * spin2r2 ) ;
+        dgamma_dr[0][2][1] = - 4 * spin * M * r * cos_theta * sin_theta / ( spin2 * Theta * Lambda_r + r2 * Theta * Lambda_r ) ;
+        dgamma_dr[1][1][1] = ( -rho2 * delta_theta_dtheta + delta_theta * rho2_dtheta ) / delta_theta / delta_theta;
+        dgamma_dr[2][0][1] = dgamma_dr[0][2][1];
+        dgamma_dr[2][2][1] = ( 8 * spin2 * M * r * rho2 * cos_theta * sin_theta * sin_theta2 + spin2r2 * Theta * rho2 * rho2 * 2 * sin_theta * cos_theta - 2 * spin2 * M * r * sin_theta2 * sin_theta2 * rho2_dtheta ) / (Theta * Theta * rho2 * rho2 );
 
         // Now transform to the rectangular coordinates
 
@@ -239,7 +221,7 @@ class KerrdeSitter
             FOR1(j)
             {
                 metric_vars.d1_lapse[i] +=
-                    jacobian_BL_to_Cart[i][j] * dlapse_dr[j];
+                    jacobian_BL_to_Cart[j][i] * dlapse_dr[j];
 
                 metric_vars.d1_shift[i][j] = 0.;
 
@@ -247,30 +229,36 @@ class KerrdeSitter
                 {
                     metric_vars.d1_shift[i][j] +=
                         dshift_dr[k][n] * jacobian_BL_to_Cart[n][j] *
-                            jacobian_BL_to_Cart[i][k] +
+                            jacobian_Cart_to_BL[i][k] +
                         spherical_shift[k] *
                             jacobian_Cart_to_BL_deriv[i][k][n] *
                             jacobian_BL_to_Cart[n][j];
+                }
 
+                FOR1(k)
+                {
                     metric_vars.d1_gamma[i][j][k] = 0.;
 
-                    FOR1(b)
+                    FOR2(a,b)
                     {
                         metric_vars.d1_gamma[i][j][k] +=
-                            spherical_gamma[i][j] *
-                            (jacobian_BL_to_Cart_deriv[n][i][k] *
+                            spherical_gamma[a][b] *
+                            (jacobian_BL_to_Cart_deriv[a][i][k] *
                                  jacobian_BL_to_Cart[b][j] +
-                             jacobian_BL_to_Cart[n][i] *
+                             jacobian_BL_to_Cart[a][i] *
                                  jacobian_BL_to_Cart_deriv[b][j][k]);
+
                     }
 
-                    FOR2(a, b)
+                    FOR3(a, b,n)
                     {
                         metric_vars.d1_gamma[i][j][k] +=
                             dgamma_dr[a][b][n] * jacobian_BL_to_Cart[n][k] *
                             jacobian_BL_to_Cart[a][i] *
                             jacobian_BL_to_Cart[b][j];
+
                     }
+
                 }
             }
         }
@@ -299,34 +287,6 @@ class KerrdeSitter
             metric_vars.K += gamma_UU[i][j] * metric_vars.K_tensor[i][j];
         }
 
-        // debugging
-        std::cout << "spherical_shift: " << spherical_shift[0] << " "
-                  << spherical_shift[1] << " " << spherical_shift[2]
-                  << std::endl;
-        std::cout << "cart_to_spherical_jacobian:" << jacobian_Cart_to_BL[0][0]
-                  << " " << jacobian_Cart_to_BL[0][1] << " "
-                  << jacobian_Cart_to_BL[0][2] << "\n "
-                  << jacobian_Cart_to_BL[1][0] << " "
-                  << jacobian_Cart_to_BL[1][1] << " "
-                  << jacobian_Cart_to_BL[1][2] << "\n "
-                  << jacobian_Cart_to_BL[2][0] << " "
-                  << jacobian_Cart_to_BL[2][1] << " "
-                  << jacobian_Cart_to_BL[2][2] << std::endl;
-        std::cout << "spherical_gamma:" << spherical_gamma[0][0] << " "
-                  << spherical_gamma[0][1] << " " << spherical_gamma[0][2]
-                  << "\n " << spherical_gamma[1][0] << " "
-                  << spherical_gamma[1][1] << " " << spherical_gamma[1][2]
-                  << "\n " << spherical_gamma[2][0] << " "
-                  << spherical_gamma[2][1] << " " << spherical_gamma[2][2]
-                  << std::endl;
-
-        std::cout << "gamma: " << metric_vars.gamma[0][0] << " "
-                  << metric_vars.gamma[0][1] << " " << metric_vars.gamma[0][2]
-                  << "\n " << metric_vars.gamma[1][0] << " "
-                  << metric_vars.gamma[1][1] << " " << metric_vars.gamma[1][2]
-                  << "\n " << metric_vars.gamma[2][0] << " "
-                  << metric_vars.gamma[2][1] << " " << metric_vars.gamma[2][2]
-                  << std::endl;
     }
 
     // Ultimate values referenced from arXiv:1011.0479v1
