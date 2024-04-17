@@ -21,6 +21,9 @@ src_dirs := $(GRCHOMBO_SOURCE)/utils \
             $(GRCHOMBO_SOURCE)/AMRInterpolator  \
             $(GRBoondi_SOURCE)/Background  \
 			$(GRBoondi_SOURCE)/Diagnostics \
-			$(GRBoondi_SOURCE)/Core
+			$(GRBoondi_SOURCE)/Core \
+            $(GRBoondi_SOURCE)/Matter \
+            $(GRBoondi_SOURCE)/Lagrangians \
+            $(GRBoondi_SOURCE)/utils
 
 include $(CHOMBO_HOME)/mk/Make.test
