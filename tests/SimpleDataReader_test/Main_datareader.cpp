@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     int reader_failed { 0 };
     int interp_failed { 0 };
 
-    SimpleDataReader<double> reader{"data_test.dat"};
+    SimpleDataReader<double> reader{"data_test.dat_test"};
     DataContainer<double> data = reader.get_data();
 
     // Test the nearest neighbor algorithm
