@@ -7,7 +7,7 @@
 verbosity = 1
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/dev_EMField_23310546"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRBoondi/testing/TEST_EMFIELD_MAXMINS"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -32,6 +32,8 @@ hdf5_subpath = "hdf5"
 pout_subpath = "pout"
 data_subpath = "data"
 integrals_filename = "Integrals"
+maxs_filename = "Maximums"
+mins_filename = "Maximums"
 
 # change the name of output files
 # pout_prefix = "pout"
@@ -73,7 +75,7 @@ z_damping = 1.0
 ################################################## Grid parameters
 ##################################################
 
-N_full = 128
+N_full = 32
 L_full = 64
 
 # Max and min box sizes
@@ -167,8 +169,9 @@ diagnostic_excision_vars = rho rhoE rhoJ rhoLinMom sourceLinMom
 ################################################## Extraction
 ##################################################
 
-activate_extraction = 1 # extraction of fluxes
+activate_extraction = 1 # extraction of surface quantities
 activate_integration = 1 # integration of densities
+activate_minmax = 1 # extraction of minimum and maximum values
 
 num_extraction_radii = 2
 extraction_radii = 1.6 30
@@ -176,11 +179,19 @@ extraction_levels = 1 1
 num_points_phi = 24
 num_points_theta = 37
 
+## Variable names are those in DiagnosticVariables namespace in DiagnosticVariables.hpp
+
 extraction_vars = Edot Jdot
 num_extraction_vars = 2
 
 integration_vars = rhoE rhoJ EMsquared
 num_integration_vars = 3
+
+maximum_vars = EMsquared EMtrace
+num_maximum_vars = 2
+
+minimum_vars = EMsquared EMtrace
+num_minimum_vars = 2
 
 write_extraction = 0
 extraction_subpath = "extraction"

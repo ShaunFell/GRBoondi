@@ -30,6 +30,8 @@ class ProcaSimulationParameters : public ChomboParameters
     {
         // filenames
         pp.load("integrals_filename", integrals_filename);
+        pp.load("maxs_filename", maxs_filename, std::string("minmax"));
+        pp.load("mins_filename", mins_filename, std::string("minmax"));
 
         // extraction params
         pp.load("num_extraction_radii", extraction_params.num_extraction_radii,
@@ -64,6 +66,7 @@ class ProcaSimulationParameters : public ChomboParameters
 
         pp.load("activate_extraction", activate_extraction, false);
         pp.load("activate_integration", activate_integration, false);
+        pp.load("activate_minmax", activate_minmax, false);
 
         // grid parameters
         pp.load("nan_check", nan_check, 1);
@@ -93,6 +96,18 @@ class ProcaSimulationParameters : public ChomboParameters
         UserVariables::load_vars_to_vector(
             pp, "integration_vars", "num_integration_vars", integration_vars,
             num_integration_vars);
+
+        // load maximum variables
+        UserVariables::load_vars_to_vector(
+            pp, "maximum_vars", "num_maximum_vars", maximum_vars,
+            num_maximum_vars
+        );
+
+        // load minimum variables
+        UserVariables::load_vars_to_vector(
+            pp, "minimum_vars", "num_minimum_vars", minimum_vars,
+            num_minimum_vars
+        );
 
         // load diagnostic variables to excise
         UserVariables::load_vars_to_vector(
@@ -127,6 +142,8 @@ class ProcaSimulationParameters : public ChomboParameters
     double sigma;
     int nan_check;
     std::string integrals_filename;
+    std::string maxs_filename;
+    std::string mins_filename;
 
     spherical_extraction_params_t extraction_params;
     int num_extraction_vars;
@@ -135,6 +152,12 @@ class ProcaSimulationParameters : public ChomboParameters
     int num_integration_vars;
     std::vector<std::pair<int, VariableType>> integration_vars;
 
+    int num_maximum_vars;
+    std::vector<std::pair<int, VariableType>> maximum_vars;
+
+    int num_minimum_vars;
+    std::vector<std::pair<int, VariableType>> minimum_vars;;
+
     int num_diagnostic_excision_vars{0};
     std::vector<std::pair<int, VariableType>> diagnostic_excision_vars;
 
@@ -142,6 +165,7 @@ class ProcaSimulationParameters : public ChomboParameters
     bool activate_ham_tagging;
     bool activate_extraction_tagging;
     bool activate_extraction;
+    bool activate_minmax;
     double grid_scaling;
 
     double initial_ratio;
