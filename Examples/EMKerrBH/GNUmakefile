@@ -22,6 +22,7 @@ src_dirs := $(GRCHOMBO_SOURCE)/utils \
             $(GRBoondi_SOURCE)/Background  \
             $(GRBoondi_SOURCE)/Matter \
 			$(GRBoondi_SOURCE)/Diagnostics \
-			$(GRBoondi_SOURCE)/Core
+			$(GRBoondi_SOURCE)/Core \
+            $(GRBoondi_SOURCE)/utils
 
 include $(CHOMBO_HOME)/mk/Make.test
