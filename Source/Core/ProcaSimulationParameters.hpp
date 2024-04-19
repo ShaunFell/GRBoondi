@@ -98,16 +98,14 @@ class ProcaSimulationParameters : public ChomboParameters
             num_integration_vars);
 
         // load maximum variables
-        UserVariables::load_vars_to_vector(
-            pp, "maximum_vars", "num_maximum_vars", maximum_vars,
-            num_maximum_vars
-        );
+        UserVariables::load_vars_to_vector(pp, "maximum_vars",
+                                           "num_maximum_vars", maximum_vars,
+                                           num_maximum_vars);
 
         // load minimum variables
-        UserVariables::load_vars_to_vector(
-            pp, "minimum_vars", "num_minimum_vars", minimum_vars,
-            num_minimum_vars
-        );
+        UserVariables::load_vars_to_vector(pp, "minimum_vars",
+                                           "num_minimum_vars", minimum_vars,
+                                           num_minimum_vars);
 
         // load diagnostic variables to excise
         UserVariables::load_vars_to_vector(
@@ -156,7 +154,8 @@ class ProcaSimulationParameters : public ChomboParameters
     std::vector<std::pair<int, VariableType>> maximum_vars;
 
     int num_minimum_vars;
-    std::vector<std::pair<int, VariableType>> minimum_vars;;
+    std::vector<std::pair<int, VariableType>> minimum_vars;
+    ;
 
     int num_diagnostic_excision_vars{0};
     std::vector<std::pair<int, VariableType>> diagnostic_excision_vars;

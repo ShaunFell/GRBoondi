@@ -204,7 +204,6 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
         // initialize background and matter class
         background_t background_init{m_p.background_params, m_dx};
         proca_t proca_field(background_init, m_p.matter_params);
-        
 
         // calculate densities on grid
         if (!m_p.activate_extraction) // did we already fill ghosts in the
@@ -282,7 +281,6 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
                                         m_dt, m_time, m_restart_time,
                                         SmallDataIO::APPEND, first_step);
 
-
             // remove duplicates
             constraint_file.remove_duplicate_time_data();
 
@@ -293,7 +291,7 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
                 // first create a container for the variable names and iterate
                 // over the vars_to_integrate
                 std::vector<std::string> header_names;
-     
+
                 for (auto var_enum : vars_to_integrate)
                 {
                     header_names.push_back(
@@ -318,25 +316,28 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
     {
 
         // get enum of variables we want to find the maximum of
-        const std::vector<int> vars_to_find_max = DiagnosticVariables::convert_pairs_to_enum(m_p.maximum_vars);
+        const std::vector<int> vars_to_find_max =
+            DiagnosticVariables::convert_pairs_to_enum(m_p.maximum_vars);
 
         // get enum of variables we want to find the minimum of
-        const std::vector<int> vars_to_find_min = DiagnosticVariables::convert_pairs_to_enum(m_p.minimum_vars);
-
+        const std::vector<int> vars_to_find_min =
+            DiagnosticVariables::convert_pairs_to_enum(m_p.minimum_vars);
 
         // initialize background and matter class
         background_t background_init{m_p.background_params, m_dx};
         proca_t proca_field(background_init, m_p.matter_params);
 
         // calculate densities on grid
-        if (!m_p.activate_extraction && !m_p.activate_integration) // did we already fill ghosts in the extraction block?
+        if (!m_p.activate_extraction &&
+            !m_p.activate_integration) // did we already fill ghosts in the
+                                       // extraction block?
         {
             fillAllGhosts();
         }
 
-        // If we want to extract any of the minmax values, we need to compute the
-        // charges and fluxes on the grid determine if any of the variables we
-        // want to compute are calculated in ChargesFluxes class
+        // If we want to extract any of the minmax values, we need to compute
+        // the charges and fluxes on the grid determine if any of the variables
+        // we want to compute are calculated in ChargesFluxes class
         bool calculate_chargesfluxes = false;
         for (auto var_enum : {c_rho, c_rhoJ, c_rhoE, c_EM_squared, c_EM_trace})
         {
@@ -365,7 +366,7 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
         {
             calculate_linmom += DiagnosticVariables::is_variable_to_extract(
                 var_enum, vars_to_find_max);
-                calculate_linmom += DiagnosticVariables::is_variable_to_extract(
+            calculate_linmom += DiagnosticVariables::is_variable_to_extract(
                 var_enum, vars_to_find_min);
         }
         if (calculate_linmom && !m_p.activate_integration)
@@ -378,19 +379,20 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
                            SKIP_GHOST_CELLS);
         }
 
-        //excise if we didnt already in integration block
+        // excise if we didnt already in integration block
         if (!m_p.activate_integration)
         {
             const std::vector<int> vars_to_excise =
                 DiagnosticVariables::convert_pairs_to_enum(
                     m_p.diagnostic_excision_vars);
             ExcisionDiagnostics<proca_t, background_t> excisor(
-                background_init, m_dx, m_p.center, m_p.diagnostic_inner_boundary,
-                m_p.diagnostic_outer_boundary, vars_to_excise);
+                background_init, m_dx, m_p.center,
+                m_p.diagnostic_inner_boundary, m_p.diagnostic_outer_boundary,
+                vars_to_excise);
 
             // excise within the excision zone
             BoxLoops::loop(excisor, m_state_diagnostics, m_state_diagnostics,
-                        SKIP_GHOST_CELLS, disable_simd());
+                           SKIP_GHOST_CELLS, disable_simd());
         }
 
         // if we're on the min level, then perform AMR reduction
@@ -406,23 +408,28 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
             std::vector<double> minimums;
 
             // now compute the max and mins
-            for (auto var_enum: vars_to_find_max)
+            for (auto var_enum : vars_to_find_max)
             {
                 maximums.push_back(amr_reductions.max(var_enum));
             }
-            for (auto var_enum: vars_to_find_min)
+            for (auto var_enum : vars_to_find_min)
             {
                 minimums.push_back(amr_reductions.min(var_enum));
             }
 
-            //create two file objects for the max and min. 
-            // Note, this doesnt account for the possibility that the max and min files are the same, but we take this into account below
-            SmallDataIO maximum_file(m_p.data_path + m_p.maxs_filename, m_dt, m_time, m_restart_time, SmallDataIO::APPEND, first_step);
-            SmallDataIO minimum_file(m_p.data_path + m_p.mins_filename, m_dt, m_time, m_restart_time, SmallDataIO::APPEND, first_step);
+            // create two file objects for the max and min.
+            //  Note, this doesnt account for the possibility that the max and
+            //  min files are the same, but we take this into account below
+            SmallDataIO maximum_file(m_p.data_path + m_p.maxs_filename, m_dt,
+                                     m_time, m_restart_time,
+                                     SmallDataIO::APPEND, first_step);
+            SmallDataIO minimum_file(m_p.data_path + m_p.mins_filename, m_dt,
+                                     m_time, m_restart_time,
+                                     SmallDataIO::APPEND, first_step);
 
             // flag to tell us if the min and max files are the same
-            bool min_is_max_file = (m_p.maxs_filename == m_p.mins_filename) ? true : false;
-
+            bool min_is_max_file =
+                (m_p.maxs_filename == m_p.mins_filename) ? true : false;
 
             maximum_file.remove_duplicate_time_data();
             if (!min_is_max_file)
@@ -444,7 +451,8 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
                 }
                 for (auto var_enum : vars_to_find_min)
                 {
-                    // if the maximum and minimum files are the same, combine the two header column names
+                    // if the maximum and minimum files are the same, combine
+                    // the two header column names
                     if (min_is_max_file)
                     {
                         header_maxs.push_back(
@@ -453,7 +461,7 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
                     else
                     {
                         header_mins.push_back(
-                        DiagnosticVariables::variable_names[var_enum]);
+                            DiagnosticVariables::variable_names[var_enum]);
                     }
                 }
 
@@ -462,44 +470,44 @@ void BaseProcaFieldLevel<background_t, proca_t>::specificPostTimeStep()
                 if (!min_is_max_file)
                 {
                     minimum_file.write_header_line(header_mins);
-                } else
-                { //if the maximum and minimum files are the same, create a second header line that specifies which values are the max and min
+                }
+                else
+                { // if the maximum and minimum files are the same, create a
+                  // second header line that specifies which values are the max
+                  // and min
                     std::vector<std::string> second_header_for_combined_files;
                     for (auto var_enum : vars_to_find_max)
                     {
-                        second_header_for_combined_files.push_back(
-                            "MAX");
+                        second_header_for_combined_files.push_back("MAX");
                     }
                     for (auto var_enum : vars_to_find_min)
                     {
-                        second_header_for_combined_files.push_back(
-                            "MIN");
+                        second_header_for_combined_files.push_back("MIN");
                     }
-                    maximum_file.write_header_line(second_header_for_combined_files, "  ");
-                    
+                    maximum_file.write_header_line(
+                        second_header_for_combined_files, "  ");
                 }
-
             }
 
             // now write the data to the file
             if (min_is_max_file)
-            { //if the two files are the same, write all data to the single file
-                for (auto& min : minimums)
+            { // if the two files are the same, write all data to the single
+              // file
+                for (auto &min : minimums)
                 {
-                    maximums.push_back(min);   
+                    maximums.push_back(min);
                 }
                 maximum_file.write_time_data_line(maximums);
             }
             else
-            { //if they're different, then write each data to the separate files
+            { // if they're different, then write each data to the separate
+              // files
                 maximum_file.write_time_data_line(maximums);
                 minimum_file.write_time_data_line(minimums);
             }
-
-        
         }
 
-    } //end of minmax block
+    } // end of minmax block
 
     // add any other computations from the user, via virtual function
     additionalPostTimeStep();
