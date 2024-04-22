@@ -1,0 +1,30 @@
+name: Sync paper branch with main
+
+on: 
+  push:
+    branches:
+      - 'main'
+
+permissions:
+  contents: write
+
+jobs:
+  sync-paper-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git User
+        uses: fregante/setup-git-user@v2
+
+      - name: Update paper Branch
+        run: |
+          git fetch origin
+          git checkout paper
+          git pull
+          git merge origin/main
+          git push origin paper
+      
