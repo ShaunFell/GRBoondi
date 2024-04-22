@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
 
       - name: Update paper Branch
-        runs: |
+        run: |
           git fetch origin
           git checkout paper
           git pull
