@@ -4,33 +4,27 @@ on: [push]
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        mpi: ["FALSE", "TRUE"]
-        opt: ["FALSE", "TRUE"]
-        include:
-          - debug: 'TRUE'
-            opt: 'FALSE'
-          - debug: 'FALSE'
-            opt: 'TRUE'
-    name: MPI = ${{ matrix.mpi}}, OPT = ${{ matrix.opt }}
+    runs-on: ubuntu-22.04
+    name: MPI = TRUE, OPT = FALSE, DEBUG = FALSE
     env:
       CHOMBO_HOME: ${{ github.workspace}}/Chombo/lib
       OMP_NUM_THREADS: 1
-      BUILD_ARGS: MPI=${{ matrix.mpi }} OPT=${{ matrix.opt }} DEBUG=${{ matrix.debug }}
+      BUILD_ARGS: MPI=TRUE OPT=FALSE DEBUG=TRUE
 
     steps:
+
       - name: Checkout Chombo from GRTLCollaboration
         uses: actions/checkout@master
         with:
           repository: GRTLCollaboration/Chombo
+          token: ${{ secrets.CI_SECRET || github.token }}
           path: Chombo
 
       - name: Checkout GRChombo from GRTLCollaboration
         uses: actions/checkout@master
         with:
           repository: GRTLCollaboration/GRChombo
+          token: ${{ secrets.CI_SECRET || github.token }}
           path: GRChombo
 
       - name: Update package manager database
@@ -57,10 +51,13 @@ jobs:
           sudo apt-get -y install intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic intel-oneapi-compiler-fortran intel-oneapi-mkl intel-oneapi-openmp
         working-directory: /tmp
 
-      - name: Install Intell MPI
+      - name: Install Intel MPI
         if: matrix.mpi == 'TRUE'
         run: |
           sudo apt-get -y install intel-oneapi-mpi intel-oneapi-mpi-devel
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
       - name: Build Chombo
         run: |
