@@ -24,13 +24,13 @@ jobs:
       - name: Checkout Chombo from GRTLCollaboration
         uses: actions/checkout@master
         with:
-          repository: https://github.com/GRTLCollaboration/Chombo
+          repository: GRTLCollaboration/Chombo
           path: Chombo
 
       - name: Checkout GRChombo from GRTLCollaboration
         uses: actions/checkout@master
         with:
-          repository: https://github.com/GRTLCollaboration/GRChombo
+          repository: GRTLCollaboration/GRChombo
           path: GRChombo
 
       - name: Update package manager database
