@@ -61,19 +61,21 @@ template <class level_t> int runGRChombo(int argc, char *argv[])
     std::chrono::time_point<Clock> start_time = Clock::now();
 
     // We want to calculate the charges and fluxes at t = 0
-    // call the PostTimeStep right now!!!!
-    pout() << "Running initial PostTimeStep" << endl;
-    auto task = [](GRAMRLevel *level)
-    {
-        if (level->time() == 0.)
-        {
-            level->specificPostTimeStep();
-        }
-    };
+    if (sim_params.run_initial_posttimestep)
+    { // call the PostTimeStep right now!!!!
 
-    // call 'now' really now
-    MultiLevelTaskPtr<> call_task(task);
-    call_task.execute(gr_amr);
+        auto task = [](GRAMRLevel *level)
+        {
+            if (level->time() == 0.)
+            {
+                level->specificPostTimeStep();
+            }
+        };
+        pout() << "Running initial PostTimeStep" << endl;
+        // call 'now' really now
+        MultiLevelTaskPtr<> call_task(task);
+        call_task.execute(gr_amr);
+    }
 
     // go go go !!!!!! Run simulation
     gr_amr.run(sim_params.stop_time, sim_params.max_steps);

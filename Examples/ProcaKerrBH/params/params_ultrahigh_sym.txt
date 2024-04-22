@@ -7,7 +7,7 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRBoondi/testing/ultrares_GRMilijun_ProcaKerrBH_23352283"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRBoondi/prod/dev_ultrares_GRMilijun_ProcaKerrBH_23465049"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -15,6 +15,7 @@ plot_prefix = "GeneralizedProcap_"
 
 #file to restart the simulation from
 #restart_file = GeneralizedProca_051400.3d.hdf5
+run_initial_posttimestep = 1
 
 # HDF5files are written every dt = L/N*dt_multiplier*checkpoint_interval
 checkpoint_interval = 2000

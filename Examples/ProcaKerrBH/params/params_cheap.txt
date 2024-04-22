@@ -14,6 +14,7 @@ plot_prefix = "GeneralizedProcap_"
 
 #file to restart the simulation from
 #restart_file = GeneralizedProca_002200.3d.hdf5
+run_initial_posttimestep = 1
 
 # HDF5files are written every dt = L/N*dt_multiplier*checkpoint_interval
 checkpoint_interval = 100
