@@ -1,6 +1,8 @@
-/* GRBoondi 2024
- * Please refer to LICENSE in GRBoondi's root directory.
- */
+/*
+GRBoondi
+Copyright 2024, Shaun Fell
+Please refer to LICENSE in GRBoondi's root directory
+*/
 
 /*
   This class computes the value of the auxiliary Z field and assigns it to the

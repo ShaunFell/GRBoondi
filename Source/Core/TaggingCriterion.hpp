@@ -1,7 +1,8 @@
-/* GRBoondi 2024
- * Please refer to LICENSE in GRBoondi's root directory.
- */
-
+/*
+GRBoondi
+Copyright 2024, Shaun Fell
+Please refer to LICENSE in GRBoondi's root directory
+*/
 /*
 This tagging criterion is a generic criterion that uses a fixed grid, but can
 also deal with flux extraction in the outer region of the simulation
