@@ -18,5 +18,4 @@ jobs:
           type: now
           target_branch: paper
           message: Merge main into paper
-          github_token: ${{ secrets.GITHUB_TOKEN }}
       
