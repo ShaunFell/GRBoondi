@@ -10,10 +10,10 @@ jobs:
         mpi: ["FALSE", "TRUE"]
         opt: ["FALSE", "TRUE"]
         include:
-          - debug: 'TRUE"
-            opt: "FALSE"
-          - debug: "FALSE"
-            opt: "TRUE"
+          - debug: 'TRUE'
+            opt: 'FALSE'
+          - debug: 'FALSE'
+            opt: 'TRUE'
     name: MPI = ${{ matrix.mpi}}, OPT = ${{ matrix.opt }}
     env:
       CHOMBO_HOME: ${{ github.workspace}}/Chombo/lib
