@@ -127,9 +127,11 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
             bool first_step = (m_time == 0.0);
 
             // Save new value to file
-            SmallDataIO BHParamFile(m_p.data_path + "BHEvolution", m_dt, m_time, m_restart_time, SmallDataIO::APPEND, first_step);
+            SmallDataIO BHParamFile(m_p.data_path + "BHEvolution", m_dt, m_time,
+                                    m_restart_time, SmallDataIO::APPEND,
+                                    first_step);
 
-            //remove duplicates
+            // remove duplicates
             BHParamFile.remove_duplicate_time_data();
 
             // if its the first time we are saving data, create a header line
@@ -140,7 +142,9 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
             }
 
             // now write the data
-            BHParamFile.write_time_data_line({m_time, m_p.background_params.mass, m_p.background_params.spin});
+            BHParamFile.write_time_data_line({m_time,
+                                              m_p.background_params.mass,
+                                              m_p.background_params.spin});
         }
     };
 
