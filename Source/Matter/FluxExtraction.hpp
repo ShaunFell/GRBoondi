@@ -1,6 +1,8 @@
-/* GRBoondi 2024
- * Please refer to LICENSE in GRBoondi's root directory.
- */
+/*
+GRBoondi
+Copyright 2024, Shaun Fell
+Please refer to LICENSE in GRBoondi's root directory
+*/
 
 /*
     Class integrates quantities over user-defined spheres

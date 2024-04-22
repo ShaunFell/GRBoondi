@@ -1,6 +1,8 @@
-/* GRBoondi
- * Please refer to LICENSE in GRBoondis's root directory.
- */
+/*
+GRBoondi
+Copyright 2024, Shaun Fell
+Please refer to LICENSE in GRBoondi's root directory
+*/
 
 #ifndef DEFAULTBACKGROUND_HPP_
 #define DEFAULTBACKGROUND_HPP_

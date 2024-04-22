@@ -1,6 +1,9 @@
-/* GRBoondi
- * Please refer to LICENSE in GRBoondi's root directory.
- */
+/*
+GRBoondi
+Copyright 2024, Shaun Fell
+Please refer to LICENSE in GRBoondi's root directory
+*/
+
 #ifndef DATACONTAINER_HPP_INCLUDED
 #define DATACONTAINER_HPP_INCLUDED
 
