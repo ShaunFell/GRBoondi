@@ -3,7 +3,6 @@
 
 ################################################## Filesystem parameters
 
-
 verbosity = 1
 
 # location / naming of output files
