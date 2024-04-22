@@ -1,0 +1,22 @@
+name: Sync paper branch with main
+
+on: 
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  sync-paper-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Merging changes from main to paper
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          target_branch: paper
+          message: Merge main into paper
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      
