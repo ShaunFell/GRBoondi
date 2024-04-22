@@ -5,17 +5,24 @@ on:
     branches:
       - 'main'
 
+permissions:
+  contents: write
+
 jobs:
   sync-paper-branch:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
-      - name: Merging changes from main to paper
-        uses: devmasx/merge-branch@master
+        refs: paper
         with:
-          type: now
-          target_branch: paper
-          message: Merge main into paper
+          fetch-depth: 0
+
+      - name: Update paper Branch
+        runs: |
+          git fetch origin
+          git checkout paper
+          git pull
+          git merge origin/main
+          git push origin paper
       
