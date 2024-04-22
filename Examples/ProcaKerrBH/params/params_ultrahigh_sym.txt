@@ -21,7 +21,7 @@ run_initial_posttimestep = 1
 checkpoint_interval = 2000
 # set to 0 to turn off plot files (except at t=0 and t=stop_time)
 # set to -1 to never ever print plotfiles
-plot_interval = 40
+plot_interval = 100
 
 #plot variable names must match those in the DiagnosticVariables::DiagnosticVariables namespace
 num_plot_vars = 7
