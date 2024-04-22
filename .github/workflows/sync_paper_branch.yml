@@ -17,6 +17,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Git User
+        uses: fregante/setup-git-user@v2
+
       - name: Update paper Branch
         run: |
           git fetch origin
