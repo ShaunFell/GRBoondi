@@ -52,7 +52,7 @@ template <typename data_type> class TimeDataContainer
 
     // Overload operator[] to grab a particular data point from a given time
     // coordinate
-    std::vector<data_type> &operator[](data_type time)
+    std::vector<data_type> &operator[](double time)
     {
         // we iterate over the list of data points (in reverse) to find the time
         // coordinate

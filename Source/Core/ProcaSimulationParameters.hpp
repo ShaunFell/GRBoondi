@@ -35,6 +35,8 @@ class ProcaSimulationParameters : public ChomboParameters
         pp.load("maxs_filename", maxs_filename, std::string("minmax"));
         pp.load("mins_filename", mins_filename, std::string("minmax"));
 
+        // run initial postTimestep
+        pp.load("run_initial_posttimestep", run_initial_posttimestep, false);
         // extraction params
         pp.load("num_extraction_radii", extraction_params.num_extraction_radii,
                 0);
@@ -167,6 +169,7 @@ class ProcaSimulationParameters : public ChomboParameters
     bool activate_extraction_tagging;
     bool activate_extraction;
     bool activate_minmax;
+    bool run_initial_posttimestep;
     double grid_scaling;
 
     double initial_ratio;
