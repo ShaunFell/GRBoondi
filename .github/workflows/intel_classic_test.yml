@@ -1,6 +1,9 @@
 name: Intel (classic) Tests
 
-on: [push]
+on: 
+  push:
+    branches:
+      - 'main'
 
 jobs:
   build-and-test:
@@ -82,14 +85,11 @@ jobs:
           source /opt/intel/oneapi/setvars.sh --force
           make test -j 4 $BUILD_ARGS
         working-directory: ${{ github.workspace }}/GRBoondi/Source/GRChombo
-  
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
 
       - name: Run GRChombo Tests
         run: |
           source /opt/intel/oneapi/setvars.sh --force
-          make run -j 2 $BUILD_ARGS
+          make test run -j 2 $BUILD_ARGS
         working-directory: ${{ github.workspace }}/GRChombo/Source/GRChombo
 
       - name: Build GRBoondi Tests
