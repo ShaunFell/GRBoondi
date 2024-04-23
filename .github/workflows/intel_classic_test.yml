@@ -55,9 +55,6 @@ jobs:
         if: matrix.mpi == 'TRUE'
         run: |
           sudo apt-get -y install intel-oneapi-mpi intel-oneapi-mpi-devel
-        
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
 
       - name: Build Chombo
         run: |
