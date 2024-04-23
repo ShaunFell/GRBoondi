@@ -61,13 +61,13 @@ jobs:
           | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
           echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt-get update
-          sudo apt-get -y install intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic-2023.0.0 intel-oneapi-compiler-fortran-2023.0.0 intel-oneapi-mkl-2023.0.0 intel-oneapi-openmp-2023.0.0 intel-oneapi-mpi-devel
+          sudo apt-get -y install intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic-2023.2.4 intel-oneapi-compiler-fortran-2023.2.4 intel-oneapi-mkl-2023.2.0 intel-oneapi-openmp-2023.2.4
         working-directory: /tmp
 
       - name: Install Intel MPI
         if: matrix.mpi == 'TRUE'
         run: |
-          sudo apt-get -y install intel-oneapi-mpi intel-oneapi-mpi-devel
+          sudo apt-get -y install intel-oneapi-mpi intel-oneapi-mpi-devel 
 
       # MUST reload intel environment variables to load in mpiicpc after 'Install Intel MPI'
       - name: Build Chombo
