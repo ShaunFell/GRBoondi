@@ -8,6 +8,7 @@
 # GRCHOMBO_SOURCE := Set locally (e.g. export GRCHOMBO_SOURCE=path/to/GRChombo/Source in bash)
 
 GRBoondi_SOURCE = ../../Source
+GRCHOMBO_SOURCE = $(GRBoondi_SOURCE)/GRChombo/Source
 
 ebase := Main_ProcaKerrBH
 

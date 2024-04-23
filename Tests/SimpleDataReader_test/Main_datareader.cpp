@@ -84,5 +84,5 @@ int main(int argc, char *argv[])
     }
 
     mainFinalize(); // cleanup MPI processes
-    return interp_failed && reader_failed;
+    return (interp_failed || reader_failed);
 }
