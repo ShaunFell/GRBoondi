@@ -41,9 +41,6 @@ jobs:
 
       - name: Install Chombo dependencies
         run: sudo apt-get -y --no-install-recommends install csh libgetopt-complete-perl
-        
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
 
       - name: Install Intel Compilers
         run: |
@@ -51,7 +48,7 @@ jobs:
           | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
           echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt-get update
-          sudo apt-get -y install intel-basekit
+          sudo apt-get -y install intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic-2023.0.0 intel-oneapi-compiler-fortran-2023.0.0 intel-oneapi-mkl-2023.0.0 intel-oneapi-openmp-2023.0.0
         working-directory: /tmp
 
       - name: Install Intel MPI
