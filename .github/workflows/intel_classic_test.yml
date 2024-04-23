@@ -90,7 +90,7 @@ jobs:
         run: |
           source /opt/intel/oneapi/setvars.sh --force
           make test run -j 2 $BUILD_ARGS
-        working-directory: ${{ github.workspace }}/GRChombo/Source/GRChombo
+        working-directory: ${{ github.workspace }}/GRBoondi/Source/GRChombo
 
       - name: Build GRBoondi Tests
         run: |
