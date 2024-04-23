@@ -15,8 +15,8 @@ RealCleanExampleDirs := $(ExampleDirs:%=realclean-%)
 .PHONY: all run examples clean realclean $(TestDirs) $(ExampleDirs)
 
 # Note that you need to set:
-# CHOMBO_HOME := Please set the CHOMBO_HOME locally (e.g. export CHOMBO_HOME=... in bash)
 export GRBoondi_SOURCE = $(shell pwd)/Source
+export GRCHOMBO_SOURCE = $(GRBoondi_SOURCE)/GRChombo/Source
 
 ECHO?=@ # set this to null on the command line to increase verbosity
 
