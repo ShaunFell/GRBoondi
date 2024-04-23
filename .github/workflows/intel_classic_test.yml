@@ -79,21 +79,25 @@ jobs:
 
       - name: Build GRChombo Tests
         run: |
+          source /opt/intel/oneapi/setvars.sh --force
           make test -j 4 $BUILD_ARGS
         working-directory: ${{ github.workspace }}/GRBoondi/Source/GRChombo
 
       - name: Run GRChombo Tests
         run: |
+          source /opt/intel/oneapi/setvars.sh --force
           make run -j 2 $BUILD_ARGS
         working-directory: ${{ github.workspace }}/GRChombo/Source/GRChombo
 
       - name: Build GRBoondi Tests
         run: |
+          source /opt/intel/oneapi/setvars.sh --force
           make test -j 4 $BUILD_ARGS
         working-directory: ${{ github.workspace }}/GRBoondi
       
       - name: Run GRBoondi Tests
         run: |
+          source /opt/intel/oneapi/setvars.sh --force
           make run -j 2 $BUILD_ARGS
         working-directory: ${{ github.workspace }}/GRBoondi
 
