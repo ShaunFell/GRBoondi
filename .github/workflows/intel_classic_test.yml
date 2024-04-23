@@ -41,6 +41,9 @@ jobs:
 
       - name: Install Chombo dependencies
         run: sudo apt-get -y --no-install-recommends install csh libgetopt-complete-perl
+        
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
       - name: Install Intel Compilers
         run: |
@@ -55,9 +58,6 @@ jobs:
         if: matrix.mpi == 'TRUE'
         run: |
           sudo apt-get -y install intel-oneapi-mpi intel-oneapi-mpi-devel
-        
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
 
       - name: Build Chombo
         run: |
