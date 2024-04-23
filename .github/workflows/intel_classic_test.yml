@@ -82,6 +82,9 @@ jobs:
           source /opt/intel/oneapi/setvars.sh --force
           make test -j 4 $BUILD_ARGS
         working-directory: ${{ github.workspace }}/GRBoondi/Source/GRChombo
+  
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
       - name: Run GRChombo Tests
         run: |
