@@ -7,14 +7,14 @@ Example of defining a level class that sets simple initial conditions
 
 #include "BaseProcaFieldLevel.hpp"
 #include "BoxLoops.hpp"
+#include "DefaultBackground.hpp"
 #include "ExcisionEvolution.hpp"
 #include "InitialConditions.hpp"
-#include "DefaultBackground.hpp"
 #include "ProcaField.hpp"
 #include "UserVariables.hpp"
 
-// Inherits from BaseProcaFieldLevel with background = DefaultBackground and matter =
-// Default
+// Inherits from BaseProcaFieldLevel with background = DefaultBackground and
+// matter = Default
 class EMFieldLevel : public BaseProcaFieldLevel<DefaultBackground, ProcaField>
 {
   public:
@@ -35,7 +35,8 @@ class EMFieldLevel : public BaseProcaFieldLevel<DefaultBackground, ProcaField>
 
         // Excise within horizon
         DefaultBackground kerr_schild(m_p.background_params, m_dx);
-        ExcisionEvolution<BaseProcaField<DefaultBackground, ProcaField>, DefaultBackground>
+        ExcisionEvolution<BaseProcaField<DefaultBackground, ProcaField>,
+                          DefaultBackground>
             excisor(m_dx, m_p.center, m_p.evolution_excision_width,
                     kerr_schild);
 

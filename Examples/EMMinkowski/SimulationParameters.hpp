@@ -1,8 +1,8 @@
 #ifndef SIMULATIONPARAMETERS_HPP_
 #define SIMULATIONPARAMETERS_HPP_
 
-#include "InitialConditions.hpp"
 #include "DefaultBackground.hpp"
+#include "InitialConditions.hpp"
 #include "ProcaField.hpp"
 #include "ProcaSimulationParameters.hpp"
 
