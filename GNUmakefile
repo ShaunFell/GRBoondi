@@ -55,3 +55,16 @@ $(RealCleanTestDirs):
 
 $(RealCleanExampleDirs):
 	$(ECHO)$(MAKE) -C $(@:realclean-%=%) --no-print-directory realclean NODEPENDS=TRUE
+
+
+vars:
+	@echo GRBoondi_SOURCE = $(GRBoondi_SOURCE)
+	@echo GRCHOMBO_SOURCE = $(GRCHOMBO_SOURCE)
+	@echo CHOMBO_HOME = $(CHOMBO_HOME)
+	@echo "TestDirs=" $(TestDirs)
+	@echo "RunTestDirs=" $(RunTestDirs)
+	@echo "ExampleDirs=" $(ExampleDirs)
+	@echo "CleanTestDirs=" $(CleanTestDirs)
+	@echo "CleanExampleDirs=" $(CleanExampleDirs)
+	@echo "RealCleanTestDirs=" $(RealCleanTestDirs)
+	@echo "RealCleanExampleDirs=" $(RealCleanExampleDirs)
