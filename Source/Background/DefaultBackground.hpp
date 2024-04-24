@@ -24,7 +24,7 @@ class DefaultBackground
   public:
     DefaultBackground(){};
 
-    DefaultBackground(params_t a_params, double dx) {};
+    DefaultBackground(params_t a_params, double dx){};
 
     template <class data_t> using MetricVars = ADMFixedBGVars::Vars<data_t>;
 
@@ -36,8 +36,9 @@ class DefaultBackground
         current_cell.store_vars(vars);
     }
 
-    template <class data_t> void compute_metric_background(MetricVars<data_t> &vars,
-                                   const Coordinates<data_t> &coords ) const
+    template <class data_t>
+    void compute_metric_background(MetricVars<data_t> &vars,
+                                   const Coordinates<data_t> &coords) const
     {
         // Set spacetime background to Minkowski in Cartesian coordinates
 
@@ -67,7 +68,7 @@ class DefaultBackground
     }
 
     virtual bool check_if_excised(const Coordinates<double> &coords,
-                          const double buffer = 1.0) const
+                                  const double buffer = 1.0) const
     {
         return false; // Dont ever excise
     }
