@@ -7,43 +7,43 @@
 
 #define SMALL_ERR 1e-4
 
-
-// from https://stackoverflow.com/questions/17394149/how-can-you-efficiently-compare-two-stdvectors-for-equality-ignoring-the-orde
+// from
+// https://stackoverflow.com/questions/17394149/how-can-you-efficiently-compare-two-stdvectors-for-equality-ignoring-the-orde
 template <class T>
 static bool compareVectors(const vector<T> &a, const vector<T> &b)
 {
-  const size_t n = a.size(); // make it const and unsigned!
-  std::vector<bool> free(n, true);
-  for ( size_t i = 0; i < n; ++i )
-  {
-      bool matchFound = false;
-      auto start = b.cbegin();
-      while ( true )
-      {
-          const auto position = std::find(start, b.cend(), a[i]);
-          if ( position == b.cend() )
-          {
-              break; // nothing found
-          }
-          const auto index = position - b.cbegin();
-          if ( free[index] )
-          {
-             // free pair found
-             free[index] = false;
-             matchFound = true;
-             break;
-          }
-          else
-          {
-             start = position + 1; // search in the rest
-          }
-      }
-      if ( !matchFound )
-      {
-         return false;
-      }
-   }
-   return true;
+    const size_t n = a.size(); // make it const and unsigned!
+    std::vector<bool> free(n, true);
+    for (size_t i = 0; i < n; ++i)
+    {
+        bool matchFound = false;
+        auto start = b.cbegin();
+        while (true)
+        {
+            const auto position = std::find(start, b.cend(), a[i]);
+            if (position == b.cend())
+            {
+                break; // nothing found
+            }
+            const auto index = position - b.cbegin();
+            if (free[index])
+            {
+                // free pair found
+                free[index] = false;
+                matchFound = true;
+                break;
+            }
+            else
+            {
+                start = position + 1; // search in the rest
+            }
+        }
+        if (!matchFound)
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 int main(int argc, char *argv[])
@@ -91,10 +91,10 @@ int main(int argc, char *argv[])
         std::cout << "Data reader test ..... FAILED" << std::endl;
         reader_failed = 1;
         std::cout << "nearest_neighbor_coords = ";
-        for (auto el: nearest_neighbor_coords)
+        for (auto el : nearest_neighbor_coords)
         {
             std::cout << "(";
-            for (auto el2: el)
+            for (auto el2 : el)
             {
                 std::cout << el2 << " ";
             }
@@ -102,10 +102,10 @@ int main(int argc, char *argv[])
         }
         std::cout << std::endl;
         std::cout << "ref_data = ";
-        for (auto el: ref_data)
+        for (auto el : ref_data)
         {
             std::cout << "(";
-            for (auto el2: el)
+            for (auto el2 : el)
             {
                 std::cout << el2 << " ";
             }
