@@ -19,7 +19,7 @@ jobs:
             opt: 'FALSE'
           - debug: 'FALSE'
             opt: 'TRUE'
-    name: GCC ${{ matrix.gcc-version }}, DIM = ${{ matrix.dim }}, MPI = ${{ matrix.mpi }}, OPT = ${{ matrix.opt }}
+    name: GCC ${{ matrix.gcc-version }}, MPI = ${{ matrix.mpi }}, OPT = ${{ matrix.opt }}
     env:
       CHOMBO_HOME: ${{ github.workspace }}/Chombo/lib
       OMP_NUM_THREADS: 1
@@ -41,31 +41,31 @@ jobs:
           token: ${{ secrets.CI_SECRET || github.token }}
           path: GRBoondi
 
-      - name: Update package manager database
-        id: update-database
-        continue-on-error: true
-        run: sudo apt-get update
+    - name: Update package manager database
+      id: update-database
+      continue-on-error: true
+      run: sudo apt-get update
 
-      - name: Update package repository mirrors if necessary
-        if: steps.update-database.outcome == 'failure'
-        run: |
-          sudo gem install apt-spy2
-          sudo apt-spy2 fix --commit --launchpad --country=US
-          sudo apt-get update
+      # This is quite slow so only do this if the previous command fails
+    - name: Update package repository mirrors if necessary
+      if: steps.update-database.outcome == 'failure'
+      run: |
+        sudo gem install apt-spy2
+        sudo apt-spy2 fix --commit --launchpad --country=US
+        sudo apt-get update
 
-      - name: Install common dependencies
-        run: sudo apt-get -y --no-install-recommends install csh libhdf5-dev libblas-dev liblapack-dev libgetopt-complete-perl
+    - name: Install common dependencies
+      run: sudo apt-get -y --no-install-recommends install csh libhdf5-dev libblas-dev liblapack-dev libgetopt-complete-perl
 
-      - name: Install MPI dependencies
-        if: matrix.mpi == 'TRUE'
-        run: |
-          sudo apt-get -y --no-install-recommends install libhdf5-openmpi-dev petsc-dev openmpi-bin 
+    - name: Install MPI dependencies
+      if: matrix.mpi == 'TRUE'
+      run: sudo apt-get -y --no-install-recommends install libhdf5-openmpi-dev petsc-dev openmpi-bin 
 
-      - name: Set Compilers
-        run: |
-          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${{ matrix.gcc-version }} 200
-          sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-${{ matrix.gcc-version }} 200
-          sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-${{ matrix.gcc-version }} 200
+    - name: Set Compilers
+      run: |
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${{ matrix.gcc-version }} 200
+        sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-${{ matrix.gcc-version }} 200
+        sudo update-alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-${{ matrix.gcc-version }} 200
 
       # MUST reload intel environment variables to load in mpiicpc after 'Install Intel MPI'
       - name: Build Chombo
