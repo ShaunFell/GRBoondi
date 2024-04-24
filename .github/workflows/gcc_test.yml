@@ -27,6 +27,10 @@ jobs:
 
     steps:
 
+      
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+
       - name: Checkout Chombo from GRTLCollaboration
         uses: actions/checkout@master
         with:
