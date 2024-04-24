@@ -9,7 +9,7 @@ jobs:
   build-and-test:
     runs-on: ubuntu-22.04
     strategy:
-      max-parallel: 1
+      max-parallel: 4
       matrix:
         mpi: ['FALSE', 'TRUE']
         opt: ['FALSE', 'TRUE']
