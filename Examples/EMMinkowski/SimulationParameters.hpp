@@ -2,7 +2,7 @@
 #define SIMULATIONPARAMETERS_HPP_
 
 #include "InitialConditions.hpp"
-#include "KerrSchild.hpp"
+#include "DefaultBackground.hpp"
 #include "ProcaField.hpp"
 #include "ProcaSimulationParameters.hpp"
 
@@ -18,17 +18,14 @@ class SimulationParameters : public ProcaSimulationParameters
 
     void read_params(GRParmParse &pp)
     {
-        // Initial Kerr data
-        pp.load("kerr_mass", background_params.mass);
-        pp.load("kerr_spin", background_params.spin);
-        pp.load("kerr_center", background_params.center, center);
+        pp.load("center", background_params.center, center);
 
         // Initial EM field params
         pp.load("initial_em_field", initial_conditions_params.init_amplitude);
     }
 
     // parameters of kerr bh
-    KerrSchild::params_t background_params;
+    DefaultBackground::params_t background_params;
 
     // initial conditions parameters
     Initial_EM_Conditions::params_t initial_conditions_params;

@@ -15,7 +15,16 @@ Please refer to LICENSE in GRBoondi's root directory
 class DefaultBackground
 {
   public:
+    //! Struct for the params of the  BH
+    struct params_t
+    {
+        std::array<double, CH_SPACEDIM> center; //!< The center of the BH
+    };
+
+  public:
     DefaultBackground(){};
+
+    DefaultBackground(params_t a_params, double dx) {};
 
     template <class data_t> using MetricVars = ADMFixedBGVars::Vars<data_t>;
 
@@ -23,6 +32,14 @@ class DefaultBackground
     {
         // Set spacetime background to Minkowski in Cartesian coordinates
         MetricVars<data_t> vars;
+        compute_metric_background(vars);
+        current_cell.store_vars(vars);
+    }
+
+    template <class data_t> void compute_metric_background(MetricVars<data_t> &vars,
+                                   const Coordinates<data_t> &coords ) const
+    {
+        // Set spacetime background to Minkowski in Cartesian coordinates
 
         vars.lapse = 1.;
         vars.K = 0.;
@@ -47,11 +64,9 @@ class DefaultBackground
                 FOR1(k) { vars.d1_gamma[i][j][k] = 0.; }
             }
         }
-
-        current_cell.store_vars(vars);
     }
 
-    bool check_if_excised(const Coordinates<double> &coords,
+    virtual bool check_if_excised(const Coordinates<double> &coords,
                           const double buffer = 1.0) const
     {
         return false; // Dont ever excise
