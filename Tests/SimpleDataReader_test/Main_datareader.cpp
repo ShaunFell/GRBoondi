@@ -49,6 +49,28 @@ int main(int argc, char *argv[])
     {
         std::cout << "Data reader test ..... FAILED" << std::endl;
         reader_failed = 1;
+        std::cout << "nearest_neighbor_coords = ";
+        for (auto el: nearest_neighbor_coords)
+        {
+            std::cout << "(";
+            for (auto el2: el)
+            {
+                std::cout << el2 << " ";
+            }
+            std::cout << ")";
+        }
+        std::cout << std::endl;
+        std::cout << "ref_data = ";
+        for (auto el: ref_data)
+        {
+            std::cout << "(";
+            for (auto el2: el)
+            {
+                std::cout << el2 << " ";
+            }
+            std::cout << ")";
+        }
+        std::cout << std::endl;
     }
 
     // Test the interpolation algorithm
@@ -81,6 +103,8 @@ int main(int argc, char *argv[])
     {
         std::cout << "Interpolation test ..... FAILED" << std::endl;
         interp_failed = 1;
+        std::cout << "interp_data = " << interp_data << std::endl;
+        std::cout << "ref_interp_data = " << ref_interp_data << std::endl;
     }
 
     mainFinalize(); // cleanup MPI processes
