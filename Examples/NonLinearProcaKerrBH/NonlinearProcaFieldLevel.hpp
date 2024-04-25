@@ -147,7 +147,7 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
                                               m_p.background_params.spin});
         }
     };
-
+#ifdef CH_USE_HDF5
     // we add the computation of the gnn diagnostic variable here
     virtual void additionalPrePlotLevel() override
     {
@@ -165,6 +165,7 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
         BoxLoops::loop(constraint, m_state_diagnostics, m_state_diagnostics,
                        SKIP_GHOST_CELLS);
     }
+#endif
 
     // Since we use a custom tagging criteria that uses the diagnostic data,
     //   we need to override the preTagCells method to populate the diagnostic
