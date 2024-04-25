@@ -98,13 +98,20 @@ jobs:
           source /opt/intel/oneapi/setvars.sh --force
           make test -j 4 $BUILD_ARGS
         working-directory: ${{ github.workspace }}/GRBoondi
+
+      - name: Build GRBoondi Examples
+        run: |
+          source /opt/intel/oneapi/setvars.sh --force
+          make examples -j 4 $BUILD_ARGS
+        working-directory: ${{ github.workspace }}/GRBoondi
       
       - name: Run GRBoondi Tests
         run: |
           source /opt/intel/oneapi/setvars.sh --force
           export OMP_NUM_THREADS=4
-          make run -j 1 $BUILD_ARGS TestDirs='Tests/SimpleDataReader_test/'
+          make test run -j 1 $BUILD_ARGS TestDirs='Tests/SimpleDataReader_test/'
         working-directory: ${{ github.workspace }}/GRBoondi
+
 
 
 
