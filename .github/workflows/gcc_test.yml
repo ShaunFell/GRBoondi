@@ -88,6 +88,11 @@ jobs:
         run: |
           make test -j 4 $BUILD_ARGS
         working-directory: ${{ github.workspace }}/GRBoondi
+
+      - name: Build GRBoondi Examples
+        run: |
+          make examples -j 4 $BUILD_ARGS
+        working-directory: ${{ github.workspace }}/GRBoondi
       
       - name: Run GRBoondi Tests
         run: |
