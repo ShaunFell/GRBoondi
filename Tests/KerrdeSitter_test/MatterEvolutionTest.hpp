@@ -11,12 +11,12 @@
 #include "Cell.hpp"
 #include "Coordinates.hpp"
 #include "FourthOrderDerivatives.hpp"
+#include "NewConstraints.hpp" //for the constraint variables
 #include "Tensor.hpp"
 #include "TensorAlgebra.hpp"
 #include "UserVariables.hpp" //This files needs c_NUM - total number of components
 #include "VarsTools.hpp"
 #include "simd.hpp"
-#include "NewConstraints.hpp" //for the constraint variables
 
 //!  Calculates RHS of matter variables only, metric vars assumed analytic
 /*!
@@ -45,12 +45,13 @@ template <class matter_t, class background_t> class MatterEvolution
         data_t Ham;
         Tensor<1, data_t> Mom;
 
-        //Mapping beteween members of this struct and the Chombo grid
+        // Mapping beteween members of this struct and the Chombo grid
         template <typename mapping_function_t>
         void enum_mapping(mapping_function_t mapping_function)
         {
             VarsTools::define_enum_mapping(mapping_function, c_Ham, Ham);
-            VarsTools::define_enum_mapping(mapping_function, GRInterval<c_Mom1, c_Mom3>(), Mom);
+            VarsTools::define_enum_mapping(mapping_function,
+                                           GRInterval<c_Mom1, c_Mom3>(), Mom);
         }
     };
 
@@ -89,9 +90,9 @@ template <class matter_t, class background_t> class MatterEvolution
                             advec);
         m_deriv.add_dissipation(matter_rhs, current_cell, m_sigma);
 
-        //for de Sitter, the energy of the background is no longer vanishing
-        double CC { m_background.m_params.cosmo_constant };
-        double EulerEnergy { 2 * CC };
+        // for de Sitter, the energy of the background is no longer vanishing
+        double CC{m_background.m_params.cosmo_constant};
+        double EulerEnergy{2 * CC};
 
         ConstraintVars<data_t> ConstraintVars;
 
@@ -102,7 +103,6 @@ template <class matter_t, class background_t> class MatterEvolution
 
         // Write the rhs into the output vars for this cell
         current_cell.store_vars(matter_rhs);
-           
     }
 
   protected:

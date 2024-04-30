@@ -20,12 +20,11 @@ for more details
 // GRChombo includes
 #include "Cell.hpp"
 #include "Coordinates.hpp"
+#include "FourthOrderDerivatives.hpp"
 #include "GammaCalculator.hpp"
 #include "MatterCCZ4.hpp"
 #include "MatterCCZ4RHS.hpp"
 #include "NewConstraints.hpp"
-#include "FourthOrderDerivatives.hpp"
-
 
 // Chombo includes
 #include "BoxLoops.hpp"
@@ -44,27 +43,23 @@ for more details
 // background includes
 #include "ADMFixedBGVars.hpp"
 #include "BaseProcaFieldTest.hpp"
+#include "KerrdeSitter.hpp"
 #include "MatterEvolutionTest.hpp"
 #include "ProcaField.hpp"
-#include "KerrdeSitter.hpp"
 
 #include "BaseProcaField.hpp"
 #include "ProcaField.hpp"
 #include "ProcaFieldTest.hpp"
 
-
 // c++ includes
 #include <algorithm>
+#include <iomanip>
 #include <iostream>
 #include <string>
-#include <iomanip>
 
-std::string tab{"\t"}; 
-static const auto precision  = std::setprecision(16);
+std::string tab{"\t"};
+static const auto precision = std::setprecision(16);
 static const int printwidth = 25;
-
-
-
 
 int test1()
 {
@@ -78,7 +73,7 @@ int test1()
     IntVect intvect;
     intvect[0] = 1;
     intvect[1] = 0.5;
-    intvect[2] = 0.5; 
+    intvect[2] = 0.5;
 
     // create a coordinate object
     // We set the coordinates to some arbitrary value, but which
@@ -86,27 +81,25 @@ int test1()
     //       values in the Mathematica notebook
     Coordinates<double> coords(
         intvect, dx,
-        {8,8,8}); // should correspond to the point (x,y,z) = (1,1,1)
+        {8, 8, 8}); // should correspond to the point (x,y,z) = (1,1,1)
     const double x = coords.x;
     const double y = coords.y;
     const double z = coords.z;
-    std::cout << tab << "(x,y,z) = (" << x << "," << y << "," << z
-                << ")" << std::endl;
+    std::cout << tab << "(x,y,z) = (" << x << "," << y << "," << z << ")"
+              << std::endl;
 
     // initialize the kerr params and the kerr object
     KerrdeSitter::params_t kerr_params;
     kerr_params.mass = 1.;
     kerr_params.spin = 0.5;
     kerr_params.cosmo_constant = 0.001;
-    kerr_params.center = {8.,8.,8.};
+    kerr_params.center = {8., 8., 8.};
     KerrdeSitter kerr_init(kerr_params, dx);
     std::cout << tab << precision << " kerr mass = " << kerr_params.mass
-                << std::endl;
-    std::cout << tab  << " kerr spin = " << kerr_params.spin
-                << std::endl;
-    std::cout << tab
-                << " kerr cosmo_constant = " << kerr_params.cosmo_constant
-                << std::endl;
+              << std::endl;
+    std::cout << tab << " kerr spin = " << kerr_params.spin << std::endl;
+    std::cout << tab << " kerr cosmo_constant = " << kerr_params.cosmo_constant
+              << std::endl;
 
     // Discriminant test
     double Q{KerrdeSitter::discriminant<double>(kerr_params)};
@@ -116,7 +109,6 @@ int test1()
     {
         std::cout << tab << "Discriminant test failed" << std::endl;
         failed = 1;
-
     }
     else
     {
@@ -138,43 +130,37 @@ int test1()
     FArrayBox fab_out(box, 3);
     auto box_pointers = BoxPointers{fab_in, fab_out};
     Cell<double> current_cell(mv_intvec, box_pointers);
-    Coordinates<double> coords_metricvars(current_cell, dx,
-                                            kerr_params.center);
+    Coordinates<double> coords_metricvars(current_cell, dx, kerr_params.center);
 
-    std::cout << "coords: " << coords_metricvars.x << " "
-                << coords_metricvars.y << " " << coords_metricvars.z
-                << std::endl;
+    std::cout << "coords: " << coords_metricvars.x << " " << coords_metricvars.y
+              << " " << coords_metricvars.z << std::endl;
 
     kerr_init.compute_metric_background(metric_vars, coords_metricvars);
 
     auto gamma_UU = TensorAlgebra::compute_inverse_sym(metric_vars.gamma);
-    auto chris_phys = TensorAlgebra::compute_christoffel(metric_vars.d1_gamma, gamma_UU).ULL;
+    auto chris_phys =
+        TensorAlgebra::compute_christoffel(metric_vars.d1_gamma, gamma_UU).ULL;
 
     std::cout << "lapse: \n" << metric_vars.lapse << std::endl;
 
-    std::cout << "\nshift: \n" << metric_vars.shift[0] << " "
-                << metric_vars.shift[1] << " " << metric_vars.shift[2]
-                << std::endl;
+    std::cout << "\nshift: \n"
+              << metric_vars.shift[0] << " " << metric_vars.shift[1] << " "
+              << metric_vars.shift[2] << std::endl;
 
-    std::cout << "\ngamma: \n" << metric_vars.gamma[0][0] << " "
-                << metric_vars.gamma[0][1] << " "
-                << metric_vars.gamma[0][2] << "\n "
-                << metric_vars.gamma[1][0] << " "
-                << metric_vars.gamma[1][1] << " "
-                << metric_vars.gamma[1][2] << "\n "
-                << metric_vars.gamma[2][0] << " "
-                << metric_vars.gamma[2][1] << " "
-                << metric_vars.gamma[2][2] << std::endl;
-    
-    std::cout << "\ngammaUU: \n" << gamma_UU[0][0] << " "
-                << gamma_UU[0][1] << " "
-                << gamma_UU[0][2] << "\n "
-                << gamma_UU[1][0] << " "
-                << gamma_UU[1][1] << " "
-                << gamma_UU[1][2] << "\n "
-                << gamma_UU[2][0] << " "
-                << gamma_UU[2][1] << " "
-                << gamma_UU[2][2] << std::endl;
+    std::cout << "\ngamma: \n"
+              << metric_vars.gamma[0][0] << " " << metric_vars.gamma[0][1]
+              << " " << metric_vars.gamma[0][2] << "\n "
+              << metric_vars.gamma[1][0] << " " << metric_vars.gamma[1][1]
+              << " " << metric_vars.gamma[1][2] << "\n "
+              << metric_vars.gamma[2][0] << " " << metric_vars.gamma[2][1]
+              << " " << metric_vars.gamma[2][2] << std::endl;
+
+    std::cout << "\ngammaUU: \n"
+              << gamma_UU[0][0] << " " << gamma_UU[0][1] << " "
+              << gamma_UU[0][2] << "\n " << gamma_UU[1][0] << " "
+              << gamma_UU[1][1] << " " << gamma_UU[1][2] << "\n "
+              << gamma_UU[2][0] << " " << gamma_UU[2][1] << " "
+              << gamma_UU[2][2] << std::endl;
 
     std::cout << "\nchris phys: " << std::endl;
     FOR2(i, j)
@@ -182,21 +168,22 @@ int test1()
         FOR1(k)
         {
             std::cout << "  chris_phys[" << i << "][" << j << "][" << k
-                        << "] = " << chris_phys[i][j][k];
+                      << "] = " << chris_phys[i][j][k];
         }
         std::cout << std::endl;
     }
 
-    std::cout << "\nmetric_vars.d1_lapse: \n" << metric_vars.d1_lapse[0]
-                << " " << metric_vars.d1_lapse[1] << " "
-                << metric_vars.d1_lapse[2] << std::endl;
+    std::cout << "\nmetric_vars.d1_lapse: \n"
+              << metric_vars.d1_lapse[0] << " " << metric_vars.d1_lapse[1]
+              << " " << metric_vars.d1_lapse[2] << std::endl;
 
     std::cout << "\nmetric_vars.d1_shift: " << std::endl;
     FOR1(i)
     {
         FOR1(j)
         {
-            std::cout << "  d1_shift[" << i << "][" << j << "] = " << metric_vars.d1_shift[i][j] << " ";
+            std::cout << "  d1_shift[" << i << "][" << j
+                      << "] = " << metric_vars.d1_shift[i][j] << " ";
         }
         std::cout << std::endl;
     }
@@ -207,7 +194,7 @@ int test1()
         FOR1(k)
         {
             std::cout << "  d1_gamma[" << i << "][" << j << "][" << k
-                        << "] = " << metric_vars.d1_gamma[i][j][k];
+                      << "] = " << metric_vars.d1_gamma[i][j][k];
         }
         std::cout << std::endl;
     }
@@ -216,77 +203,71 @@ int test1()
     FOR2(i, j)
     {
         std::cout << "  k_tensor[" << i << "][" << j
-                    << "]= " << metric_vars.K_tensor[i][j];
+                  << "]= " << metric_vars.K_tensor[i][j];
         std::cout << std::endl;
     }
 
     std::cout << "\nmetric_vars.K: " << metric_vars.K << std::endl;
 
-
-
-
     // Verify time derivative of chi vanishes
-    std::vector<double> detgamma_deriv { 0,0,0};
-    double det_gamma = TensorAlgebra::compute_determinant_sym(metric_vars.gamma);
-    FOR2(i,j)
-    {
-        detgamma_deriv[j] += 2 * det_gamma * chris_phys[i][i][j];
-    }
+    std::vector<double> detgamma_deriv{0, 0, 0};
+    double det_gamma =
+        TensorAlgebra::compute_determinant_sym(metric_vars.gamma);
+    FOR2(i, j) { detgamma_deriv[j] += 2 * det_gamma * chris_phys[i][i][j]; }
 
-    double chi = pow(det_gamma, -1.0/3.0);
-    std::vector<double> chi_deriv {0,0,0};
+    double chi = pow(det_gamma, -1.0 / 3.0);
+    std::vector<double> chi_deriv{0, 0, 0};
     FOR1(i)
     {
-        chi_deriv[i] += detgamma_deriv[i] * (-1.0/3.0) * pow(det_gamma,-4./3.);
+        chi_deriv[i] +=
+            detgamma_deriv[i] * (-1.0 / 3.0) * pow(det_gamma, -4. / 3.);
     }
 
     std::cout << "\nchi: " << chi << std::endl;
-    std::cout << "\nchi_deriv: " << chi_deriv[0] << " " << chi_deriv[1] << " " << chi_deriv[2] << std::endl;
+    std::cout << "\nchi_deriv: " << chi_deriv[0] << " " << chi_deriv[1] << " "
+              << chi_deriv[2] << std::endl;
 
     double chi_dot = 0;
     FOR1(i)
     {
-        chi_dot += metric_vars.shift[i] * chi_deriv[i] - 2./3. * chi * metric_vars.d1_shift[i][i];
+        chi_dot += metric_vars.shift[i] * chi_deriv[i] -
+                   2. / 3. * chi * metric_vars.d1_shift[i][i];
     }
-    chi_dot += 2./3. * chi * metric_vars.lapse * metric_vars.K;
+    chi_dot += 2. / 3. * chi * metric_vars.lapse * metric_vars.K;
     std::cout << "\nchi_dot: " << chi_dot << std::endl;
 
     return 0;
 
 } // end of kerr tests
 
-
 // This struct should be a copy of the background param_t struct, with specified
 // values
 struct
 {
     double mass = 1.0;
-    std::array<double, CH_SPACEDIM> center; // automatically filled in during test2 eval
+    std::array<double, CH_SPACEDIM>
+        center; // automatically filled in during test2 eval
     double cosmo_constant = 0.001;
     double spin = 0.5;
     double r_plus = 1.868535723767148;
 
 } BackgroundParams;
 
-
-
 int test2(bool debug_plots_on = false)
 {
 
-    #ifdef _OPENMP
+#ifdef _OPENMP
     std::cout << " Number of threads: " << omp_get_max_threads() << std::endl;
-    #endif
+#endif
 
-    int failed{0};                    // flag for failed
-    const std::vector<int> resolutions {96, 192, 384};   //resolutions to run at
+    int failed{0};                                    // flag for failed
+    const std::vector<int> resolutions{96, 192, 384}; // resolutions to run at
 
-
-    const int num_resolutions = 3; //how many of the resolutions to actually use
+    const int num_resolutions = 3; // how many of the resolutions to actually
+                                   // use
 
     // vector of norms for convergence checking
     std::array<std::array<double, NUM_VARS>, num_resolutions> error_norms;
-
-   
 
     for (int ires{0}; ires < num_resolutions; ++ires)
     {
@@ -295,12 +276,12 @@ int test2(bool debug_plots_on = false)
         std::cout << "Resolution: " << ires << std::endl;
         std::cout << "*******************" << std::endl;
 
-
         // fill current error norm array with zeroes
         error_norms[ires].fill(0.0);
 
         // setup the array boxes for various inputs and outputs
-        const int N_GRID{ resolutions[ires] }; // number of cells on each side of box
+        const int N_GRID{
+            resolutions[ires]}; // number of cells on each side of box
 
         std::cout << "Creating grid (" << N_GRID << " x " << N_GRID << " x "
                   << N_GRID << ")" << std::endl;
@@ -350,7 +331,8 @@ int test2(bool debug_plots_on = false)
         bg_params.r_plus = BackgroundParams.r_plus;
         std::cout << "Mass: " << bg_params.mass << std::endl;
         std::cout << "Spin: " << bg_params.spin << std::endl;
-        std::cout << "cosmo_constant: " << bg_params.cosmo_constant << std::endl;
+        std::cout << "cosmo_constant: " << bg_params.cosmo_constant
+                  << std::endl;
         std::cout << "outer horizon: " << bg_params.r_plus << std::endl;
         std::cout << "Center: " << bg_params.center[0] << " "
                   << bg_params.center[1] << " " << bg_params.center[2]
@@ -392,7 +374,8 @@ int test2(bool debug_plots_on = false)
 
         // setup matterccz4 rhs with matter class
         MatterCCZ4RHS<ProcaFieldTest> matter_ccz4_rhs(
-            matter, ccz4_params, dx, sigma, CCZ4RHS<>::USE_BSSN, G_Newt, BackgroundParams.cosmo_constant);
+            matter, ccz4_params, dx, sigma, CCZ4RHS<>::USE_BSSN, G_Newt,
+            BackgroundParams.cosmo_constant);
 
         std::cout << "Numerically computing rhs..." << std::endl;
 
@@ -416,31 +399,41 @@ int test2(bool debug_plots_on = false)
         ExcisionTest<BaseProcaField<KerrdeSitter, ProcaField>, KerrdeSitter>
             excision(dx, center_vector, background_init);
         BoxLoops::loop(excision, rhs_FAB, rhs_FAB, disable_simd());
-        BoxLoops::loop(excision, fixedbg_rhs_FAB, fixedbg_rhs_FAB, disable_simd());
+        BoxLoops::loop(excision, fixedbg_rhs_FAB, fixedbg_rhs_FAB,
+                       disable_simd());
 
         if (debug_plots_on)
         {
-            { //Output parts of the rhs_FAB after subtraction
+            { // Output parts of the rhs_FAB after subtraction
 
                 std::cout << "In debugging block" << std::endl;
-                std::string filename { "output_rhs_res" + std::to_string(ires) + ".txt" };
+                std::string filename{"output_rhs_res" + std::to_string(ires) +
+                                     ".txt"};
                 std::ofstream outfile;
                 outfile.clear();
                 outfile.open(filename);
-                outfile <<  "#" << std::setw(printwidth) << "x" << std::setw(printwidth) << "y" << std::setw(printwidth) << "z";
-                outfile << std::setw(printwidth) <<  "chi";
+                outfile << "#" << std::setw(printwidth) << "x"
+                        << std::setw(printwidth) << "y" << std::setw(printwidth)
+                        << "z";
+                outfile << std::setw(printwidth) << "chi";
                 outfile << std::setw(printwidth) << "K";
-                outfile << std::setw(printwidth) << "lapse" << std::setw(printwidth) << "Avec1" << std::setw(printwidth) << "Avec2" << std::setw(printwidth) << "Avec3" << std::setw(printwidth) << "Ham";
-                outfile << std::setw(printwidth) << "Mom1" << std::setw(printwidth) << "Mom2" << std::setw(printwidth) << "Mom3" <<std::endl;
+                outfile << std::setw(printwidth) << "lapse"
+                        << std::setw(printwidth) << "Avec1"
+                        << std::setw(printwidth) << "Avec2"
+                        << std::setw(printwidth) << "Avec3"
+                        << std::setw(printwidth) << "Ham";
+                outfile << std::setw(printwidth) << "Mom1"
+                        << std::setw(printwidth) << "Mom2"
+                        << std::setw(printwidth) << "Mom3" << std::endl;
                 BoxIterator bit(box);
                 for (bit.begin(); bit.ok(); ++bit)
                 {
                     IntVect iv = bit();
                     if (iv[1] == N_GRID / 2 && iv[2] == N_GRID / 2)
                     {
-                        double x { dx * (iv[0] + 0.5) };
-                        double y { dx * (iv[1] + 0.5) };
-                        double z { dx * (iv[2] + 0.5) };
+                        double x{dx * (iv[0] + 0.5)};
+                        double y{dx * (iv[1] + 0.5)};
+                        double z{dx * (iv[2] + 0.5)};
                         double out7 = rhs_FAB(iv, c_chi);
                         double out1 = rhs_FAB(iv, c_lapse);
                         double out2 = rhs_FAB(iv, c_Avec1);
@@ -451,39 +444,55 @@ int test2(bool debug_plots_on = false)
                         double out5 = rhs_FAB(iv, c_Mom2);
                         double out6 = rhs_FAB(iv, c_Mom3);
                         double out10 = rhs_FAB(iv, c_K);
-                        
-                        outfile << precision << std::setw(printwidth) << x << std::setw(printwidth) << y << std::setw(printwidth) << z ;
+
+                        outfile << precision << std::setw(printwidth) << x
+                                << std::setw(printwidth) << y
+                                << std::setw(printwidth) << z;
                         outfile << std::setw(printwidth) << out7;
                         outfile << std::setw(printwidth) << out10;
-                        outfile << std::setw(printwidth) << out1 << std::setw(printwidth) << out2 << std::setw(printwidth)<<out8<< std::setw(printwidth)<<out9 << std::setw(printwidth);
-                        outfile << out3 << std::setw(printwidth) << out4 << std::setw(printwidth) << out5;
+                        outfile << std::setw(printwidth) << out1
+                                << std::setw(printwidth) << out2
+                                << std::setw(printwidth) << out8
+                                << std::setw(printwidth) << out9
+                                << std::setw(printwidth);
+                        outfile << out3 << std::setw(printwidth) << out4
+                                << std::setw(printwidth) << out5;
                         outfile << std::setw(printwidth) << out6 << std::endl;
                     }
                 }
                 outfile.close();
             }
 
-            { //Output parts of the fixedbg_rhs_FAB after subtraction
+            { // Output parts of the fixedbg_rhs_FAB after subtraction
 
                 std::cout << "In debugging block" << std::endl;
-                std::string filename { "output_fixedbg_rhs_res"+    std::to_string(ires) + ".txt" };
+                std::string filename{"output_fixedbg_rhs_res" +
+                                     std::to_string(ires) + ".txt"};
                 std::ofstream outfile;
                 outfile.clear();
                 outfile.open(filename);
-                outfile <<  "#" << std::setw(printwidth) << "x" << std::setw(printwidth) << "y" << std::setw(printwidth) << "z";
-                outfile << std::setw(printwidth) <<  "chi";
+                outfile << "#" << std::setw(printwidth) << "x"
+                        << std::setw(printwidth) << "y" << std::setw(printwidth)
+                        << "z";
+                outfile << std::setw(printwidth) << "chi";
                 outfile << std::setw(printwidth) << "K";
-                outfile << std::setw(printwidth) << "lapse" << std::setw(printwidth) << "Avec1" << std::setw(printwidth) << "Avec2" << std::setw(printwidth) << "Avec3" << std::setw(printwidth) <<"Ham";
-                outfile << std::setw(printwidth) << "Mom1" << std::setw(printwidth) << "Mom2" << std::setw(printwidth) << "Mom3" <<std::endl;
+                outfile << std::setw(printwidth) << "lapse"
+                        << std::setw(printwidth) << "Avec1"
+                        << std::setw(printwidth) << "Avec2"
+                        << std::setw(printwidth) << "Avec3"
+                        << std::setw(printwidth) << "Ham";
+                outfile << std::setw(printwidth) << "Mom1"
+                        << std::setw(printwidth) << "Mom2"
+                        << std::setw(printwidth) << "Mom3" << std::endl;
                 BoxIterator bit(box);
                 for (bit.begin(); bit.ok(); ++bit)
                 {
                     IntVect iv = bit();
                     if (iv[1] == N_GRID / 2 && iv[2] == N_GRID / 2)
                     {
-                        double x { dx * (iv[0] + 0.5) };
-                        double y { dx * (iv[1] + 0.5) };
-                        double z { dx * (iv[2] + 0.5) };
+                        double x{dx * (iv[0] + 0.5)};
+                        double y{dx * (iv[1] + 0.5)};
+                        double z{dx * (iv[2] + 0.5)};
                         double out7 = fixedbg_rhs_FAB(iv, c_chi);
                         double out1 = fixedbg_rhs_FAB(iv, c_lapse);
                         double out2 = fixedbg_rhs_FAB(iv, c_Avec1);
@@ -494,12 +503,19 @@ int test2(bool debug_plots_on = false)
                         double out5 = fixedbg_rhs_FAB(iv, c_Mom2);
                         double out6 = fixedbg_rhs_FAB(iv, c_Mom3);
                         double out10 = fixedbg_rhs_FAB(iv, c_K);
-                        
-                        outfile << precision << std::setw(printwidth) << x << std::setw(printwidth) << y << std::setw(printwidth) << z ;
+
+                        outfile << precision << std::setw(printwidth) << x
+                                << std::setw(printwidth) << y
+                                << std::setw(printwidth) << z;
                         outfile << std::setw(printwidth) << out7;
                         outfile << std::setw(printwidth) << out10;
-                        outfile << std::setw(printwidth) << out1 << std::setw(printwidth) << out2 <<std::setw(printwidth)<<out8<< std::setw(printwidth)<<out9<< std::setw(printwidth);
-                        outfile << out3 << std::setw(printwidth) << out4 << std::setw(printwidth) << out5;
+                        outfile << std::setw(printwidth) << out1
+                                << std::setw(printwidth) << out2
+                                << std::setw(printwidth) << out8
+                                << std::setw(printwidth) << out9
+                                << std::setw(printwidth);
+                        outfile << out3 << std::setw(printwidth) << out4
+                                << std::setw(printwidth) << out5;
                         outfile << std::setw(printwidth) << out6 << std::endl;
                     }
                 }
@@ -514,27 +530,36 @@ int test2(bool debug_plots_on = false)
 
         if (debug_plots_on)
         {
-            { //Output parts of the rhs_FAB after subtraction
+            { // Output parts of the rhs_FAB after subtraction
 
                 std::cout << "In debugging block" << std::endl;
-                std::string filename { "output_diff_res" + std::to_string(ires) + ".txt" };
+                std::string filename{"output_diff_res" + std::to_string(ires) +
+                                     ".txt"};
                 std::ofstream outfile;
                 outfile.clear();
                 outfile.open(filename);
-                outfile <<  "#" << std::setw(printwidth) << "x" << std::setw(printwidth) << "y" << std::setw(printwidth) << "z";
-                outfile << std::setw(printwidth) <<  "chi";
+                outfile << "#" << std::setw(printwidth) << "x"
+                        << std::setw(printwidth) << "y" << std::setw(printwidth)
+                        << "z";
+                outfile << std::setw(printwidth) << "chi";
                 outfile << std::setw(printwidth) << "K";
-                outfile << std::setw(printwidth) << "lapse" << std::setw(printwidth) << "Avec1" << std::setw(printwidth) << "Avec2" << std::setw(printwidth) << "Avec3" << std::setw(printwidth) << "Ham";
-                outfile << std::setw(printwidth) << "Mom1" << std::setw(printwidth) << "Mom2" << std::setw(printwidth) << "Mom3" <<std::endl;
+                outfile << std::setw(printwidth) << "lapse"
+                        << std::setw(printwidth) << "Avec1"
+                        << std::setw(printwidth) << "Avec2"
+                        << std::setw(printwidth) << "Avec3"
+                        << std::setw(printwidth) << "Ham";
+                outfile << std::setw(printwidth) << "Mom1"
+                        << std::setw(printwidth) << "Mom2"
+                        << std::setw(printwidth) << "Mom3" << std::endl;
                 BoxIterator bit(box);
                 for (bit.begin(); bit.ok(); ++bit)
                 {
                     IntVect iv = bit();
                     if (iv[1] == N_GRID / 2 && iv[2] == N_GRID / 2)
                     {
-                        double x { dx * (iv[0] + 0.5) };
-                        double y { dx * (iv[1] + 0.5) };
-                        double z { dx * (iv[2] + 0.5) };
+                        double x{dx * (iv[0] + 0.5)};
+                        double y{dx * (iv[1] + 0.5)};
+                        double z{dx * (iv[2] + 0.5)};
                         double out7 = rhs_FAB(iv, c_chi);
                         double out1 = rhs_FAB(iv, c_lapse);
                         double out2 = rhs_FAB(iv, c_Avec1);
@@ -545,20 +570,25 @@ int test2(bool debug_plots_on = false)
                         double out5 = rhs_FAB(iv, c_Mom2);
                         double out6 = rhs_FAB(iv, c_Mom3);
                         double out10 = rhs_FAB(iv, c_K);
-                        
-                        outfile << precision << std::setw(printwidth) << x << std::setw(printwidth) << y << std::setw(printwidth) << z ;
+
+                        outfile << precision << std::setw(printwidth) << x
+                                << std::setw(printwidth) << y
+                                << std::setw(printwidth) << z;
                         outfile << std::setw(printwidth) << out7;
                         outfile << std::setw(printwidth) << out10;
-                        outfile << std::setw(printwidth) << out1 << std::setw(printwidth) << out2 << std::setw(printwidth)<<out8<< std::setw(printwidth)<<out9 << std::setw(printwidth);
-                        outfile << out3 << std::setw(printwidth) << out4 << std::setw(printwidth) << out5;
+                        outfile << std::setw(printwidth) << out1
+                                << std::setw(printwidth) << out2
+                                << std::setw(printwidth) << out8
+                                << std::setw(printwidth) << out9
+                                << std::setw(printwidth);
+                        outfile << out3 << std::setw(printwidth) << out4
+                                << std::setw(printwidth) << out5;
                         outfile << std::setw(printwidth) << out6 << std::endl;
                     }
                 }
                 outfile.close();
             }
         }
-
-        
 
         std::cout << "Checking results..." << std::endl;
 
@@ -606,8 +636,8 @@ int test2(bool debug_plots_on = false)
                 rhs_FAB.norm(L1_norm, i, num_comps) * pow(N_GRID, -3);
         }
 
-        //check the RHS of the metric variables is zero
-        for ( int i { c_chi}; i < c_lapse; i++)
+        // check the RHS of the metric variables is zero
+        for (int i{c_chi}; i < c_lapse; i++)
         {
             double max_err = rhs_FAB.norm(max_norm, i, num_comps);
             if (max_err > error_limit)
@@ -681,11 +711,12 @@ int main(int argc, char *argv[])
         argvs.push_back(argv[i]);
     }
 
-    bool run_test1 = (std::find(argvs.begin(), argvs.end(), "test1") != argvs.end());
-    bool run_test2 = (std::find(argvs.begin(), argvs.end(), "test2") != argvs.end());
-    bool debug = (std::find(argvs.begin(), argvs.end(), "debug") != argvs.end());
-
-
+    bool run_test1 =
+        (std::find(argvs.begin(), argvs.end(), "test1") != argvs.end());
+    bool run_test2 =
+        (std::find(argvs.begin(), argvs.end(), "test2") != argvs.end());
+    bool debug =
+        (std::find(argvs.begin(), argvs.end(), "debug") != argvs.end());
 
     std::cout << std::string(10, '#') << std::endl;
     std::cout << "Running GRBoondi tests" << std::endl;
@@ -714,7 +745,6 @@ int main(int argc, char *argv[])
         std::cout << std::string(10, '#') << std::endl;
         test2res = test2(debug);
     }
-
 
     return test2res || test1res;
 }

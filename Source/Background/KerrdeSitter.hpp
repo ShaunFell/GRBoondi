@@ -323,31 +323,37 @@ class KerrdeSitter
         // Now calculate the extrinsic curvature and its trace, using the
         // transformed metric quantities
         auto gamma_UU{TensorAlgebra::compute_inverse_sym(metric_vars.gamma)};
-        const auto chris_phys = TensorAlgebra::compute_christoffel(metric_vars.d1_gamma, gamma_UU);
-          std::vector<std::vector<data_t>> shift_cov_div {{0,0,0},{0,0,0},{0,0,0}};
-        FOR2(i,j)
+        const auto chris_phys =
+            TensorAlgebra::compute_christoffel(metric_vars.d1_gamma, gamma_UU);
+        std::vector<std::vector<data_t>> shift_cov_div{
+            {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+        FOR2(i, j)
         {
             shift_cov_div[j][i] += metric_vars.d1_shift[j][i];
             FOR1(k)
             {
-                shift_cov_div[j][i] += chris_phys.ULL[j][i][k] * metric_vars.shift[k];
+                shift_cov_div[j][i] +=
+                    chris_phys.ULL[j][i][k] * metric_vars.shift[k];
             }
         }
-        std::vector<std::vector<data_t>> shift_cov_div_low {{0,0,0},{0,0,0},{0,0,0}};
-        FOR2(i,j)
+        std::vector<std::vector<data_t>> shift_cov_div_low{
+            {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+        FOR2(i, j)
         {
             FOR1(k)
             {
-                shift_cov_div_low[i][j] += metric_vars.gamma[i][k] * shift_cov_div[k][j];
+                shift_cov_div_low[i][j] +=
+                    metric_vars.gamma[i][k] * shift_cov_div[k][j];
             }
         }
 
-        FOR2(i,j)
+        FOR2(i, j)
         {
             metric_vars.K_tensor[i][j] = 0.;
-            metric_vars.K_tensor[i][j] += (shift_cov_div_low[i][j] + shift_cov_div_low[j][i]) / (2. * metric_vars.lapse);
+            metric_vars.K_tensor[i][j] +=
+                (shift_cov_div_low[i][j] + shift_cov_div_low[j][i]) /
+                (2. * metric_vars.lapse);
         }
-
 
         metric_vars.K = 0.;
         FOR1(i)
@@ -442,17 +448,17 @@ class KerrdeSitter
     {
 
         bool is_excised{false};
-        double current_radius {coords.get_radius()};
+        double current_radius{coords.get_radius()};
 
         // This is a pretty good excision zone
         // The cosmological horizon is always less than sqrt(3/lambda) - 1
         // So just excise 2/3 between sqrt(3/lambda) and sqrt(3/lambda) - 1
         // i.e. excise everything beyond sqrt(3/lambda) - 1/3
-        const double CC {m_params.cosmo_constant};
-        const double outer_excision_zone { outer_cosmo_horizon() - 1. / 3. };
-  
+        const double CC{m_params.cosmo_constant};
+        const double outer_excision_zone{outer_cosmo_horizon() - 1. / 3.};
 
-        if (current_radius < buffer_outer * m_params.r_plus || current_radius > outer_excision_zone)
+        if (current_radius < buffer_outer * m_params.r_plus ||
+            current_radius > outer_excision_zone)
         {
             is_excised = true;
         }
