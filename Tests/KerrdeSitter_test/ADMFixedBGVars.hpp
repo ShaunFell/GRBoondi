@@ -36,13 +36,14 @@ template <class data_t> struct Vars
     Tensor<1, Tensor<2, data_t>> d2_shift;
     Tensor<2, Tensor<2, data_t>> d2_gamma;
 
-    //add enum mapping to store these on the grid
+    // add enum mapping to store these on the grid
     template <typename mapping_function_t>
     void enum_mapping(mapping_function_t mapping_function)
     {
         VarsTools::define_enum_mapping(mapping_function, c_K, K);
         VarsTools::define_enum_mapping(mapping_function, c_lapse, lapse);
-        VarsTools::define_enum_mapping(mapping_function, GRInterval<c_shift1, c_shift3>(), shift);
+        VarsTools::define_enum_mapping(mapping_function,
+                                       GRInterval<c_shift1, c_shift3>(), shift);
     }
 };
 
