@@ -7,8 +7,8 @@ This class adds the simplest L2 lagrangian to the base equations of motion
 #include "ADMFixedBGVars.hpp"
 #include "ADMProcaVars.hpp"
 #include "BaseProcaField.hpp"
-#include "DefaultG.hpp"
 #include "BoostedBH.hpp"
+#include "DefaultG.hpp"
 #include "L2_simp.hpp"
 
 // Note: base class BaseProcaField uses CRTP, so pass ProcaField itself as

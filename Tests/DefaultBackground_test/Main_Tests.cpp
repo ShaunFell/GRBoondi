@@ -50,9 +50,9 @@ for more details
 
 // c++ includes
 #include <algorithm>
+#include <iomanip>
 #include <iostream>
 #include <string>
-#include <iomanip>
 
 std::string tab{"\t"};
 static const auto precision = std::setprecision(16);
@@ -73,8 +73,8 @@ int test2()
 
     int failed{0};                                    // flag for failed
     const std::vector<int> resolutions{96, 192, 384}; // resolutions to run at
-    const int num_resolutions = 2; // how many of the resolutions to actually
-                                   // use
+    const int num_resolutions = 2;    // how many of the resolutions to actually
+                                      // use
     const bool debug_plots_on{false}; // export data for plotting
 
     // vector of norms for convergence checking
@@ -145,8 +145,8 @@ int test2()
 
         std::cout << "Computing fixed background..." << std::endl;
         // assign background variables to grid
-        BoxLoops::loop(AssignFixedBGtoBSSNVars<DefaultBackground>(background_init,
-                                                             dx, center_vector),
+        BoxLoops::loop(AssignFixedBGtoBSSNVars<DefaultBackground>(
+                           background_init, dx, center_vector),
                        fixedbg_FAB, fixedbg_FAB);
         GammaCalculator gamamcalc(dx);
         BoxLoops::loop(gamamcalc, fixedbg_FAB, deriv_fixedbg_FAB);
@@ -203,7 +203,8 @@ int test2()
         std::cout << "Excising..." << std::endl;
 
         // excise the center where values are always large
-        ExcisionTest<BaseProcaField<DefaultBackground, ProcaField>, DefaultBackground>
+        ExcisionTest<BaseProcaField<DefaultBackground, ProcaField>,
+                     DefaultBackground>
             excision(dx, center_vector, background_init);
         BoxLoops::loop(excision, rhs_FAB, rhs_FAB, disable_simd());
 
@@ -327,11 +328,11 @@ int test2()
                 outfile.close();
             }
 
-            { // Output parts of the fixedbg_FAB 
+            { // Output parts of the fixedbg_FAB
 
                 std::cout << "In debugging block" << std::endl;
-                std::string filename{"output_fixedbg_res" + std::to_string(ires) +
-                                     ".txt"};
+                std::string filename{"output_fixedbg_res" +
+                                     std::to_string(ires) + ".txt"};
                 std::ofstream outfile;
                 outfile.clear();
                 outfile.open(filename);
@@ -450,33 +451,40 @@ int test2()
                 hi_res_norm = 1e-10;
             }
 
-            if (i==c_Ham) //we need to do something special for the hamiltonain since theres a small error in the second derivatives causing weird behavior.
+            if (i == c_Ham) // we need to do something special for the
+                            // hamiltonain since theres a small error in the
+                            // second derivatives causing weird behavior.
             {
-                if (error_norms[ires][c_Ham] < 1e-12 && error_norms[ires+1][c_Ham] < 1e-12)
+                if (error_norms[ires][c_Ham] < 1e-12 &&
+                    error_norms[ires + 1][c_Ham] < 1e-12)
                 {
-                    //nothing
-                } else 
+                    // nothing
+                }
+                else
                 {
                     failed = -1;
-                    std::cout << "Hamiltonian constraint non-zero! " << std::endl;
+                    std::cout << "Hamiltonian constraint non-zero! "
+                              << std::endl;
                 }
-            } else
+            }
+            else
             {
-                
+
                 double convergence_factor = lo_res_norm / hi_res_norm;
                 if (convergence_factor < min_convergence_factor)
                 {
                     min_convergence_factor = convergence_factor;
                 }
-            
+
                 if (convergence_factor < 11)
                 {
                     failed = -1;
                     std::cout << "CONVERGENCE FACTOR FOR COMPONENT "
-                            << UserVariables::variable_names[i] << " ON LEVEL "
-                            << ires << " IS LOW: VALUE = " << convergence_factor
-                            << " " << hi_res_norm << " " << lo_res_norm
-                            << std::endl;
+                              << UserVariables::variable_names[i]
+                              << " ON LEVEL " << ires
+                              << " IS LOW: VALUE = " << convergence_factor
+                              << " " << hi_res_norm << " " << lo_res_norm
+                              << std::endl;
                 }
             }
         }

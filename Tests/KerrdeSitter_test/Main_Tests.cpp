@@ -711,10 +711,9 @@ int main(int argc, char *argv[])
         argvs.push_back(argv[i]);
     }
 
-
     bool run_test1 =
         (std::find(argvs.begin(), argvs.end(), "test1") != argvs.end());
-    bool run_test2 = true; //always run test 2
+    bool run_test2 = true; // always run test 2
     bool debug =
         (std::find(argvs.begin(), argvs.end(), "debug") != argvs.end());
 

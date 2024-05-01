@@ -60,7 +60,6 @@ std::string tab{"\t"};
 static const auto precision = std::setprecision(16);
 static const int printwidth = 25;
 
-
 // This struct should be a copy of the background param_t struct, with specified
 // values
 struct
@@ -74,9 +73,9 @@ struct
 int test2()
 {
 
-    #ifdef _OPENMP
+#ifdef _OPENMP
     std::cout << " Number of threads: " << omp_get_max_threads() << std::endl;
-    #endif
+#endif
 
     int failed{0};                    // flag for failed
     const bool debug_plots_on{false}; // export data for plotting
@@ -155,8 +154,8 @@ int test2()
 
         std::cout << "Computing fixed background..." << std::endl;
         // assign background variables to grid
-        BoxLoops::loop(AssignFixedBGtoBSSNVars<BoostedBH>(background_init,
-                                                             dx, center_vector),
+        BoxLoops::loop(AssignFixedBGtoBSSNVars<BoostedBH>(background_init, dx,
+                                                          center_vector),
                        fixedbg_FAB, fixedbg_FAB);
         GammaCalculator gamamcalc(dx);
         BoxLoops::loop(gamamcalc, fixedbg_FAB, deriv_fixedbg_FAB);
@@ -213,8 +212,8 @@ int test2()
         std::cout << "Excising..." << std::endl;
 
         // excise the center where values are always large
-        ExcisionTest<BaseProcaField<BoostedBH, ProcaField>, BoostedBH>
-            excision(dx, center_vector, background_init);
+        ExcisionTest<BaseProcaField<BoostedBH, ProcaField>, BoostedBH> excision(
+            dx, center_vector, background_init);
         BoxLoops::loop(excision, rhs_FAB, rhs_FAB, disable_simd());
 
         if (debug_plots_on)
@@ -337,11 +336,11 @@ int test2()
                 outfile.close();
             }
 
-            { // Output parts of the fixedbg_FAB 
+            { // Output parts of the fixedbg_FAB
 
                 std::cout << "In debugging block" << std::endl;
-                std::string filename{"output_fixedbg_res" + std::to_string(ires) +
-                                     ".txt"};
+                std::string filename{"output_fixedbg_res" +
+                                     std::to_string(ires) + ".txt"};
                 std::ofstream outfile;
                 outfile.clear();
                 outfile.open(filename);

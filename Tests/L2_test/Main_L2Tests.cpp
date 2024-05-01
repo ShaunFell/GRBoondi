@@ -52,9 +52,9 @@
 
 int test1()
 {
-    #ifdef _OPENMP
+#ifdef _OPENMP
     std::cout << " Number of threads: " << omp_get_max_threads() << std::endl;
-    #endif
+#endif
 
     int failed{0};     // flag for failed
     int resolution{0}; // exponent for factor of 2 on default resolution
