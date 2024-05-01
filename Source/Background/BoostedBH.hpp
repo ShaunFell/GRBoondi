@@ -229,7 +229,7 @@ class BoostedBH
         const double r_horizon = 0.5 * M;
         bool is_excised = false;
 
-        if (sqrt(r2) / r_horizon < 0.5 * buffer)
+        if (sqrt(r2) / r_horizon < 0.75 * buffer)
         {
             is_excised = true;
         }

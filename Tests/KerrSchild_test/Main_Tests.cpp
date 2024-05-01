@@ -41,7 +41,6 @@ for more details
 // background includes
 #include "ADMFixedBGVars.hpp"
 #include "BaseProcaFieldTest.hpp"
-#include "BoostedBH.hpp"
 #include "KerrSchild.hpp"
 #include "KerrSchildFixedBG.hpp"
 #include "MatterEvolution.hpp"
@@ -162,15 +161,15 @@ struct
     double mass = 1.0;
     std::array<double, CH_SPACEDIM>
         center; // automatically filled in during test2 eval
-    double velocity = 0.5;
+    double spin = 0.5;
 } BackgroundParams;
 
 template <class background_t> int test2()
 {
 
-#ifdef _OPENMP
+    #ifdef _OPENMP
     std::cout << " Number of threads: " << omp_get_max_threads() << std::endl;
-#endif
+    #endif
 
     int failed{0};                    // flag for failed
     const bool debug_plots_on{false}; // export data for plotting
@@ -191,7 +190,7 @@ template <class background_t> int test2()
 
         // setup the array boxes for various inputs and outputs
         const int N_GRID{
-            128 * (int)pow(2, ires)}; // number of cells on each side of box
+            96 * (int)pow(2, ires)}; // number of cells on each side of box
 
         std::cout << "Creating grid (" << N_GRID << " x " << N_GRID << " x "
                   << N_GRID << ")" << std::endl;
@@ -236,10 +235,10 @@ template <class background_t> int test2()
         // create background
         typename background_t::params_t bg_params;
         bg_params.mass = BackgroundParams.mass;
-        bg_params.velocity = BackgroundParams.velocity;
+        bg_params.spin = BackgroundParams.spin;
         bg_params.center = center_vector;
         std::cout << "Mass: " << bg_params.mass << std::endl;
-        std::cout << "Velocity: " << bg_params.velocity << std::endl;
+        std::cout << "spin: " << bg_params.spin << std::endl;
         std::cout << "Center: " << bg_params.center[0] << " "
                   << bg_params.center[1] << " " << bg_params.center[2]
                   << std::endl;
@@ -424,7 +423,7 @@ int main(int argc, char *argv[])
     std::cout << "current tests: KerrSchild Extended Test" << std::endl;
     std::cout << std::string(10, '#') << std::endl;
     std::cout << std::string(10, '#') << std::endl;
-    int test2res = test2<BoostedBH>();
+    int test2res = test2<KerrSchild>();
 
     return test2res;
 }

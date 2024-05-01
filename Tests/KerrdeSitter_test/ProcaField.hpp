@@ -8,7 +8,6 @@ This class adds the simplest L2 lagrangian to the base equations of motion
 #include "ADMProcaVars.hpp"
 #include "BaseProcaField.hpp"
 #include "DefaultG.hpp"
-#include "KerrSchild.hpp"
 #include "KerrdeSitter.hpp"
 #include "L2_simp.hpp"
 

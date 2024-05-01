@@ -7,13 +7,13 @@ This class adds the simplest L2 lagrangian to the base equations of motion
 #include "ADMFixedBGVars.hpp"
 #include "ADMProcaVars.hpp"
 #include "BaseProcaField.hpp"
-#include "BoostedBH.hpp"
+#include "KerrSchild.hpp"
 #include "DefaultG.hpp"
 #include "L2_simp.hpp"
 
 // Note: base class BaseProcaField uses CRTP, so pass ProcaField itself as
 // template argument
-class ProcaFieldTest : public BaseProcaFieldTest<BoostedBH, ProcaFieldTest>
+class ProcaFieldTest : public BaseProcaFieldTest<KerrSchild, ProcaFieldTest>
 {
 
   protected:
@@ -36,13 +36,13 @@ class ProcaFieldTest : public BaseProcaFieldTest<BoostedBH, ProcaFieldTest>
         double vector_damping;
     };
 
-    BoostedBH m_background;
+    KerrSchild m_background;
     params_t m_params;
     L2_t m_L2;
     DefaultG m_G2;
 
-    ProcaFieldTest(BoostedBH a_background, params_t a_params)
-        : BaseProcaFieldTest<BoostedBH, ProcaFieldTest>(a_background),
+    ProcaFieldTest(KerrSchild a_background, params_t a_params)
+        : BaseProcaFieldTest<KerrSchild, ProcaFieldTest>(a_background),
           m_background(a_background), m_params(a_params)
     {
         // set up the L2 lagrangian

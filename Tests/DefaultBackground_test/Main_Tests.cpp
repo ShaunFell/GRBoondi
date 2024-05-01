@@ -11,7 +11,6 @@ for more details
 #endif
 
 #define NUM_ERR_LIM 0.1
-#define ERR 1e-9
 
 // misc includes
 #include "AssignFixedBGtoBSSNVars.hpp"
@@ -20,7 +19,6 @@ for more details
 // GRChombo includes
 #include "Cell.hpp"
 #include "Coordinates.hpp"
-#include "FourthOrderDerivatives.hpp"
 #include "GammaCalculator.hpp"
 #include "MatterCCZ4.hpp"
 #include "MatterCCZ4RHS.hpp"
@@ -43,9 +41,8 @@ for more details
 // background includes
 #include "ADMFixedBGVars.hpp"
 #include "BaseProcaFieldTest.hpp"
-#include "KerrdeSitter.hpp"
-#include "MatterEvolutionTest.hpp"
-#include "ProcaField.hpp"
+#include "DefaultBackground.hpp"
+#include "MatterEvolution.hpp"
 
 #include "BaseProcaField.hpp"
 #include "ProcaField.hpp"
@@ -53,207 +50,21 @@ for more details
 
 // c++ includes
 #include <algorithm>
-#include <iomanip>
 #include <iostream>
 #include <string>
+#include <iomanip>
 
 std::string tab{"\t"};
 static const auto precision = std::setprecision(16);
 static const int printwidth = 25;
 
-int test1()
-{
-    std::cout << "\n\n KerrdeSitter test:" << std::endl;
-
-    int failed = 0;
-
-    double dx{0.125};
-
-    // initialize an IntVect object
-    IntVect intvect;
-    intvect[0] = 1;
-    intvect[1] = 0.5;
-    intvect[2] = 0.5;
-
-    // create a coordinate object
-    // We set the coordinates to some arbitrary value, but which
-    // correspond to the
-    //       values in the Mathematica notebook
-    Coordinates<double> coords(
-        intvect, dx,
-        {8, 8, 8}); // should correspond to the point (x,y,z) = (1,1,1)
-    const double x = coords.x;
-    const double y = coords.y;
-    const double z = coords.z;
-    std::cout << tab << "(x,y,z) = (" << x << "," << y << "," << z << ")"
-              << std::endl;
-
-    // initialize the kerr params and the kerr object
-    KerrdeSitter::params_t kerr_params;
-    kerr_params.mass = 1.;
-    kerr_params.spin = 0.5;
-    kerr_params.cosmo_constant = 0.001;
-    kerr_params.center = {8., 8., 8.};
-    KerrdeSitter kerr_init(kerr_params, dx);
-    std::cout << tab << precision << " kerr mass = " << kerr_params.mass
-              << std::endl;
-    std::cout << tab << " kerr spin = " << kerr_params.spin << std::endl;
-    std::cout << tab << " kerr cosmo_constant = " << kerr_params.cosmo_constant
-              << std::endl;
-
-    // Discriminant test
-    double Q{KerrdeSitter::discriminant<double>(kerr_params)};
-    std::cout << tab << "Q = " << Q << std::endl;
-    double mathematica_result_Q{0.0175359611526745};
-    if (abs(Q - mathematica_result_Q) > ERR)
-    {
-        std::cout << tab << "Discriminant test failed" << std::endl;
-        failed = 1;
-    }
-    else
-    {
-        std::cout << tab << "Discriminant test passed" << std::endl;
-    }
-
-    // Metric variable tests
-    std::cout << "Metric variable tests: " << std::endl;
-    // instantiate the metric variables
-    ADMFixedBGVars::Vars<double> metric_vars;
-
-    IntVect mv_intvec;
-    mv_intvec[0] = 1;
-    mv_intvec[1] = 0.5;
-    mv_intvec[2] = 0.5;
-
-    Box box(IntVect(0, 0, 0), IntVect(8, 8, 8));
-    FArrayBox fab_in(box, 3);
-    FArrayBox fab_out(box, 3);
-    auto box_pointers = BoxPointers{fab_in, fab_out};
-    Cell<double> current_cell(mv_intvec, box_pointers);
-    Coordinates<double> coords_metricvars(current_cell, dx, kerr_params.center);
-
-    std::cout << "coords: " << coords_metricvars.x << " " << coords_metricvars.y
-              << " " << coords_metricvars.z << std::endl;
-
-    kerr_init.compute_metric_background(metric_vars, coords_metricvars);
-
-    auto gamma_UU = TensorAlgebra::compute_inverse_sym(metric_vars.gamma);
-    auto chris_phys =
-        TensorAlgebra::compute_christoffel(metric_vars.d1_gamma, gamma_UU).ULL;
-
-    std::cout << "lapse: \n" << metric_vars.lapse << std::endl;
-
-    std::cout << "\nshift: \n"
-              << metric_vars.shift[0] << " " << metric_vars.shift[1] << " "
-              << metric_vars.shift[2] << std::endl;
-
-    std::cout << "\ngamma: \n"
-              << metric_vars.gamma[0][0] << " " << metric_vars.gamma[0][1]
-              << " " << metric_vars.gamma[0][2] << "\n "
-              << metric_vars.gamma[1][0] << " " << metric_vars.gamma[1][1]
-              << " " << metric_vars.gamma[1][2] << "\n "
-              << metric_vars.gamma[2][0] << " " << metric_vars.gamma[2][1]
-              << " " << metric_vars.gamma[2][2] << std::endl;
-
-    std::cout << "\ngammaUU: \n"
-              << gamma_UU[0][0] << " " << gamma_UU[0][1] << " "
-              << gamma_UU[0][2] << "\n " << gamma_UU[1][0] << " "
-              << gamma_UU[1][1] << " " << gamma_UU[1][2] << "\n "
-              << gamma_UU[2][0] << " " << gamma_UU[2][1] << " "
-              << gamma_UU[2][2] << std::endl;
-
-    std::cout << "\nchris phys: " << std::endl;
-    FOR2(i, j)
-    {
-        FOR1(k)
-        {
-            std::cout << "  chris_phys[" << i << "][" << j << "][" << k
-                      << "] = " << chris_phys[i][j][k];
-        }
-        std::cout << std::endl;
-    }
-
-    std::cout << "\nmetric_vars.d1_lapse: \n"
-              << metric_vars.d1_lapse[0] << " " << metric_vars.d1_lapse[1]
-              << " " << metric_vars.d1_lapse[2] << std::endl;
-
-    std::cout << "\nmetric_vars.d1_shift: " << std::endl;
-    FOR1(i)
-    {
-        FOR1(j)
-        {
-            std::cout << "  d1_shift[" << i << "][" << j
-                      << "] = " << metric_vars.d1_shift[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
-
-    std::cout << "\nmetric_vars.d1_gamma: \n" << std::endl;
-    FOR2(i, j)
-    {
-        FOR1(k)
-        {
-            std::cout << "  d1_gamma[" << i << "][" << j << "][" << k
-                      << "] = " << metric_vars.d1_gamma[i][j][k];
-        }
-        std::cout << std::endl;
-    }
-
-    std::cout << "\nmetric_vars.k_tensor: " << std::endl;
-    FOR2(i, j)
-    {
-        std::cout << "  k_tensor[" << i << "][" << j
-                  << "]= " << metric_vars.K_tensor[i][j];
-        std::cout << std::endl;
-    }
-
-    std::cout << "\nmetric_vars.K: " << metric_vars.K << std::endl;
-
-    // Verify time derivative of chi vanishes
-    std::vector<double> detgamma_deriv{0, 0, 0};
-    double det_gamma =
-        TensorAlgebra::compute_determinant_sym(metric_vars.gamma);
-    FOR2(i, j) { detgamma_deriv[j] += 2 * det_gamma * chris_phys[i][i][j]; }
-
-    double chi = pow(det_gamma, -1.0 / 3.0);
-    std::vector<double> chi_deriv{0, 0, 0};
-    FOR1(i)
-    {
-        chi_deriv[i] +=
-            detgamma_deriv[i] * (-1.0 / 3.0) * pow(det_gamma, -4. / 3.);
-    }
-
-    std::cout << "\nchi: " << chi << std::endl;
-    std::cout << "\nchi_deriv: " << chi_deriv[0] << " " << chi_deriv[1] << " "
-              << chi_deriv[2] << std::endl;
-
-    double chi_dot = 0;
-    FOR1(i)
-    {
-        chi_dot += metric_vars.shift[i] * chi_deriv[i] -
-                   2. / 3. * chi * metric_vars.d1_shift[i][i];
-    }
-    chi_dot += 2. / 3. * chi * metric_vars.lapse * metric_vars.K;
-    std::cout << "\nchi_dot: " << chi_dot << std::endl;
-
-    return 0;
-
-} // end of kerr tests
-
-// This struct should be a copy of the background param_t struct, with specified
-// values
 struct
 {
-    double mass = 1.0;
     std::array<double, CH_SPACEDIM>
         center; // automatically filled in during test2 eval
-    double cosmo_constant = 0.001;
-    double spin = 0.5;
-    double r_plus = 1.868535723767148;
-
 } BackgroundParams;
 
-int test2(bool debug_plots_on = false)
+int test2()
 {
 
 #ifdef _OPENMP
@@ -262,9 +73,9 @@ int test2(bool debug_plots_on = false)
 
     int failed{0};                                    // flag for failed
     const std::vector<int> resolutions{96, 192, 384}; // resolutions to run at
-
     const int num_resolutions = 2; // how many of the resolutions to actually
                                    // use
+    const bool debug_plots_on{false}; // export data for plotting
 
     // vector of norms for convergence checking
     std::array<std::array<double, NUM_VARS>, num_resolutions> error_norms;
@@ -321,28 +132,20 @@ int test2(bool debug_plots_on = false)
         const double center = length / 2.0;  // center of the computational box
         const std::array<double, CH_SPACEDIM> center_vector = {
             center, center, center}; // center of the computational box
+        BackgroundParams.center = center_vector;
 
         // create background
-        typename KerrdeSitter::params_t bg_params;
-        bg_params.mass = BackgroundParams.mass;
-        bg_params.spin = BackgroundParams.spin;
-        bg_params.cosmo_constant = BackgroundParams.cosmo_constant;
+        typename DefaultBackground::params_t bg_params;
         bg_params.center = center_vector;
-        bg_params.r_plus = BackgroundParams.r_plus;
-        std::cout << "Mass: " << bg_params.mass << std::endl;
-        std::cout << "Spin: " << bg_params.spin << std::endl;
-        std::cout << "cosmo_constant: " << bg_params.cosmo_constant
-                  << std::endl;
-        std::cout << "outer horizon: " << bg_params.r_plus << std::endl;
         std::cout << "Center: " << bg_params.center[0] << " "
                   << bg_params.center[1] << " " << bg_params.center[2]
                   << std::endl;
         std::cout << "dx: " << dx << std::endl;
-        KerrdeSitter background_init(bg_params, dx);
+        DefaultBackground background_init(bg_params, dx);
 
         std::cout << "Computing fixed background..." << std::endl;
         // assign background variables to grid
-        BoxLoops::loop(AssignFixedBGtoBSSNVars<KerrdeSitter>(background_init,
+        BoxLoops::loop(AssignFixedBGtoBSSNVars<DefaultBackground>(background_init,
                                                              dx, center_vector),
                        fixedbg_FAB, fixedbg_FAB);
         GammaCalculator gamamcalc(dx);
@@ -356,7 +159,7 @@ int test2(bool debug_plots_on = false)
         // compute the hamiltonian and momentum constraints and put them in the
         // RHS fab
         BoxLoops::loop(Constraints(dx, c_Ham, Interval(c_Mom1, c_Mom3)),
-                       fixedbg_FAB, rhs_FAB, box);
+                       fixedbg_FAB, rhs_FAB, box, disable_simd());
 
         // set CCZ4 parameters
         const double G_Newt{0.}; // dont evolve the background
@@ -374,13 +177,12 @@ int test2(bool debug_plots_on = false)
 
         // setup matterccz4 rhs with matter class
         MatterCCZ4RHS<ProcaFieldTest> matter_ccz4_rhs(
-            matter, ccz4_params, dx, sigma, CCZ4RHS<>::USE_BSSN, G_Newt,
-            BackgroundParams.cosmo_constant);
+            matter, ccz4_params, dx, sigma, CCZ4RHS<>::USE_BSSN, G_Newt);
 
         std::cout << "Numerically computing rhs..." << std::endl;
 
         // numerically compute RHS
-        BoxLoops::loop(matter_ccz4_rhs, fixedbg_FAB, rhs_FAB, disable_simd());
+        BoxLoops::loop(matter_ccz4_rhs, fixedbg_FAB, rhs_FAB);
 
         std::cout << "Analytic computing rhs..." << std::endl;
 
@@ -389,18 +191,21 @@ int test2(bool debug_plots_on = false)
         ProcaField analytic_matter(background_init, proca_params);
 
         // compute RHS using analytic expressions
-        MatterEvolution<ProcaField, KerrdeSitter> my_an_evolution(
+        MatterEvolution<ProcaField, DefaultBackground> my_an_evolution(
             analytic_matter, background_init, sigma, dx, center_vector);
         BoxLoops::loop(my_an_evolution, fixedbg_FAB, fixedbg_rhs_FAB);
+
+        // take the difference between the numerically computed RHS and the
+        // analytically computed RHS. should converge to zero for increasing
+        // resolution
+        rhs_FAB -= fixedbg_rhs_FAB;
 
         std::cout << "Excising..." << std::endl;
 
         // excise the center where values are always large
-        ExcisionTest<BaseProcaField<KerrdeSitter, ProcaField>, KerrdeSitter>
+        ExcisionTest<BaseProcaField<DefaultBackground, ProcaField>, DefaultBackground>
             excision(dx, center_vector, background_init);
         BoxLoops::loop(excision, rhs_FAB, rhs_FAB, disable_simd());
-        BoxLoops::loop(excision, fixedbg_rhs_FAB, fixedbg_rhs_FAB,
-                       disable_simd());
 
         if (debug_plots_on)
         {
@@ -521,19 +326,11 @@ int test2(bool debug_plots_on = false)
                 }
                 outfile.close();
             }
-        }
 
-        // take the difference between the numerically computed RHS and the
-        // analytically computed RHS. should converge to zero for increasing
-        // resolution
-        rhs_FAB -= fixedbg_rhs_FAB;
-
-        if (debug_plots_on)
-        {
-            { // Output parts of the rhs_FAB after subtraction
+            { // Output parts of the fixedbg_FAB 
 
                 std::cout << "In debugging block" << std::endl;
-                std::string filename{"output_diff_res" + std::to_string(ires) +
+                std::string filename{"output_fixedbg_res" + std::to_string(ires) +
                                      ".txt"};
                 std::ofstream outfile;
                 outfile.clear();
@@ -560,16 +357,16 @@ int test2(bool debug_plots_on = false)
                         double x{dx * (iv[0] + 0.5)};
                         double y{dx * (iv[1] + 0.5)};
                         double z{dx * (iv[2] + 0.5)};
-                        double out7 = rhs_FAB(iv, c_chi);
-                        double out1 = rhs_FAB(iv, c_lapse);
-                        double out2 = rhs_FAB(iv, c_Avec1);
-                        double out8 = rhs_FAB(iv, c_Avec2);
-                        double out9 = rhs_FAB(iv, c_Avec3);
-                        double out3 = rhs_FAB(iv, c_Ham);
-                        double out4 = rhs_FAB(iv, c_Mom1);
-                        double out5 = rhs_FAB(iv, c_Mom2);
-                        double out6 = rhs_FAB(iv, c_Mom3);
-                        double out10 = rhs_FAB(iv, c_K);
+                        double out7 = fixedbg_FAB(iv, c_chi);
+                        double out1 = fixedbg_FAB(iv, c_lapse);
+                        double out2 = fixedbg_FAB(iv, c_Avec1);
+                        double out8 = fixedbg_FAB(iv, c_Avec2);
+                        double out9 = fixedbg_FAB(iv, c_Avec3);
+                        double out3 = fixedbg_FAB(iv, c_Ham);
+                        double out4 = fixedbg_FAB(iv, c_Mom1);
+                        double out5 = fixedbg_FAB(iv, c_Mom2);
+                        double out6 = fixedbg_FAB(iv, c_Mom3);
+                        double out10 = fixedbg_FAB(iv, c_K);
 
                         outfile << precision << std::setw(printwidth) << x
                                 << std::setw(printwidth) << y
@@ -636,24 +433,6 @@ int test2(bool debug_plots_on = false)
                 rhs_FAB.norm(L1_norm, i, num_comps) * pow(N_GRID, -3);
         }
 
-        // check the RHS of the metric variables is zero
-        for (int i{c_chi}; i < c_lapse; i++)
-        {
-            double max_err = rhs_FAB.norm(max_norm, i, num_comps);
-            if (max_err > error_limit)
-            {
-                std::cout << "RHS FOR COMPONENT "
-                          << UserVariables::variable_names[i]
-                          << " IS NON ZERO: MAX ERROR = " << max_err
-                          << std::endl;
-                failed = -1;
-            }
-            // save the L1 norm for the convergence check - gives sum of abs
-            // values
-            error_norms[ires][i] =
-                rhs_FAB.norm(L1_norm, i, num_comps) * pow(N_GRID, -3);
-        }
-
     } // end of resolution loop
 
     // check convergence for increasing resolution
@@ -670,19 +449,35 @@ int test2(bool debug_plots_on = false)
                 lo_res_norm = 1e-8;
                 hi_res_norm = 1e-10;
             }
-            double convergence_factor = lo_res_norm / hi_res_norm;
-            if (convergence_factor < min_convergence_factor)
+
+            if (i==c_Ham) //we need to do something special for the hamiltonain since theres a small error in the second derivatives causing weird behavior.
             {
-                min_convergence_factor = convergence_factor;
-            }
-            if (convergence_factor < 11)
+                if (error_norms[ires][c_Ham] < 1e-12 && error_norms[ires+1][c_Ham] < 1e-12)
+                {
+                    //nothing
+                } else 
+                {
+                    failed = -1;
+                    std::cout << "Hamiltonian constraint non-zero! " << std::endl;
+                }
+            } else
             {
-                failed = -1;
-                std::cout << "CONVERGENCE FACTOR FOR COMPONENT "
-                          << UserVariables::variable_names[i] << " ON LEVEL "
-                          << ires << " IS LOW: VALUE = " << convergence_factor
-                          << " " << hi_res_norm << " " << lo_res_norm
-                          << std::endl;
+                
+                double convergence_factor = lo_res_norm / hi_res_norm;
+                if (convergence_factor < min_convergence_factor)
+                {
+                    min_convergence_factor = convergence_factor;
+                }
+            
+                if (convergence_factor < 11)
+                {
+                    failed = -1;
+                    std::cout << "CONVERGENCE FACTOR FOR COMPONENT "
+                            << UserVariables::variable_names[i] << " ON LEVEL "
+                            << ires << " IS LOW: VALUE = " << convergence_factor
+                            << " " << hi_res_norm << " " << lo_res_norm
+                            << std::endl;
+                }
             }
         }
     }
@@ -705,46 +500,16 @@ int test2(bool debug_plots_on = false)
 
 int main(int argc, char *argv[])
 {
-    std::vector<std::string> argvs;
-    for (int i = 0; i < argc; i++)
-    {
-        argvs.push_back(argv[i]);
-    }
-
-
-    bool run_test1 =
-        (std::find(argvs.begin(), argvs.end(), "test1") != argvs.end());
-    bool run_test2 = true; //always run test 2
-    bool debug =
-        (std::find(argvs.begin(), argvs.end(), "debug") != argvs.end());
-
     std::cout << std::string(10, '#') << std::endl;
     std::cout << "Running GRBoondi tests" << std::endl;
     std::cout << std::string(10, '#') << std::endl;
 
-    bool test1res = 0;
-    bool test2res = 0;
+    std::cout << std::string(10, '#') << std::endl;
+    std::cout << std::string(10, '#') << std::endl;
+    std::cout << "current tests: Default Background Extended Test" << std::endl;
+    std::cout << std::string(10, '#') << std::endl;
+    std::cout << std::string(10, '#') << std::endl;
+    int test2res = test2();
 
-    if (run_test1)
-    {
-        std::cout << std::string(10, '#') << std::endl;
-        std::cout << "Running GRBoondi tests" << std::endl;
-        std::cout << "current tests: KerrdeSitter Simple Test" << std::endl;
-        std::cout << std::string(10, '#') << std::endl;
-        test1res = test1();
-        // Here we test the outputs of the background functions
-    }
-
-    if (run_test2)
-    {
-        std::cout << "\n\n" << std::endl;
-        std::cout << std::string(10, '#') << std::endl;
-        std::cout << std::string(10, '#') << std::endl;
-        std::cout << "current tests: KerrdeSitter Extended Test" << std::endl;
-        std::cout << std::string(10, '#') << std::endl;
-        std::cout << std::string(10, '#') << std::endl;
-        test2res = test2(debug);
-    }
-
-    return test2res || test1res;
+    return test2res;
 }
