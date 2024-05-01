@@ -7,7 +7,7 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/GRMilijun_ProcaKerrBH_Evo_23332974"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRBoondi/prod/dev_highres_GRMilijun_ProcaKerrBH_BHEvo_23526465"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -18,10 +18,10 @@ plot_prefix = "GeneralizedProcap_"
 run_initial_posttimestep = 1
 
 # HDF5files are written every dt = L/N*dt_multiplier*checkpoint_interval
-checkpoint_interval = 200
+checkpoint_interval = 2000
 # set to 0 to turn off plot files (except at t=0 and t=stop_time)
 # set to -1 to never ever print plotfiles
-plot_interval = 20
+plot_interval = 50
 
 #plot variable names must match those in the DiagnosticVariables::DiagnosticVariables namespace
 num_plot_vars = 7

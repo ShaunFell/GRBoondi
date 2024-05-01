@@ -7,7 +7,7 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRBoondi/testing/rep_GRBoondi_ProcaKdS_L_0001_a_099_M_1_highres_23406062"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRBoondi/prod/highres_GRMilijun_ProcaKerrdeSitterBH_23526128"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -89,8 +89,8 @@ N_full = 256
 L_full = 80
 
 # Max and min box sizes
-max_box_size = 16
-min_box_size = 16
+max_box_size = 32
+min_box_size = 32
 
 #for fixed grid tagging
 tag_buffer_size = 0
