@@ -167,9 +167,9 @@ struct
 template <class background_t> int test2()
 {
 
-    #ifdef _OPENMP
+#ifdef _OPENMP
     std::cout << " Number of threads: " << omp_get_max_threads() << std::endl;
-    #endif
+#endif
 
     int failed{0};                    // flag for failed
     const bool debug_plots_on{false}; // export data for plotting
