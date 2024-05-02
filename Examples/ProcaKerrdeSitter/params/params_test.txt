@@ -1,4 +1,4 @@
-
+restart_file=GeneralizedProca_002264.3d.hdf5
 ###  params.txt
 
 ################################################## Filesystem parameters
@@ -7,20 +7,20 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRBoondi/prod/dev_highres_GRMilijun_ProcaKerrdeSitterBH_23530103"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRBoondi/testing/re_dev_highres_GRMilijun_ProcaKdS_test_23530396"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
 plot_prefix = "GeneralizedProcap_"
 
 #file to restart the simulation from
-#restart_file = GeneralizedProca_000003.3d.hdf5
+#restart_file = GeneralizedProca_000751.3d.hdf5
 
 # HDF5files are written every dt = L/N*dt_multiplier*checkpoint_interval
-checkpoint_interval = 50
+checkpoint_interval = 1
 # set to 0 to turn off plot files (except at t=0 and t=stop_time)
 # set to -1 to never ever print plotfiles
-plot_interval = 20
+plot_interval = 1
 
 #plot variable names must match those in the DiagnosticVariables::DiagnosticVariables namespace
 num_plot_vars = 6
@@ -85,12 +85,12 @@ bh_evolution = 0
 ################################################## Grid parameters
 ##################################################
 
-N_full = 192
+N_full = 64
 L_full = 60
 
 # Max and min box sizes
-max_box_size = 32
-min_box_size = 32
+max_box_size = 16
+min_box_size = 16
 
 #for fixed grid tagging
 tag_buffer_size = 0
@@ -175,7 +175,7 @@ evolution_excision_inner = 1.
 evolution_excision_outer = 54.1
 
 diagnostic_inner_boundary = 1.14
-diagnostic_outer_boundary = 28
+diagnostic_outer_boundary = 46
 
 num_diagnostic_excision_vars = 5
 diagnostic_excision_vars = rho rhoE rhoJ rhoLinMom sourceLinMom

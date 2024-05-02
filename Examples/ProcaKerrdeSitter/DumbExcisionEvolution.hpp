@@ -41,7 +41,7 @@ class DumbExcisionEvolution
     {
         // where are we?!
         const Coordinates<double> coords(current_cell, m_dx, m_center);
-        const double radius{coords.get_radius()};
+        const double radius {coords.get_radius()};
 
         bool is_excised{(radius < m_inner_radius) || (radius > m_outer_radius)};
         bool is_Z_excised{radius < m_outer_horizon};
@@ -58,12 +58,8 @@ class DumbExcisionEvolution
 
         if (is_Z_excised)
         {
-            // the matter rhs vars within the excision zone
-            // recalculate them - for now set to decay to zero
-            Vars vars;
-            VarsTools::assign(vars, 0.0);
             // assign values of rhs or vars in output box
-            current_cell.store_vars(vars);
+            current_cell.store_vars(0.0, c_Z);
         }
     }
 };
