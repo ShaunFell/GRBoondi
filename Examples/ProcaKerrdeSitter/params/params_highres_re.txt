@@ -1,4 +1,4 @@
-restart_file=GeneralizedProca_000000.3d.hdf5
+restart_file=GeneralizedProca_001000.3d.hdf5
 ###  params.txt
 
 ################################################## Filesystem parameters
@@ -7,7 +7,7 @@ restart_file=GeneralizedProca_000000.3d.hdf5
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRBoondi/testing/rep_GRBoondi_ProcaKdS_L_0001_a_099_M_1_highres_23406259"
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRBoondi/testing/re_dev_highres_GRMilijun_ProcaKdS_23530622"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -85,12 +85,12 @@ bh_evolution = 0
 ################################################## Grid parameters
 ##################################################
 
-N_full = 256
-L_full = 80
+N_full = 192
+L_full = 60
 
 # Max and min box sizes
-max_box_size = 16
-min_box_size = 16
+max_box_size = 32
+min_box_size = 32
 
 #for fixed grid tagging
 tag_buffer_size = 0
@@ -174,8 +174,8 @@ sigma = 0.3 #the default
 evolution_excision_inner = 1.
 evolution_excision_outer = 54.1
 
-diagnostic_inner_boundary = 1.6
-diagnostic_outer_boundary = 46
+diagnostic_inner_boundary = 1.14
+diagnostic_outer_boundary = 28
 
 num_diagnostic_excision_vars = 5
 diagnostic_excision_vars = rho rhoE rhoJ rhoLinMom sourceLinMom
