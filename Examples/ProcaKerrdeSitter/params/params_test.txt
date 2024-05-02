@@ -1,4 +1,4 @@
-restart_file=GeneralizedProca_002264.3d.hdf5
+restart_file=GeneralizedProca_003380.3d.hdf5
 ###  params.txt
 
 ################################################## Filesystem parameters
