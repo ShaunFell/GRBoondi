@@ -54,7 +54,7 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrdeSitter, ProcaField>
                                  const double a_time) override
     {
         // Calculate right hand side
-        KerrdeSitter background_init (m_p.background_params, m_dx);
+        KerrdeSitter background_init(m_p.background_params, m_dx);
         ProcaField proca_field(background_init, m_p.matter_params);
 
         MatterEvolution<ProcaField, KerrdeSitter> matter_class(

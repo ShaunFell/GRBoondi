@@ -69,14 +69,13 @@ class Initial_Proca_Conditions
 
         const data_t radius = coords.get_radius(); // x^2 + y^2 + z^2
 
-
         // Calculate conformal factor
         data_t gamma_det =
             TensorAlgebra::compute_determinant_sym(metric_vars.gamma);
-            
+
         // initial profile
         data_t alpha = kerrMass * m_matter_params.mass;
-        data_t r0 {1.0 / (m_matter_params.mass * alpha)};
+        data_t r0{1.0 / (m_matter_params.mass * alpha)};
 
         // set non-zero grid variables
         mattervars.Avec[0] =
