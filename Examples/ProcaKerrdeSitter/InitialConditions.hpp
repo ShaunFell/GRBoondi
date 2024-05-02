@@ -67,28 +67,20 @@ class Initial_Proca_Conditions
         const data_t kerrSpin = m_Kerr_params.spin;
         const data_t kerrSpin2 = kerrSpin * kerrSpin;
 
-        const data_t rho = coords.get_radius(); // x^2 + y^2 + z^2
-        const data_t rho2 = rho * rho;
+        const data_t radius = coords.get_radius(); // x^2 + y^2 + z^2
 
-        const data_t coords_z = coords.z;
 
         // Calculate conformal factor
         data_t gamma_det =
             TensorAlgebra::compute_determinant_sym(metric_vars.gamma);
-
-        // the Kerr Schild radius r
-        const data_t r2 = 0.5 * (rho2 - kerrSpin2) +
-                          sqrt(0.25 * (rho2 - kerrSpin2) * (rho2 - kerrSpin2) +
-                               kerrSpin2 * coords_z * coords_z);
-        const data_t radius = sqrt(r2);
-
+            
         // initial profile
         data_t alpha = kerrMass * m_matter_params.mass;
-        data_t r0_BL{1.0 / (m_matter_params.mass * alpha)};
+        data_t r0 {1.0 / (m_matter_params.mass * alpha)};
 
         // set non-zero grid variables
         mattervars.Avec[0] =
-            m_params.init_amplitude * exp(-radius / r0_BL) / gamma_det;
+            m_params.init_amplitude * exp(-radius / r0) / gamma_det;
 
         // export to grid
         current_cell.store_vars(mattervars);
