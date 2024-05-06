@@ -45,8 +45,9 @@ void BaseProcaFieldLevel<background_t, proca_t>::prePlotLevel()
     DampingFieldDiagnostic z_field_diagnostic{};
 
     // compute diagnostics on each cell of current level
-    BoxLoops::loop(make_compute_pack(Asquared, EM, z_field_diagnostic),
-                   m_state_new, m_state_diagnostics, EXCLUDE_GHOST_CELLS);
+    BoxLoops::loop(
+        make_compute_pack(Asquared, EM, z_field_diagnostic, background_init),
+        m_state_new, m_state_diagnostics, EXCLUDE_GHOST_CELLS);
 
     // Excise diagnostics within the excision zone.
     // Variables to excise defined by user
