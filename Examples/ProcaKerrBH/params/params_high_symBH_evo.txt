@@ -1,0 +1,198 @@
+## ProcaKerrBH
+###  params_high_sym.txt
+
+################################################## Filesystem parameters
+
+
+verbosity = 0
+
+# location / naming of output files
+output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRBoondi/prod/dev_highres_GRMilijun_ProcaKerrBH_BHEvo_23526465"
+
+#filename prefixes for checkpoint files and plot files
+chk_prefix = "GeneralizedProca_"
+plot_prefix = "GeneralizedProcap_"
+
+#file to restart the simulation from
+#restart_file = GeneralizedProca_000003.3d.hdf5
+run_initial_posttimestep = 1
+
+# HDF5files are written every dt = L/N*dt_multiplier*checkpoint_interval
+checkpoint_interval = 2000
+# set to 0 to turn off plot files (except at t=0 and t=stop_time)
+# set to -1 to never ever print plotfiles
+plot_interval = 50
+
+#plot variable names must match those in the DiagnosticVariables::DiagnosticVariables namespace
+num_plot_vars = 7
+plot_vars = Z Asquared rho rhoE gnn EMtrace EMsquared
+
+# subpaths - specific directories for hdf5, pout, extraction data
+# (these are created at runtime)
+hdf5_subpath = "hdf5"
+pout_subpath = "pout"
+data_subpath = "data"
+integrals_filename = "Integrals"
+
+# change the name of output files
+# pout_prefix = "pout"
+print_progress_only_to_rank_0 = 0
+
+# ignore_checkpoint_name_mismatch = 0
+# write_plot_ghosts = 0
+
+################################################# constraint tagging
+##################################################
+activate_ham_tagging = 0
+activate_extraction_tagging = 0
+activate_tagging_diagnostic = 0
+
+
+################################################# AMR levels
+##################################################
+
+#max level is the number of additional refinement levels. So max_level=4 --> 5 total levels
+max_level = 4
+
+#Since we use fixed grid tagging, we dont ever need to regrid
+regrid_interval = 0 0 0 0
+
+################################################## Initial Data parameters
+##################################################
+
+# kerr params
+kerr_mass = 1.0
+kerr_spin = 0.99
+kerr_spindir = 0 0 1
+
+# EM parameters
+initial_amplitude = -0.1
+
+#L2 lagrangian parameters
+L2_alpha = 1
+
+#proca parameters
+proca_mass = 0.4
+
+#constraint violation damping
+z_damping = 1.0
+
+#relaxation time of matter fields
+relaxation_time = 500
+
+#activate evolution of black hole, due to flux of matter across horizon
+bh_evolution = 1
+
+################################################## Grid parameters
+##################################################
+
+N_full = 240
+L_full = 96
+
+# Max and min box sizes
+max_box_size = 40
+min_box_size = 40
+
+block_factor = 8
+
+#for fixed grid tagging
+tag_buffer_size = 0
+
+#grid spacing between refinement levels
+grid_buffer_size = 32
+# fill_ratio = 0.7
+# num_ghosts = 3
+# center = 256.0 256.0 256.0 # defaults to center of the grid
+
+#global scaling of refinement levels. Larger value equals larger refinement levels
+grid_scaling = 1
+initial_ratio =0.25
+
+################################################## Boundary Conditions parameters
+##################################################
+
+# Periodic directions - 0 = false, 1 = true
+isPeriodic = 0 0 0
+# if not periodic, then specify the boundary type
+# 0 = static, 1 = sommerfeld, 2 = reflective
+# (see BoundaryConditions.hpp for details)
+
+#sommerfeld outgoing-radiation condition and use z-symmetry of kerr background
+# see read_me for definition of hi and lo boundary
+hi_boundary = 1 1 1
+lo_boundary = 1 1 2
+
+# if reflective boundaries selected, must set
+# parity of all vars (in order given by UserVariables.hpp)
+# 0 = even
+# 1,2,3 = odd x, y, z
+# 4,5,6 = odd xy, yz, xz
+# 7     = odd xyz
+vars_parity            = 0 1 2 3 #proca field
+                                    1 2 3 0 # electric field and z field
+vars_parity_diagnostic = 0        #Asquared
+                                            0 0 0  #rho rhoE rhoJ
+                                            0        # chi
+                                            0        # gnn
+                                            0        # c_Z_out
+                                            0 0     # EM_trace EM_squared
+                                            0 0     # rhoLinMom sourceLinMom
+                                            0 0 0  # Edot Jdot fluxLinMom
+
+# if sommerfeld boundaries selected, must select
+# non zero asymptotic values
+num_nonzero_asymptotic_vars = 0
+
+# if you are using extrapolatin BC:
+extrapolation_order = 1
+num_extrapolating_vars = 0
+
+
+################################################## Evolution parameters
+#################################################
+
+# dt will be dx*dt_multiplier on each grid level
+dt_multiplier = 0.2
+stop_time = 10000.0
+# max_steps = 4
+
+nan_check = 1
+
+# coefficient for KO numerical dissipation
+sigma = 0.3 #the default
+
+
+################################################## Excision
+##################################################
+
+## percentage to excise within horizon
+# 1 = excise the entire region within r<r_s
+# 0.97 = excise r < 0.97*r_s
+evolution_excision_width = 0.855
+
+diagnostic_inner_boundary = 1.6
+diagnostic_outer_boundary = 46
+
+num_diagnostic_excision_vars = 5
+diagnostic_excision_vars = rho rhoE rhoJ rhoLinMom sourceLinMom
+
+################################################## Extraction
+##################################################
+
+activate_extraction = 1 # extraction of fluxes
+activate_integration = 1 # integration of densities
+
+num_extraction_radii = 2
+extraction_radii = 1.6 46
+extraction_levels = 1 1
+num_points_phi = 24
+num_points_theta = 37
+
+extraction_vars = Edot Jdot
+num_extraction_vars = 2
+
+integration_vars = rho rhoE rhoJ EMsquared
+num_integration_vars = 4
+
+write_extraction = 0
+extraction_subpath = "extraction"
