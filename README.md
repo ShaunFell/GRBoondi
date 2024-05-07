@@ -1,5 +1,7 @@
 # GRBoondi
 
+[![status](https://joss.theoj.org/papers/9565689c5c5d5da3c39adb87a4e7d255/status.svg)](https://joss.theoj.org/papers/9565689c5c5d5da3c39adb87a4e7d255)
+
 GRBoondi is an open-sourced code for simulating generalized Proca fields on arbitrary analytic fixed backgrounds, based on the publicly available 3+1D numerical relativity code GRChombo. The goal of GRBoondi is to reduce the prequisite knowledge of numerical relativity and GRChombo in the numerical studies of generalized Proca theories . The main steps for performing a study should only be inputting the additions to the equations of motion beyond the base Proca theory and GRBoondi can automatically incorporate the higher-order terms in the simulation.
 
 
