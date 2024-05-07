@@ -20,4 +20,6 @@ We welcome feedback, bug reports, and contributions. Please consult the repo own
 GRBoondi is licensed under the BSD 3-Clause License. Please see LICENSE for details.
 
 ## Citation
-Soon to come!
+This repository has been submitted to the Journal of Open Source Software. In the mean-time, if you use this software for your research, please cite our arXiv paper:
+
+https://arxiv.org/abs/2405.01348
