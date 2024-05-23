@@ -1,0 +1,58 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: GRBoondi
+message: >-
+  If you plan to publish results that use this software,
+  please cite it as below.
+type: software
+authors:
+  - given-names: Shaun David Brocus
+    family-names: Fell
+    email: shaundbfell@gmail.com
+    affiliation: ' Universität Heidelberg'
+    orcid: 'https://orcid.org/0000-0002-8059-0359'
+identifiers:
+  - type: doi
+    value: 10.48550/arXiv.2405.01348
+    description: arXiv-issued DOI via DataCite
+repository-code: 'https://github.com/ShaunFell/GRBoondi'
+abstract: >-
+  While numerical simulations offer unparalleled precision
+  and robustness in studying complex phys-
+
+  ical systems, their execution is often hindered by
+  complexity, costliness, and time consumption due
+
+  to the intricate equations involved. This challenge is
+  already encountered in General Relativity,
+
+  where non-flat spacetimes exacerbate the computational
+  burden. This complexity is further in-
+
+  tensified when dealing with additional degrees of freedom.
+  To address this challenge head-on, we
+
+  introduce GRBoondi , a groundbreaking fixed-background
+  numerical relativity code designed to pro-
+
+  vide a unified interface for numerically solving
+  Generalized Proca theories. GRBoondi grants users
+
+  the ability to make arbitrary modifications to the Proca
+  equations of motion on any background,
+
+  providing a robust and versatile tool for exploring
+  diverse classes of Generalized Proca theories.
+
+  This letter serves as part of the submission of GRBoondi
+  to the Journal of Open Source Software.
+
+  For access to the code, please visit
+  https://github.com/ShaunFell/GRBoondi.git
+keywords:
+  - numerical relativity
+  - General Relativity
+  - Proca
+license: BSD-3-Clause
