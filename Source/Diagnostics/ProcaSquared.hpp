@@ -31,8 +31,8 @@ template <class background_t> class ProcaSquared
   public:
     ProcaSquared(double a_dx, const std::array<double, CH_SPACEDIM> a_center,
                  const background_t a_background)
-        : m_dx(a_dx), m_deriv{m_dx}, m_center{a_center}, m_background{
-                                                             a_background} {};
+        : m_dx(a_dx), m_deriv{m_dx}, m_center{a_center},
+          m_background{a_background} {};
 
     template <class data_t> void compute(Cell<data_t> current_cell) const
     {

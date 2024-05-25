@@ -325,7 +325,7 @@ class KerrdeSitter
         auto gamma_UU{TensorAlgebra::compute_inverse_sym(metric_vars.gamma)};
         const auto chris_phys =
             TensorAlgebra::compute_christoffel(metric_vars.d1_gamma, gamma_UU);
-        Tensor<2,data_t> shift_cov_div;
+        Tensor<2, data_t> shift_cov_div;
         FOR2(i, j)
         {
             shift_cov_div[j][i] = 0.;
@@ -336,12 +336,12 @@ class KerrdeSitter
                     chris_phys.ULL[j][i][k] * metric_vars.shift[k];
             }
         }
-        Tensor<2,data_t> shift_cov_div_low;
+        Tensor<2, data_t> shift_cov_div_low;
         FOR2(i, j)
         {
             FOR1(k)
             {
-            	shift_cov_div_low[i][j] = 0.;
+                shift_cov_div_low[i][j] = 0.;
                 shift_cov_div_low[i][j] +=
                     metric_vars.gamma[i][k] * shift_cov_div[k][j];
             }

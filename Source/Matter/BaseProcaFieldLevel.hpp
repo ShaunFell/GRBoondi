@@ -79,7 +79,7 @@ class BaseProcaFieldLevel : public GRAMRLevel
 
     // additional pre-plot routines from the user, e.g. writing custom
     // diagnostic data
-    virtual void additionalPrePlotLevel(){};
+    virtual void additionalPrePlotLevel() {};
 #endif
 
     virtual void
@@ -87,14 +87,14 @@ class BaseProcaFieldLevel : public GRAMRLevel
                     const double a_time); // RHS routines used at each RK4 step.
                                           // e.g. calculate the time derivatives
 
-    virtual void preTagCells()
-        override{}; // things to do before tagging cells (e.g. filling ghosts)
+    virtual void preTagCells() override {
+    }; // things to do before tagging cells (e.g. filling ghosts)
 
     virtual void specificPostTimeStep() override;
 
     // additional post-time-step routines from the user, e.g. computating
     // additional fluxes
-    virtual void additionalPostTimeStep(){};
+    virtual void additionalPostTimeStep() {};
 
     virtual void computeTaggingCriterion(
         FArrayBox &tagging_criterion, const FArrayBox &current_state,
