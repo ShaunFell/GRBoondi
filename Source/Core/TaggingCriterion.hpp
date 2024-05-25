@@ -40,9 +40,9 @@ class TaggingCriterion
                      const bool a_activate_ham_tagging = false,
                      const bool a_activate_extraction_tagging = false,
                      const bool DIAGNOSTIC = false)
-        : m_center{a_center},
-          m_dx(dx), m_L{a_L}, m_init_ratio{a_rat}, m_params{a_params},
-          m_level{a_level}, m_activate_extraction{a_activate_extraction},
+        : m_center{a_center}, m_dx(dx), m_L{a_L}, m_init_ratio{a_rat},
+          m_params{a_params}, m_level{a_level},
+          m_activate_extraction{a_activate_extraction},
           m_activate_ham_tagging{a_activate_ham_tagging},
           m_activate_extraction_tagging{a_activate_extraction_tagging},
           m_DIAGNOSTIC{DIAGNOSTIC} {};
