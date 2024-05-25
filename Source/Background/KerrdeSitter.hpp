@@ -342,7 +342,6 @@ class KerrdeSitter
             shift_cov_div_low[i][j] = 0.;
             FOR1(k)
             {
-                shift_cov_div_low[i][j] = 0.;
                 shift_cov_div_low[i][j] +=
                     metric_vars.gamma[i][k] * shift_cov_div[k][j];
             }
