@@ -25,8 +25,9 @@ bool is_wrong(double value, double correct_value, std::string deriv_type)
     if (abs(value - correct_value) > 1e-10)
     {
         std::cout.precision(17);
-        std::cout << "Test of " << deriv_type << " failed " << " with value "
-                  << value << " instad of " << correct_value << ".\n";
+        std::cout << "Test of " << deriv_type << " failed "
+                  << " with value " << value << " instad of " << correct_value
+                  << ".\n";
         return true;
     }
     else

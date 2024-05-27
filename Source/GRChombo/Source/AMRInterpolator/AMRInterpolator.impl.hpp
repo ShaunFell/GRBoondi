@@ -255,10 +255,12 @@ void AMRInterpolator<InterpAlgo>::computeLevelLayouts()
 
         if (m_verbosity >= 2)
         {
-            _pout << "    Level " << level_idx << "\t" << "dx=("
+            _pout << "    Level " << level_idx << "\t"
+                  << "dx=("
                   << D_TERM(m_dx[level_idx][0], << "," << m_dx[level_idx][1],
                                                 << "," << m_dx[level_idx][2])
-                  << ")\t" << "grid_origin=("
+                  << ")\t"
+                  << "grid_origin=("
                   << D_TERM(m_origin[level_idx][0],
                             << "," << m_origin[level_idx][1],
                             << "," << m_origin[level_idx][2])
