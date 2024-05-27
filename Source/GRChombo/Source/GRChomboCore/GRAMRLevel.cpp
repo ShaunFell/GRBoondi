@@ -1124,6 +1124,6 @@ void GRAMRLevel::printProgress(const std::string &from) const
     int total_nbox = level_domain.size();
 
     pout() << from << " level " << m_level << " at time " << m_time << " ("
-           << speed << " M/hr)" << ". Boxes on this rank: " << nbox << " / "
-           << total_nbox << endl;
+           << speed << " M/hr)"
+           << ". Boxes on this rank: " << nbox << " / " << total_nbox << endl;
 }
