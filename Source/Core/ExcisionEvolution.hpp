@@ -47,8 +47,6 @@ template <class matter_t, class background_t> class ExcisionEvolution
         // check if we're inside buffered horizon region
         bool is_excised = m_background.check_if_excised(coords, m_buffer);
 
-        std::cout << "I'm in here" << std::endl;
-
         if (is_excised)
         {
             // the matter rhs vars within the excision zone
