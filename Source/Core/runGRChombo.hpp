@@ -64,7 +64,8 @@ template <class level_t> int runGRChombo(int argc, char *argv[])
     if (sim_params.run_initial_posttimestep)
     { // call the PostTimeStep right now!!!!
 
-        auto task = [](GRAMRLevel *level) {
+        auto task = [](GRAMRLevel *level)
+        {
             if (level->time() == 0.)
             {
                 level->specificPostTimeStep();
