@@ -48,7 +48,12 @@ static bool compareVectors(const vector<T> &a, const vector<T> &b)
 
 int main(int argc, char *argv[])
 {
-    mainSetup(argc, argv); // setup MPI processes
+    char *dummy_argv[] = {
+	(char*)argv[0],
+	(char*)"2",
+	NULL
+    };
+    mainSetup((int)2, dummy_argv); // setup MPI processes
 
     int reader_failed{0};
     int interp_failed{0};
