@@ -29,7 +29,7 @@ Please refer to LICENSE in GRBoondi's root directory
 
 // Main run function templated over level class
 
-template <class level_t> int runGRChombo(int argc, char *argv[])
+template <class level_t> int runGRBoondi(int argc, char *argv[])
 {
     // Load the parameter file and construct the SimulationParameter class
     // To add more parameters edit the SimulationParameters file.
