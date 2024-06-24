@@ -1,1 +1,0 @@
-../SphericalExtractionTest/UserVariables.hpp
