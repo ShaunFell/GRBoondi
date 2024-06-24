@@ -24,6 +24,7 @@ jobs:
     name: GCC ${{ matrix.gcc-version }}, MPI = ${{ matrix.mpi }}, OPT = ${{ matrix.opt }}
     env:
       CHOMBO_HOME: ${{ github.workspace }}/Chombo/lib
+      GRCHOMBO_HOME: ${{ github.workspace }}/GRChombo
       OMP_NUM_THREADS: 1
       BUILD_ARGS: MPI=${{ matrix.mpi}} OPT=${{ matrix.opt }} DEBUG=${{ matrix.debug }}
 
@@ -35,6 +36,13 @@ jobs:
           repository: GRTLCollaboration/Chombo
           token: ${{ secrets.CI_SECRET || github.token }}
           path: Chombo
+
+      - name: Checkout GRChombo from GRTLCollaboration
+        uses: actions/checkout@master
+        with:
+          repository: GRTLCollaboration/GRChombo
+          token: ${{ secrets.CI_SECRET || github.token }}
+          path: GRChombo
 
       - name: Checkout GRBoondi
         uses: actions/checkout@master
@@ -80,12 +88,12 @@ jobs:
         run: |
           rm -rf Tests/ApparentHorizonFinderTest2D
           make test -j 4 $BUILD_ARGS
-        working-directory: ${{ github.workspace }}/GRBoondi/Source/GRChombo
+        working-directory: ${{ github.workspace }}/GRChombo
 
       - name: Run GRChombo Tests
         run: |
           make test run -j 2 $BUILD_ARGS
-        working-directory: ${{ github.workspace }}/GRBoondi/Source/GRChombo
+        working-directory: ${{ github.workspace }}/GRChombo
 
       - name: Build GRBoondi Tests
         run: |
