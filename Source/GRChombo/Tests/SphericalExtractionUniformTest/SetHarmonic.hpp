@@ -1,1 +1,0 @@
-../SphericalExtractionTest/SetHarmonic.hpp
