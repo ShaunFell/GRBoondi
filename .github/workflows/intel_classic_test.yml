@@ -24,7 +24,7 @@ jobs:
     name: MPI = ${{ matrix.mpi }}, OPT = ${{ matrix.opt }}
     env:
       CHOMBO_HOME: ${{ github.workspace }}/Chombo/lib
-      GRCHOMBO_SOURCE: ${{ github.workspace }}/GRChombo
+      GRCHOMBO_SOURCE: ${{ github.workspace }}/GRChombo/Source
       OMP_NUM_THREADS: 1
       BUILD_ARGS: MPI=${{ matrix.mpi}} OPT=${{ matrix.opt }} DEBUG=${{ matrix.debug }}
 
