@@ -15,6 +15,7 @@ log*
 .*.sw[n-p]
 *.out
 *.dat
+!KerrdeSitter_rPlus.dat
 *.hdf5
 *.dSYM
 LB.txt
@@ -33,6 +34,8 @@ GRBoondi.code-workspace
 
 PostProcessing/movies/*
 PostProcessing/plots/*
+
+params/*
 
 .PrivateNotes.md
 
