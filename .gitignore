@@ -34,6 +34,8 @@ GRBoondi.code-workspace
 PostProcessing/movies/*
 PostProcessing/plots/*
 
+params/*
+
 .PrivateNotes.md
 
 
