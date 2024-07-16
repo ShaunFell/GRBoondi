@@ -23,8 +23,8 @@ class NonlinearG2
     using MetricVars = typename ADMFixedBGVars::template Vars<data_t>;
 
   public:
-    NonlinearG2(){}; // Default constructor for default initialization in matter
-                     // class
+    NonlinearG2(){}; // Default constructor for default initialization in
+                     // matter class
 
     NonlinearG2(params_t a_params) : m_params{a_params} {};
 
