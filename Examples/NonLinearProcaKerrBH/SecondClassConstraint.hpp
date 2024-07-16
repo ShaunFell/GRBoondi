@@ -30,7 +30,7 @@ template <class background_t> class SecondClassConstraint
                           const background_t a_background,
                           const ProcaField a_proca_field)
         : m_dx{dx}, m_deriv(dx), m_background(a_background), m_center(a_center),
-          m_proca_field(a_proca_field){};
+          m_proca_field(a_proca_field) {};
 
     template <class data_t> void compute(Cell<data_t> current_cell) const
     {
