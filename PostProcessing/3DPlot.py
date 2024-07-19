@@ -12,10 +12,11 @@ config = configparser.ConfigParser()
 config.read(sys.argv[1])
 
 
-
+# Extract config variables
 plotpath = config["Output"]["output_plot_path"]
 moviepath = config["Output"]["output_movie_path"]
 
+#if the plot and movie paths dont exist, create them
 if not os.path.exists(plotpath):
 	os.mkdir(plotpath)
 if not os.path.exists(moviepath):
@@ -25,6 +26,8 @@ print("HDF5 file path: " + config["Header"]["hdf5_path"])
 print("Output Plots directory: " +plotpath)
 print("Output Movie Directory: " +moviepath)
 
+
+#set verbosity for printing
 def verbPrint(*objects):
 	if config["Header"].getint("verbosity",0):
 		print(*objects)
@@ -74,7 +77,13 @@ def setup_slice_plot(variableToPlot, plotbounds, setplotbounds):
 	"""
 	This is where the real magic happens. Create all the data for the plot
 	"""
-	# annotation settings
+
+	"""
+	For documentation on all the attributes below, see
+		https://visit-sphinx-github-user-manual.readthedocs.io/en/develop/python_scripting/functions.html
+	"""
+
+	# annotation settings, such as the information printed on the plot (user, database name, time, etc.)
 	AnnotationAtts = AnnotationAttributes()
 
     ## Grab annotation settings from config file, with defaults
@@ -114,14 +123,15 @@ def setup_slice_plot(variableToPlot, plotbounds, setplotbounds):
 
 
 
-	#Add a volume plot
+	## Add a volume plot
 
 	AddPlot("Volume", variableToPlot,1,1)
 	VolumeAtts = VolumeAttributes()
 	plotscaling = config["VolumeConfig"].get("plotscaling", fallback = "Linear").title()
 	verbPrint("plot scaling: ",  plotscaling)
-	VolumeAtts.scaling = getattr(VolumeAtts, plotscaling) #Get the plot scaling attribute
 
+	#Set the attributes for the volume plot
+	VolumeAtts.scaling = getattr(VolumeAtts, plotscaling) #Get the plot scaling attribute
 	VolumeAtts.lightingFlag = config["VolumeConfig"].getboolean('lightingFlag', 1)
 	VolumeAtts.legendFlag =   config["VolumeConfig"].getboolean('legendFlag', 1)
 	VolumeAtts.opacityAttenuation = config["VolumeConfig"].getint('opacityAttenuation', 1)
@@ -140,6 +150,7 @@ def setup_slice_plot(variableToPlot, plotbounds, setplotbounds):
 	verbPrint("opacity ramp: ",  opacityramp)
 	VolumeAtts.freeformOpacity = opacityramp #set the tuple as the opacity ramp
 
+	#Determine the max and min values of the variable to use for coloring and opacity
 	VolumeAtts.useColorVarMin = config["VolumeConfig"].getboolean('useColorVarMin', 0)
 	VolumeAtts.colorVarMin = config["VolumeConfig"].getfloat('colorVarMin', 0)
 	VolumeAtts.useColorVarMax = config["VolumeConfig"].getboolean('useColorVarMax', 0)
@@ -149,6 +160,7 @@ def setup_slice_plot(variableToPlot, plotbounds, setplotbounds):
 	VolumeAtts.useOpacityVarMax = config["VolumeConfig"].getboolean('useOpacityVarMax', 0)
 	VolumeAtts.opacityVarMax = config["VolumeConfig"].getfloat('opacityVarMax', 0)
 
+	#Specify the type of rendering engine to use
 	rendertype = config["VolumeConfig"].get("rendererType", fallback = "default").title()
 	if rendertype == "Raycasting": rendertype = "RayCasting" 
 	if rendertype == "Raycastingintegration": rendertype = "RayCastingIntegration"
@@ -157,14 +169,13 @@ def setup_slice_plot(variableToPlot, plotbounds, setplotbounds):
 	verbPrint("Renderer type: ", rendertype)
 	VolumeAtts.rendererType = getattr(VolumeAtts, rendertype) #get the rendering type attribute
 
+	#Determine the sampling rate of the data to use for the plot
 	sampling = config["VolumeConfig"].get("sampling", fallback = "rasterization").title()
 	verbPrint("Sampling: ", sampling)
 	VolumeAtts.sampling = getattr(VolumeAtts, sampling) #get the sampling attribute
-
 	lowgradientlightingreduc = config["VolumeConfig"].get("lowGradientLightingReduction", fallback = "Lower").title()
 	verbPrint("Low gradient lighting reduction: ", lowgradientlightingreduc)
 	VolumeAtts.lowGradientLightingReduction = getattr(VolumeAtts, lowgradientlightingreduc) #get the low gradient lighting reduction attribute
-
 	VolumeAtts.samplesPerRay = config["VolumeConfig"].getint('samplesPerRay', 1)
 	#set the above attributes to the plot options
 	SetPlotOptions(VolumeAtts)
@@ -177,6 +188,8 @@ def setup_slice_plot(variableToPlot, plotbounds, setplotbounds):
 
 	# Phew, now we can finally draw the plots!
 	DrawPlots()
+
+	## Set camera options
 
 	# set the zoom
 	View3DAtts = View3DAttributes()
@@ -241,12 +254,13 @@ def PlotFiles():
 	files = glob.glob(filename_prefix+ "*.3d.hdf5")
 	plot_files = [x for x in files if config["Header"]["plot_header"] in x]
 	if len(plot_files) == 0:
-		raise SystemError("No Plot Files Found!")
+		raise FileNotFoundError("No Plot Files Found!")
 	return plot_files
 
 
 def MultipleDatabase():
-	""" Flag that tells us if theres multiple files
+	""" 
+	Flag that tells us if theres multiple files
 	"""
 	
 	if len(PlotFiles())>1:
@@ -258,7 +272,8 @@ def MultipleDatabase():
 
 
 def make_slice_plots(variableToPlot, hdf5files, setplotbounds, plotbounds) :
-	""" Do that actual plotting, iterating over all the files for a given variable
+	""" 
+	Do that actual plotting, iterating over all the files for a given variable
 	"""
 
 	# open all the hdf5 files.
@@ -356,9 +371,9 @@ def main():
 	closeenginesuccess = CloseComputeEngine()
 
 	if not closedatabasesuccess:
-		raise ValueError("Could not close the database")
+		raise IOError("Could not close the database")
 	if not closeenginesuccess:
-		raise ValueError("Could not close the compute engine")
+		raise IOError("Could not close the compute engine")
 
 	exit()
 

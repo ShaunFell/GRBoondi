@@ -3,24 +3,40 @@ import os, configparser, sys
 import numpy as np
 import pandas as pd
 
+
+#Setup the config file parser
 config = configparser.ConfigParser()
 config.read(sys.argv[1])
 
+#Extract basic file information
 plotpath = config["Output"]["output_plot_path"]
 datapath = config["Header"]["data_path"]
 filename = config["Header"]["data_filename"]
 verbosity = config["Header"].getint("verbosity",0)
 
+#If the plot path doesnt exist, create it
 if not os.path.exists(plotpath):
     os.mkdir(plotpath)
 
+#Setup print function that respects user-defined verbosity
 def verbPrint(*objects):
 	if verbosity:
 		print(*objects)
 
 verbPrint("Output plots directory: {0}".format(plotpath))
 
+
 def get_data_dataframe(filepath):
+    """
+    Read in the data file and return a pandas dataframe
+
+    Args:
+        filepath (str): absolute path to the data file
+
+    Returns:
+        pd.DataFrame: a pandas dataframe
+    """
+
     #get the header lines
     #from GRBoondi, they should always start with a '#'
     with open(filepath, 'r') as f:
@@ -36,12 +52,23 @@ def get_data_dataframe(filepath):
     return pd.read_csv(filepath, delim_whitespace=True, names=header, engine="python", header=0, index_col=False)
 
 def setup_plots():
+    """
+    Setup the plot style
+    """
     # turn off interactive plotting and set plot style
     plt.ioff()
     plt.style.use(config["PlotConfig"].get("plotstyle", "default"))
 
 def select_plot_func(scaling):
-    #select the plot function as determined by the requested scaling
+    """
+    Select the plot function based on the scaling
+
+    Args:
+        scaling (str): "linear", "loglog", "loglinear", "linearlog"
+
+    Returns:
+        function: the plot function from pyplot
+    """
     if scaling == "loglog":
         return plt.loglog
     elif scaling == "loglinear":
@@ -52,18 +79,33 @@ def select_plot_func(scaling):
         return plt.plot
 
 def save_fig(path, varname):
-    #save the figure
+    """
+    Save the pyplot figure
+
+    Args:
+        path (str): absolute path to the output directory
+        varname (str): name of the variable
+    """
     plt.savefig(os.path.join(path,  varname), format = config["Output"].get("fileform", "png").lower(), dpi = config["Output"].getint("dpi", 600))
 
 def setup_figure(): 
-    #setup the figure
-    #in its own function for future modularity
+    """
+    Setup the figure environment
+    """
     plt.figure()
     plt.tight_layout()
 
 
 def make_plot(data_obj, plot_variable, plotbounds = None, linestyle = '-' ):
-    #plot a single variable
+    """
+    Make the actual plot
+
+    Args:
+        data_obj (pd.DataFrame): a pandas dataframe holding the data
+        plot_variable (str): the name of the variable to be plotted
+        plotbounds (list, optional): the plot bounds. Defaults to None.
+        linestyle (str, optional): the plot line style. Defaults to '-'.
+    """
 
     #get the scaling
     plotscaling = config["PlotConfig"].get("xscaling", "linear") + config["PlotConfig"].get("yscaling", "linear")
@@ -81,13 +123,21 @@ def make_plot(data_obj, plot_variable, plotbounds = None, linestyle = '-' ):
 
 
 def make_plots(data_obj, plot_variables, plotbounds = None,  linestyles = None):
-    #make multiple plots
+    """
+    Make multiple plots
+
+    Args:
+        data_obj (pd.DataFrame): a pandas dataframe holding the data
+        plot_variables (list): the names of the variables to be plotted, in a list
+        plotbounds (list, optional): the plot bounds. Defaults to None.
+        linestyles (list, optional): the plot line styles in a list format. Defaults to None.
+    """
 
     #flag to tell if the plots should all be in one figure
     oneplot = config["VariableData"].getboolean("one_plot", False)
     if not oneplot:
 
-        #iterate over the variables and plot them
+        #iterate over the variables and plot them using the single plot function
         for i in range(len(plot_variables)):
             setup_figure()
             plotvar = plot_variables[i]
@@ -118,6 +168,15 @@ def make_plots(data_obj, plot_variables, plotbounds = None,  linestyles = None):
 
 
 def main():
+    """
+    Main function to plot the data
+
+    Raises:
+        SystemError: Data file not found
+        SystemError: No plot variables specified
+        SystemError: Number of x limits does not match number of plot variables
+        SystemError: Number of linestyles does not match number of plot variables
+    """
 
     # get the filename that contains the data
     data_filename_abs = os.path.join(datapath, filename)

@@ -378,7 +378,9 @@ def make_slice_plots(variableToPlot, hdf5files, setplotbounds, plotbounds) :
 			continue
 
 		print("Plotting file " + hdf5files[i])
-		TimeSliderNextState()
+		TimeSliderNextState() #advance to next state
+
+		#save the window to file
 		SaveWindowAtts = SaveWindowAttributes()
 		SaveWindowAtts.outputToCurrentDirectory = 0
 		SaveWindowAtts.outputDirectory = config["Output"]["output_plot_path"]
@@ -386,6 +388,8 @@ def make_slice_plots(variableToPlot, hdf5files, setplotbounds, plotbounds) :
 		SaveWindowAtts.family = 0 # needs to be enforced again
 		SetSaveWindowAttributes(SaveWindowAtts)	
 		SaveWindow()
+
+	# clean up and close window
 	DeleteAllPlots()
 
 
