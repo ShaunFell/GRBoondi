@@ -212,10 +212,10 @@ def main():
     if not set_xlims:
         xlims = None
 
-    #setup the plot style
+    #setup the style of the pyplot plot
     setup_plots()
     
-    #make the plots
+    #generate all the plots and save to disk
     make_plots(data_obj, plot_variables, xlims, linestyles)
 
     
