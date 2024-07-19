@@ -45,10 +45,10 @@ def get_data_dataframe(filepath):
                 header = line
             else:
                 break #stop the loop if theres no more header liens
+    
     header = header[1:].strip().split()
-
     verbPrint("Header: {0}".format(header))
-    #import the data to a pandas dataframe
+    #import the data to a pandas dataframe and return it
     return pd.read_csv(filepath, delim_whitespace=True, names=header, engine="python", header=0, index_col=False)
 
 def setup_plots():
@@ -147,6 +147,7 @@ def make_plots(data_obj, plot_variables, plotbounds = None,  linestyles = None):
             else:
                 linestyle = '-'
 
+            #save this single plot to disk
             make_plot(data_obj, plotvar, plotbounds, linestyle)
             plt.legend()
             save_fig(plotpath, plotvar)
@@ -154,6 +155,8 @@ def make_plots(data_obj, plot_variables, plotbounds = None,  linestyles = None):
     #combine all the plots into one
     else:
         setup_figure()
+        
+        #iterate over the variables and plot them using the single plot function
         for i in range(len(plot_variables)):
             plotvar = plot_variables[i]
 
@@ -161,7 +164,10 @@ def make_plots(data_obj, plot_variables, plotbounds = None,  linestyles = None):
                 linestyle = linestyles[i]
             else:
                 linestyle = '-'
+            
             make_plot(data_obj, plotvar, plotbounds, linestyle)
+        
+        #save all the plots in a single figure environment to disk
         plt.legend()
         plt.ylabel("") #remove ylabel for combined plot
         save_fig(plotpath, "combined")
@@ -191,9 +197,11 @@ def main():
 
     #get the plot variables
     plot_variables = config["VariableData"].get("plot_variables", "").split()    
+    
     #check the plot variables are non-empty
     if not plot_variables:
         raise SystemError("No plot variables specified.")
+    
     verbPrint("Plotting variables: {0}".format(plot_variables))
 
     #get the line styles

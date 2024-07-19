@@ -109,17 +109,7 @@ def setup_slice_plot(variableToPlot, plotbounds, setplotbounds) :
 	SetAnnotationAttributes(AnnotationAtts)
 	
 	# save settings
-	InvertBackgroundColor()
-	"""saveAtts = SaveWindowAttributes()
-	saveformat = config["Output"].get("fileform", fallback = "png").upper()
-
-	saveAtts.format = getattr(saveAtts, saveformat)
-	saveAtts.resConstraint = saveAtts.NoConstraint
-	saveAtts.width = 1280
-	saveAtts.height = 620
-	SetSaveWindowAttributes(saveAtts) 
-	"""
-	
+	InvertBackgroundColor()	
 	
 	# add pseudocolour plot
 	AddPlot("Pseudocolor", variableToPlot, 1, 1)
@@ -136,7 +126,7 @@ def setup_slice_plot(variableToPlot, plotbounds, setplotbounds) :
 		PseudocolorAtts.scaling = PseudocolorAtts.Linear
 
 	PseudocolorAtts.skewFactor = 1
-     # limitsMode =  OriginalData, CurrentPlot
+    # limitsMode =  OriginalData, CurrentPlot
 	PseudocolorAtts.limitsMode = PseudocolorAtts.OriginalData
 	verbPrint("Setting plot bounds: ", setplotbounds)
 	verbPrint("Plot Bounds lower: ", plotbounds[0], " upper: ", plotbounds[1])
@@ -146,10 +136,10 @@ def setup_slice_plot(variableToPlot, plotbounds, setplotbounds) :
 	PseudocolorAtts.max = plotbounds[1] #Set the maximum value
 	PseudocolorAtts.colorTableName = config["PlotConfig"].get("colortable", fallback = "viridis") #The type of color data.
 	PseudocolorAtts.invertColorTable = config["PlotConfig"].getint("invert_color_table", fallback = 0) #Invert the color scale
-     # opacityType = ColorTable, FullyOpaque, Constant, Ramp, VariableRange
+    # opacityType = ColorTable, FullyOpaque, Constant, Ramp, VariableRange
 	PseudocolorAtts.opacityType = PseudocolorAtts.FullyOpaque 
 	PseudocolorAtts.smoothingLevel = 0
-     # centering = Natural, Nodal, Zonal
+    # centering = Natural, Nodal, Zonal
 	centering = config["PlotConfig"].get("centering", fallback = "Natural")
 	if centering == "Natural":
 		PseudocolorAtts.centering = PseudocolorAtts.Natural
@@ -168,7 +158,6 @@ def setup_slice_plot(variableToPlot, plotbounds, setplotbounds) :
 
 	origintype = config["SliceConfig"].get("origin_type", fallback = "Intercept") #Set how we want to slice the plot. Point, Intercept, Percent, Zone, Node
 	verbPrint("Origin type: ", origintype)
-
 	if origintype=="Point":
 			SliceAtts.originType = SliceAtts.Point
 	elif origintype	== "Intercept":
@@ -250,17 +239,17 @@ def setup_slice_plot(variableToPlot, plotbounds, setplotbounds) :
 	
 	#set x and y scaling 
 	if xscaling == "Linear":
-			View2DAtts.xScale = View2DAtts.LINEAR 
+		View2DAtts.xScale = View2DAtts.LINEAR 
 	elif xscaling == "Log":
-			View2DAtts.xScale = View2DAtts.LOG
+		View2DAtts.xScale = View2DAtts.LOG
 	elif xscaling == "Skew":
-			View2DAtts.xScale = View2DAtts.SKEW 
+		View2DAtts.xScale = View2DAtts.SKEW 
 	if yscaling == "Linear":
-			View2DAtts.yScale = View2DAtts.LINEAR
+		View2DAtts.yScale = View2DAtts.LINEAR
 	elif yscaling == "Log":
-			View2DAtts.yScale = View2DAtts.LOG
+		View2DAtts.yScale = View2DAtts.LOG
 	elif yscaling == "Skew":
-			View2DAtts.yScale = View2DAtts.SKEW
+		View2DAtts.yScale = View2DAtts.SKEW
 
 	View2DAtts.windowValid = 1
 	SetView2D(View2DAtts)
@@ -275,31 +264,31 @@ def setup_slice_plot(variableToPlot, plotbounds, setplotbounds) :
 	# Set the file format
 	outformat = config["Output"].get("fileform", fallback = "PNG").upper()
 	if outformat == "png":
-			SaveWindowAtts.format = SaveWindowAtts.PNG
+		SaveWindowAtts.format = SaveWindowAtts.PNG
 	elif outformat == "JPG":
-			SaveWindowAtts.format = SaveWindowAtts.JPG
+		SaveWindowAtts.format = SaveWindowAtts.JPG
 	elif outformat == "TIF":
-			SaveWindowAtts.format = SaveWindowAtts.TIFF
+		SaveWindowAtts.format = SaveWindowAtts.TIFF
 	elif outformat == "BMP":
-			SaveWindowAtts.format = SaveWindowAtts.BMP
+		SaveWindowAtts.format = SaveWindowAtts.BMP
 	elif outformat == "PS":
-			SaveWindowAtts.format = SaveWindowAtts.POSTSCRIPT
+		SaveWindowAtts.format = SaveWindowAtts.POSTSCRIPT
 	elif outformat == "EPS":
-			SaveWindowAtts.format = SaveWindowAtts.POSTSCRIPT
+		SaveWindowAtts.format = SaveWindowAtts.POSTSCRIPT
 	elif outformat == "PPM":
-			SaveWindowAtts.format = SaveWindowAtts.PPM
+		SaveWindowAtts.format = SaveWindowAtts.PPM
 	elif outformat == "RGB":
-			SaveWindowAtts.format = SaveWindowAtts.RGB
+		SaveWindowAtts.format = SaveWindowAtts.RGB
 	elif outformat == "STL":
-			SaveWindowAtts.format = SaveWindowAtts.STL
+		SaveWindowAtts.format = SaveWindowAtts.STL
 	elif outformat == "EXR":
-			SaveWindowAtts.format = SaveWindowAtts.EXR
+		SaveWindowAtts.format = SaveWindowAtts.EXR
 	elif outformat == "ULTRA":
-			SaveWindowAtts.format = SaveWindowAtts.ULTRA
+		SaveWindowAtts.format = SaveWindowAtts.ULTRA
 	elif outformat == "VTK":
-			SaveWindowAtts.format = SaveWindowAtts.VTK
+		SaveWindowAtts.format = SaveWindowAtts.VTK
 	elif outformat == "PLY":
-			SaveWindowAtts.format = SaveWindowAtts.PLY
+		SaveWindowAtts.format = SaveWindowAtts.PLY
 
 
 	# Set the resolution
@@ -321,6 +310,7 @@ def PlotFiles():
 	plot_files = [x for x in files if config["Header"]["plot_header"] in x]
 	if len(plot_files) == 0:
 		raise SystemError("No Plot Files Found!")
+	
 	return plot_files
 
 def MultipleDatabase():
