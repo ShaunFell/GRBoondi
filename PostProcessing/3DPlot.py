@@ -69,7 +69,10 @@ def setup_engine():
 		
 
 		#Submit the job
-		OpenComputeEngine(host, arg)
+		openengine_status = OpenComputeEngine(host, arg)
+		if not openengine_status:
+			print("Job submission failed. Exiting...")
+			sys.exit(1)
 
 
 
@@ -187,7 +190,9 @@ def setup_slice_plot(variableToPlot, plotbounds, setplotbounds):
 	SetPlotSILRestriction(silr,1)
 
 	# Phew, now we can finally draw the plots!
-	DrawPlots()
+	drawplot_status = DrawPlots()
+	if not drawplot_status:
+		raise Exception("DrawPlots() failed. Aborting.")
 
 	## Set camera options
 
@@ -284,22 +289,31 @@ def make_slice_plots(variableToPlot, hdf5files, setplotbounds, plotbounds) :
 		else:
 			timeindex = 0
 		filename_prefix = os.path.join(config["Header"]["hdf5_path"], config["Header"]["plot_header"])
-		OpenDatabase(filename_prefix + "*" + ".3d.hdf5 database", timeindex)
+		database_status = OpenDatabase(filename_prefix + "*" + ".3d.hdf5 database", timeindex)
 	else:
-		OpenDatabase(PlotFiles()[0], 0)
+		database_status = OpenDatabase(PlotFiles()[0], 0)
+	
+	#check database successfully opened
+	if not database_status:
+		raise SystemError("Database could not be opened!")
+
 	#Determine starting point, if overwrite deactivated
 	for i in range(1, len(hdf5files)):
 		firstfilename = str(variableToPlot) + ('%04d' % i)
 		firstfilepath =  os.path.join(plotpath, firstfilename +"."+ config["Output"].get("fileform").lower())
 		if not overwrite_plots and os.path.exists(firstfilepath):
 			verbPrint("Plot already exists. Skipping...")
-			TimeSliderNextState() # Advance to next state
+			timeslider_status = TimeSliderNextState() # Advance to next state
 			continue
 		else:
 			# file doesnt exist, so we should start the plotting here
-			TimeSliderNextState()
+			timeslider_status = TimeSliderNextState()
 			break
-
+		
+		#check timeslider successfully executed
+		if not timeslider_status:
+			raise SystemError("TimeSlider could not be advance!")
+		
 	# create the plot
 	setup_slice_plot(variableToPlot, plotbounds, setplotbounds)
 	
@@ -313,8 +327,12 @@ def make_slice_plots(variableToPlot, hdf5files, setplotbounds, plotbounds) :
 		#if the plot already exists and overwrite disabled, skip
 		if not overwrite_plots and os.path.exists(save_abs_path): 
 			verbPrint("Plot already exists. Skipping...")
-			TimeSliderNextState() # Advance to next state
+			timeslider_status = TimeSliderNextState() # Advance to next state
 			continue
+
+		# if timeslider failed, return error
+		if not timeslider_status:
+			raise SystemError("TimeSlider could not advance!")
 
 		print("Plotting file " + hdf5files[i])
 		TimeSliderNextState()
@@ -325,7 +343,11 @@ def make_slice_plots(variableToPlot, hdf5files, setplotbounds, plotbounds) :
 		SaveWindowAtts.family = 0 # needs to be enforced again
 		SetSaveWindowAttributes(SaveWindowAtts)	
 		SaveWindow()
-	DeleteAllPlots()
+	
+	# close the plots and check they were closed
+	plotdelete_status = DeleteAllPlots()
+	if not plotdelete_status:
+		raise SystemError("Plot could not be deleted!")
 
 
 
@@ -362,7 +384,11 @@ def main():
 		if MultipleDatabase() & config["Output"].getint("make_movie", fallback = 0):
 			print ("Making a movie...")
 			cmd = 'ffmpeg -r ' + str(config["Output"].get("movie_framerate", fallback = "5")) + ' -s 1920x1080 -i ' + plotpath +"/"+ plotvar + '%04d.png -vcodec libx264 -crf 25 -pix_fmt yuv420p ' +moviepath +"/"+ plotvar+ '.mp4'
-			os.system(cmd)
+			system_status = os.system(cmd)
+			
+			#Check ffmpeg status to ensure command executed successfully
+			if not system_status == 0:
+				raise 	OSError("ffmpeg failed. Could not make the movie")
 
 		print("I've finished!")
 	
