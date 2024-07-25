@@ -190,7 +190,7 @@ def main():
 
     # check if file exists, if not raise SystemError
     if not os.path.exists(data_filename_abs):
-        raise SystemError("Data file not found: {0}".format(data_filename_abs))
+        raise IOError("Data file not found: {0}".format(data_filename_abs))
     
     # get the file object
     data_obj = get_data_dataframe(data_filename_abs)
@@ -210,13 +210,13 @@ def main():
         linestyles = None
 
     if not len(linestyles) == len(plot_variables) and linestyles != None:
-        raise SystemError("Number of linestyles does not match number of plot variables.")
+        raise RuntimeError("Number of linestyles does not match number of plot variables.")
 
     # get the x limits
     xlims = np.float64(config["VariableData"].get("xlim", "").split())
     set_xlims = config["VariableData"].getboolean("set_xlim", False)
     if not len(xlims) == len(plot_variables) and set_xlims:
-        raise SystemError("Number of xlims does not match number of plot variables.")
+        raise RuntimeError("Number of xlims does not match number of plot variables.")
     if not set_xlims:
         xlims = None
 

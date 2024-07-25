@@ -15,6 +15,7 @@ config.read(sys.argv[1])
 # Extract config variables
 plotpath = config["Output"]["output_plot_path"]
 moviepath = config["Output"]["output_movie_path"]
+overwrite_plots = config["Output"].getboolean("overwrite_plots",0)
 
 #if the plot and movie paths dont exist, create them
 if not os.path.exists(plotpath):
@@ -25,7 +26,6 @@ if not os.path.exists(moviepath):
 print("HDF5 file path: " + config["Header"]["hdf5_path"])
 print("Output Plots directory: " +plotpath)
 print("Output Movie Directory: " +moviepath)
-
 
 #set verbosity for printing
 def verbPrint(*objects):
@@ -284,7 +284,7 @@ def make_slice_plots(variableToPlot, hdf5files, setplotbounds, plotbounds) :
 	# open all the hdf5 files.
 	# create a database object if there is more than one
 	if MultipleDatabase():
-		if config["Header"]["use_plot_range"]:
+		if config["Header"].getboolean("use_plot_range", False):
 			timeindex = config["Header"].getint("plot_range", 0)
 		else:
 			timeindex = 0
@@ -312,7 +312,7 @@ def make_slice_plots(variableToPlot, hdf5files, setplotbounds, plotbounds) :
 		
 		#check timeslider successfully executed
 		if not timeslider_status:
-			raise SystemError("TimeSlider could not be advance!")
+			raise RuntimeError("TimeSlider could not be advance!")
 		
 	# create the plot
 	setup_slice_plot(variableToPlot, plotbounds, setplotbounds)
@@ -332,17 +332,22 @@ def make_slice_plots(variableToPlot, hdf5files, setplotbounds, plotbounds) :
 
 		# if timeslider failed, return error
 		if not timeslider_status:
-			raise SystemError("TimeSlider could not advance!")
+			raise RuntimeError("TimeSlider could not advance!")
 
 		print("Plotting file " + hdf5files[i])
-		TimeSliderNextState()
+		timeslider_status = TimeSliderNextState()
+		if not timeslider_status:
+			raise RuntimeError("TimeSlider could not advance!")
+
 		SaveWindowAtts = SaveWindowAttributes()
 		SaveWindowAtts.outputToCurrentDirectory = 0
 		SaveWindowAtts.outputDirectory = config["Output"]["output_plot_path"]
 		SaveWindowAtts.fileName = str(variableToPlot) + ('%04d' % i)
 		SaveWindowAtts.family = 0 # needs to be enforced again
 		SetSaveWindowAttributes(SaveWindowAtts)	
-		SaveWindow()
+		windowsave_status = SaveWindow()
+		if not windowsave_status:
+			raise RuntimeError("Window could not be saved!")
 	
 	# close the plots and check they were closed
 	plotdelete_status = DeleteAllPlots()

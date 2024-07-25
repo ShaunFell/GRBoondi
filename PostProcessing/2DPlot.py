@@ -34,7 +34,6 @@ def verbPrint(*objects):
 
 verbPrint("Verbosity: ", config["Header"].getint("verbosity",0))
 
-
 def setup_engine():
 	"""
 	Create the engine  for plotting
@@ -58,7 +57,9 @@ def setup_engine():
 		arg = ("-l", job_cmd, "-n", job_name, "-p", partition_name, "-np", num_procs, "-nn", num_nodes, "-t", time_limit, "-la", add_sub_args)
 
 		#Submit the job using visit job scheduler functionality
-		OpenComputeEngine(host, arg)
+		engine_status = OpenComputeEngine(host, arg)
+		if not engine_status:
+			raise RuntimeError("Could not start compute engine.")
 
 # This is where the real magic happens. This function creates a single slice plot.
 def setup_slice_plot(variableToPlot, plotbounds, setplotbounds) :
@@ -212,7 +213,9 @@ def setup_slice_plot(variableToPlot, plotbounds, setplotbounds) :
 	SetPlotSILRestriction(silr ,1)
 	
 	# Ok, draw the plot now!
-	DrawPlots()
+	drawplot_status = DrawPlots()
+	if not drawplot_status:
+		raise RuntimeError("Could not draw plots!")
 	
 
 	## Camera Settings
@@ -309,7 +312,7 @@ def PlotFiles():
 	files = glob.glob(filename_prefix+ "*.3d.hdf5")
 	plot_files = [x for x in files if config["Header"]["plot_header"] in x]
 	if len(plot_files) == 0:
-		raise SystemError("No Plot Files Found!")
+		raise FileNotFoundError("No Plot Files Found!")
 	
 	return plot_files
 
@@ -334,9 +337,12 @@ def make_slice_plots(variableToPlot, hdf5files, setplotbounds, plotbounds) :
 	# create a database object if there is more than one
 	if MultipleDatabase():
 		filename_prefix = os.path.join(config["Header"]["hdf5_path"], config["Header"]["plot_header"])
-		OpenDatabase(filename_prefix + "*" + ".3d.hdf5 database", 0)
+		database_status = OpenDatabase(filename_prefix + "*" + ".3d.hdf5 database", 0)
 	else:
-		OpenDatabase(PlotFiles()[0], 0)
+		database_status = OpenDatabase(PlotFiles()[0], 0)
+	
+	if not database_status:
+		raise IOError("Could not open database!")
 
 	#Determine starting point, if overwrite deactivated
 	for i in range(1, len(hdf5files)):
@@ -344,12 +350,15 @@ def make_slice_plots(variableToPlot, hdf5files, setplotbounds, plotbounds) :
 		firstfilepath =  os.path.join(plotpath, firstfilename +"."+ config["Output"].get("fileform").lower())
 		if not overwrite_plots and os.path.exists(firstfilepath):
 			verbPrint("Plot already exists. Skipping...")
-			TimeSliderNextState() # Advance to next state
+			timeslider_status = TimeSliderNextState() # Advance to next state
 			continue
 		else:
 			# file doesnt exist, so we should start the plotting here
-			TimeSliderNextState()
+			timeslider_status = TimeSliderNextState()
 			break
+	
+		if not timeslider_status:
+			raise RuntimeError("TimeSlider could not advance!")
 
 	# create the plot
 	setup_slice_plot(variableToPlot, plotbounds, setplotbounds)
@@ -368,7 +377,10 @@ def make_slice_plots(variableToPlot, hdf5files, setplotbounds, plotbounds) :
 			continue
 
 		print("Plotting file " + hdf5files[i])
-		TimeSliderNextState() #advance to next state
+		timeslider_status = TimeSliderNextState() #advance to next state
+
+		if not timeslider_status:
+			raise RuntimeError("TimeSlider could not advance!")
 
 		#save the window to file
 		SaveWindowAtts = SaveWindowAttributes()
@@ -377,10 +389,14 @@ def make_slice_plots(variableToPlot, hdf5files, setplotbounds, plotbounds) :
 		SaveWindowAtts.fileName = str(variableToPlot) + ('%04d' % i)
 		SaveWindowAtts.family = 0 # needs to be enforced again
 		SetSaveWindowAttributes(SaveWindowAtts)	
-		SaveWindow()
+		windowsave_status = SaveWindow()
+		if not windowsave_status:
+			raise RuntimeError("Window could not be saved!")
 
 	# clean up and close window
-	DeleteAllPlots()
+	plotdelete_status = DeleteAllPlots()
+	if not plotdelete_status:
+		raise SystemError("Plot could not be deleted!")
 
 
 
@@ -417,11 +433,22 @@ def main():
 		if MultipleDatabase() & config["Output"].getint("make_movie", fallback = 0):
 			print ("Making a movie...")
 			cmd = 'ffmpeg -r ' + str(config["Output"].get("movie_framerate", fallback = "5")) + '-s 1920x1080 -i ' + plotpath +"/"+ plotvar + '%04d.png -vcodec libx264 -crf 25 -pix_fmt yuv420p ' +moviepath +"/"+ plotvar+ '.mp4'
-			os.system(cmd)
+			system_status = os.system(cmd)
+			
+			#Check ffmpeg status to ensure command executed successfully
+			if not system_status == 0:
+				raise 	OSError("ffmpeg failed. Could not make the movie")
 
 		print("I've finished!")
 	
 	os.remove("./visitlog.py")
+	closedatabasesuccess = CloseDatabase()
+	closeenginesuccess = CloseComputeEngine()
+
+	if not closedatabasesuccess:
+		raise IOError("Could not close the database")
+	if not closeenginesuccess:
+		raise IOError("Could not close the compute engine")
 	exit()
 
 if __visit_script_file__ == __visit_source_file__:
