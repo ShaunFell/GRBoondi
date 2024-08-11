@@ -7,7 +7,7 @@
 import glob, os, sys, configparser
 import numpy as np
 from Source.Common.Utils import VerbosityPrint, MultipleDatabase, Close_Database, get_config
-from Source.Common.Utils import create_output_dirs
+from Source.Common.Utils import create_output_dirs, get_hdf5_file_list
 from Source.Common.Engine import *
 from Source.Common.Plotter import make_visit_plot
 
@@ -35,7 +35,7 @@ def main():
 	"""
 
 	# get list of all hdf5 plot files
-	get_hdf5_file_list(config)
+	hdf5files = get_hdf5_file_list(config)
 	print("Running Plot routines!")	
 
 	# get list of plot variables

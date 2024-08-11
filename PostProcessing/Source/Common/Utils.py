@@ -59,13 +59,13 @@ def get_hdf5_file_list(config):
         list: list of plot file names
     """
     hdf5_path = config["Header"]["hdf5_path"]
-    filenames = config["header"]["plot_header"] + "*.hdf5"
+    filenames = config["Header"]["plot_header"] + "*.hdf5"
 
     if not os.path.exists(hdf5_path):
         raise FileNotFoundError("HDF5 path not found: " + hdf5_path)
 
     #get list of file using regex 
-   	hdf5files = glob.glob(os.path.join(hdf5_path, filenames))
+    hdf5files = glob.glob(os.path.join(hdf5_path, filenames))
     hdf5files.sort() # sort the files by number
 
     #check if files exist
