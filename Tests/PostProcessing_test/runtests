@@ -1,0 +1,5 @@
+#!/bin/bash
+
+source ~/.bashrc
+python main.py
+visit -nowin -cli -s main.py

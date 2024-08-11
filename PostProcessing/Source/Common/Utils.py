@@ -2,15 +2,121 @@
 ## Copyright 2024, Shaun Fell
 ## Please refer to LICENSE in GRBoondi's root directory
 
-import os, glob
-import matplotlib.pylot as plt
-import pandas as pd
+import os, glob, sys
+import Source
+import configparser
+
+## Note:
+# we must put user-installed modules inside the functions that use them since VisIt doesn't support additional modules
+# and it's a pain to set it up for that. For simplicity, we put them there.
+
+## flag for VisIt
+try:
+    import visit
+    __visit_imported = True
+except:
+    __visit_imported = False
+
+## flag for Python
+try:
+    import matplotlib
+    import pandas
+    __extra_python = True
+except:
+    __extra_python = False
+
+#decorator for functions that require VisIt
+def require_visit(fn):
+    def wrapper(*args, **kwargs):
+        if not __visit_imported:
+            raise RuntimeError("VisIt not found. Aborting.")
+        import visit
+        return fn(*args, **kwargs)
+    return wrapper
+
+#decorator for functions that require non-standard python packages, e.g. matplotlib and pandas
+def require_python(fn):
+    def wrapper(*args, **kwargs):
+        if not __extra_python:
+            raise RuntimeError("Non-standard python packages not found. Aborting.")
+        import matplotlib.pyplot
+        import pandas
+        return fn(*args, **kwargs)
+    return wrapper
 
 
+def get_config(arg_list):
+    """safely get config object from command line arguments
+
+    Args:
+        arg_list (list): list of arguments from command line
+
+    Raises:
+        RuntimeError: please specify a parameter file
+
+    Returns:
+        configparser.ConfigParser: instance of a ConfigParser class that holds the users parameters
+    """
+
+    if len(arg_list) < 2:
+        raise RuntimeError("Please specify a parameter file")
+    
+    config = configparser.ConfigParser()
+    config.read(arg_list[1])
+
+    if __visit_imported: #If we're running VisIt, then these are the parameter sections we expect
+        mandatory_visit_headers = ["Header", "EngineConfig", "VariableData", 
+                            "AnnotationConfig", "PlotConfig", 
+                            "ViewConfig", "Output"]
+    elif __extra_python: #If we're running via python, then these are the parameter sections expect
+        mandatory_visit_headers = ["Header", "VariableData", "PlotConfig", "Output"]
+
+
+    loaded_config_sections = config.sections()  
+
+    for header in mandatory_visit_headers:
+        if header not in loaded_config_sections:
+            raise configparser.NoSectionError("Parameter file error. Missing section: " + header)
+
+    return config
+
+def create_output_dirs(config):
+    """create output directories if they don't exist
+
+    Args:
+        config (configparser.ConfigParser): instance of a ConfigParser class that holds the users parameters
+    """
+    plot_path = config["Output"].get("output_plot_path", fallback = "./plots")
+    movie_path = config["Output"].get("output_movie_path", fallback = "./movies")
+
+    if not os.path.exists(plot_path):
+        os.mkdir(plot_path)
+    if not os.path.exists(movie_path):
+        os.mkdir(movie_path)
+
+def plot_func_selector(type):
+    """selector function for type of plot to generate
+
+    Args:
+        type (str): string defining type of plot function to choose. Options: '2d' and '3d'
+
+    Raises:
+        ValueError: Invalid plot type
+
+    Returns:
+        func: appropriate plotting function
+    """
+
+    if type == '2d':
+        return Source.TwoD.generate_2dslice_plot
+    elif type == '3d':
+        return Source.ThreeD.generate_3dslice_plot
+    else:
+        raise ValueError("Invalid plot type")
 
 def PlotFiles(config):
     """	Find all the plot files and return them as list of absolute path strings
-    
+
     Args:
         config (configparser.ConfigParser): instance of a ConfigParser class that holds the users parameters
 
@@ -22,19 +128,19 @@ def PlotFiles(config):
     """
 
     #path to hdf5 files plus plot file header string
-	filename_prefix = os.path.join(config["Header"]["hdf5_path"], config["Header"]["plot_header"])
+    filename_prefix = os.path.join(config["Header"]["hdf5_path"], config["Header"]["plot_header"])
 
     #get list of file using regex
-	files = glob.glob(filename_prefix+ "*.3d.hdf5")
+    files = glob.glob(filename_prefix+ "*.3d.hdf5")
 
     #filter the file list to ensure regex-captured files are actual plot files
-	plot_files = [x for x in files if config["Header"]["plot_header"] in x]
+    plot_files = [x for x in files if config["Header"]["plot_header"] in x]
 
     #ensure plot files exist in provided directory
-	if len(plot_files) == 0:
-		raise FileNotFoundError("No Plot Files Found!")
-	
-	return plot_files
+    if len(plot_files) == 0:
+        raise FileNotFoundError("No Plot Files Found!")
+
+    return plot_files
 
 def MultipleDatabase(config):
     """Determine whether multiple plot files need to be opened
@@ -45,14 +151,54 @@ def MultipleDatabase(config):
     Returns:
         boolean: boolean flag determining if multiple plot files need to be opened
     """
-	
-	if len(PlotFiles(config))>1:
-		print("Opening multiple plot files")
-		return True
-	else:
-		print("Opening single plot file")
-		return False
 
+    if len(PlotFiles(config))>1:
+        print("Opening multiple plot files")
+        return True
+    else:
+        print("Opening single plot file")
+        return False
+
+@require_visit
+def Open_Database(config):
+    """Opens a visit database object
+
+    Args:
+        config (configparser.ConfigParser): instance of a ConfigParser class that holds the users parameters
+
+    Raises:
+        IOError: Could not open database!
+
+    Returns:
+        int: status code of opening the database
+    """
+
+    if MultipleDatabase(config):
+        filename_prefix = os.path.join(config["Header"]["hdf5_path"], config["Header"]["plot_header"])
+        database_status = visit.OpenDatabase(filename_prefix + "*" + ".3d.hdf5 database", 0)
+    else:
+        database_status = visit.OpenDatabase(PlotFiles(config)[0], 0)
+
+    if not database_status:
+        raise IOError("Could not open database!")
+
+    return database_status
+
+@require_visit
+def Close_Database(config):
+    
+    if MultipleDatabase(config):
+        filename_prefix = os.path.join(config["Header"]["hdf5_path"], config["Header"]["plot_header"])
+        database_status = visit.CloseDatabase(filename_prefix + "*" + ".3d.hdf5 database")
+    else:
+        database_status = visit.CloseDatabase(PlotFiles(config)[0])
+
+    if not database_status:
+        raise IOError("Could not close database!")
+
+    return database_status
+
+@require_python
 def get_data_dataframe(filepath):
     """
     Read in the data file and return a pandas dataframe
@@ -72,27 +218,32 @@ def get_data_dataframe(filepath):
                 header = line
             else:
                 break #stop the loop if theres no more header liens
-    
-    header = header[1:].strip().split()
-    verbPrint("Header: {0}".format(header))
-    #import the data to a pandas dataframe and return it
-    return pd.read_csv(filepath, delim_whitespace=True, names=header, engine="python", header=0, index_col=False)
 
+    header = header[1:].strip().split()
+    
+    #import the data to a pandas dataframe and return it. Includes error checking
+    return pandas.read_csv(filepath, delim_whitespace=True, names=header, engine="python", header=0, index_col=False)
+
+@require_python
 def setup_pyplot(config):
     """
     Setup the plot style
     """
-    # turn off interactive plotting and set plot style
-    plt.ioff()
-    plt.style.use(config["PlotConfig"].get("plotstyle", "default"))
 
+    # turn off interactive plotting and set plot style
+    matplotlib.pyplot.ioff()
+    matplotlib.pyplot.style.use(config["PlotConfig"].get("plotstyle", "default"))
+
+@require_python
 def setup_pyplot_figure(): 
     """
     Setup the figure environment
     """
-    plt.figure()
-    plt.tight_layout()
 
+    matplotlib.pyplot.figure()
+    matplotlib.pyplot.tight_layout()
+
+@require_python
 def select_plot_func(scaling):
     """
     Select the plot function based on the scaling
@@ -103,16 +254,18 @@ def select_plot_func(scaling):
     Returns:
         function: the plot function from pyplot
     """
-    if scaling == "loglog":
-        return plt.loglog
-    elif scaling == "loglinear":
-        return plt.semilogx
-    elif scaling == "linearlog":
-        return plt.semilogy
-    else:
-        return plt.plot
 
-def save_pyplot_fig(config, path, varname):
+    if scaling == "loglog":
+        return matplotlib.pyplot.loglog
+    elif scaling == "loglinear":
+        return matplotlib.pyplot.semilogx
+    elif scaling == "linearlog":
+        return matplotlib.pyplot.semilogy
+    else:
+        return matplotlib.pyplot.plot
+
+@require_python
+def save_pyplot_fig(config, varname):
     """
     Save the pyplot figure
 
@@ -120,7 +273,14 @@ def save_pyplot_fig(config, path, varname):
         path (str): absolute path to the output directory
         varname (str): name of the variable
     """
-    plt.savefig(os.path.join(path,  varname), format = config["Output"].get("fileform", "png").lower(), dpi = config["Output"].getint("dpi", 600))
+
+    path = config["Output"].get("output_plot_path", fallback = "./plots")
+    save_format = config["Output"].get("fileform", fallback = "png").lower()
+    save_dpi = config["Output"].getint("dpi", fallback = 600)
+    save_filename = varname+".{}".format(save_format)
+
+    #save to disk
+    matplotlib.pyplot.savefig(os.path.join(path,  save_filename), format = save_format, dpi = save_dpi)
 
 
 
@@ -150,3 +310,4 @@ class VerbosityPrint:
     def __call__(self, *objects):
         if self.verbosity:
             print(*objects)
+

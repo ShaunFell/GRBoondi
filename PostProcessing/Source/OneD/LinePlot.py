@@ -2,8 +2,11 @@
 ## Copyright 2024, Shaun Fell
 ## Please refer to LICENSE in GRBoondi's root directory
 
-from Common import *
-import matplotlib.pyplot as plt
+from Source.Common.Utils import *
+try:
+    import matplotlib.pyplot as plt
+except:
+    raise RuntimeError("matplotlib not found. Note: this file should not be loaded by VisIt.")
 
 def make_plot(config, data_obj, plot_variable, plotbounds = None, linestyle = '-' ):
     """
@@ -58,7 +61,7 @@ def make_plots(config, data_obj, plot_variables, plotbounds = None,  linestyles 
             #save this single plot to disk
             make_plot(config, data_obj, plotvar, plotbounds, linestyle)
             plt.legend()
-            save_pyplot_fig(config, plotpath, plotvar)
+            save_pyplot_fig(config, plotvar)
 
     #combine all the plots into one
     else:
@@ -78,4 +81,4 @@ def make_plots(config, data_obj, plot_variables, plotbounds = None,  linestyles 
         #save all the plots in a single figure environment to disk
         plt.legend()
         plt.ylabel("") #remove ylabel for combined plot
-        save_pyplot_fig(config, plotpath, "combined")
+        save_pyplot_fig(config, "combined")

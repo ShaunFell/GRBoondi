@@ -2,91 +2,93 @@
 ## Copyright 2024, Shaun Fell
 ## Please refer to LICENSE in GRBoondi's root directory
 
-from Utils import *
-from 2D import *
-from 3D import *
+from .Utils import *
+from Source.TwoD import *
+from Source.ThreeD import *
 
+@require_visit
+def make_slice_plots(config, variableToPlot, hdf5files, plot_type = '2d', setplotbounds = False, plotbounds = [0,1]) :
+	""" This function iterates over all hdf5 files and generates the plots. 
 
-def make_slice_plots(config, variableToPlot, hdf5files, setplotbounds = False, plotbounds = [0,1], slice_type = "2d") :
-    """ This function iterates over all hdf5 files and generates the plots. 
+	Args:
+		config (configparser.ConfigParser): instance of a ConfigParser class that holds the users parameters
+		variableToPlot (str): name of the variable to be plotted
+		hdf5files (list): list of paths to the hdf5 files
+		plot_type (str, optional): type of plot to generate. Defaults to "2d". Options are "2d" and "3d"
+		setplotbounds (bool, optional): flag to specify whether bounds for the plotting variable should be specified. Defaults to False.
+		plotbounds (list, optional): list of two values that specify the minimum and maximum value of the plot variable. Defaults to [0,1].
 
-    Args:
-        config (configparser.ConfigParser): instance of a ConfigParser class that holds the users parameters
-        variableToPlot (str): name of the variable to be plotted
-        hdf5files (list): list of paths to the hdf5 files
-        setplotbounds (bool, optional): flag to specify whether bounds for the plotting variable should be specified. Defaults to False.
-        plotbounds (list, optional): list of two values that specify the minimum and maximum value of the plot variable. Defaults to [0,1].
-        slice_type (str, optional): type of plot to generate. Defaults to "2d". Options are "2d" and "3d"
-
-    Raises:
-        IOError: Database could not be opened
-        RuntimeError: TimeSlider could not advance
-        RuntimeError: Window could not be saved
-        SystemError: Plot could not be cleared from memory
-    """
+	Raises:
+		IOError: Database could not be opened
+		RuntimeError: TimeSlider could not advance
+		RuntimeError: Window could not be saved
+		SystemError: Plot could not be cleared from memory
+	"""
+	import visit
 
 	# open all the hdf5 files.
 	# create a database object if there is more than one
-	if MultipleDatabase():
-		filename_prefix = os.path.join(config["Header"]["hdf5_path"], config["Header"]["plot_header"])
-		database_status = OpenDatabase(filename_prefix + "*" + ".3d.hdf5 database", 0)
-	else:
-		database_status = OpenDatabase(PlotFiles()[0], 0)
-	
-	if not database_status:
-		raise IOError("Could not open database!")
+	Open_Database(config)
+
+	# suppress all messages except warnings and errors
+	visit.SuppressMessages(2) # https://visit-sphinx-github-user-manual.readthedocs.io/en/develop/python_scripting/functions.html#suppressmessages		
+
+	# setup verbosity printing	
+	verbPrint = VerbosityPrint(config["Header"].getint("verbosity",0))
+	verbPrint("Verbosity: ", verbPrint.verbosity)
 
 	#Determine starting point, if overwrite deactivated
 	for i in range(1, len(hdf5files)):
 		firstfilename = str(variableToPlot) + ('%04d' % i)
-		firstfilepath =  os.path.join(plotpath, firstfilename +"."+ config["Output"].get("fileform").lower())
+		firstfilepath =  os.path.join(config["Output"]["output_plot_path"], firstfilename +"."+ config["Output"].get("fileform").lower())
 		if not config["Output"].getboolean("overwrite_plots",0) and os.path.exists(firstfilepath):
 			verbPrint("Plot already exists. Skipping...")
-			timeslider_status = TimeSliderNextState() # Advance to next state
+			timeslider_status = visit.TimeSliderNextState() # Advance to next state
 			continue
 		else:
 			# file doesnt exist, so we should start the plotting here
-			timeslider_status = TimeSliderNextState()
-			break
+			timeslider_status = visit.TimeSliderNextState()
+			break	
 	
 		if not timeslider_status:
 			raise RuntimeError("TimeSlider could not advance!")
 
-	# create the plot
-	setup_slice_plot(variableToPlot, plotbounds, setplotbounds)
+	# create the plot based on plot type
+	plot_func_selector(plot_type)(config, variableToPlot, plotbounds, setplotbounds) #includes error handling
+
 	
 	# iterate over all hdf5 files, and create a new plot for each
 	# then save to disk
 	for i in range(1, len(hdf5files)):
 		savename = str(variableToPlot) + ('%04d' % i)
-		save_abs_path = os.path.join(plotpath, savename +"."+ config["Output"].get("fileform").lower())
+		save_abs_path = os.path.join(config["Output"]["output_plot_path"], savename +"."+ config["Output"].get("fileform").lower())
 		
 		
 		#if the plot already exists and overwrite disabled, skip
 		if not config["Output"].getboolean("overwrite_plots",0) and os.path.exists(save_abs_path): 
 			verbPrint("Plot already exists. Skipping...")
-			TimeSliderNextState() # Advance to next state
+			visit.TimeSliderNextState() # Advance to next state
 			continue
 
-		print("Plotting file " + hdf5files[i])
-		timeslider_status = TimeSliderNextState() #advance to next state
+		verbPrint("Plotting file " + hdf5files[i])
+		timeslider_status = visit.TimeSliderNextState() #advance to next state
 
 		if not timeslider_status:
 			raise RuntimeError("TimeSlider could not advance!")
 
 		#save the window to file
-		SaveWindowAtts = SaveWindowAttributes()
+		SaveWindowAtts = visit.SaveWindowAttributes()
 		SaveWindowAtts.outputToCurrentDirectory = 0
 		SaveWindowAtts.outputDirectory = config["Output"]["output_plot_path"]
 		SaveWindowAtts.fileName = str(variableToPlot) + ('%04d' % i)
 		SaveWindowAtts.family = 0 # needs to be enforced again
-		SetSaveWindowAttributes(SaveWindowAtts)	
-		windowsave_status = SaveWindow()
+		visit.SetSaveWindowAttributes(SaveWindowAtts)	
+		windowsave_status = visit.SaveWindow()
 		if not windowsave_status:
 			raise RuntimeError("Window could not be saved!")
 
 	# clean up and close window
-	plotdelete_status = DeleteAllPlots()
+	plotdelete_status = visit.DeleteAllPlots()
 	if not plotdelete_status:
 		raise SystemError("Plot could not be deleted!")
 

@@ -6,19 +6,24 @@
 ## For documentation on all the attributes below, see
 ## https://visit-sphinx-github-user-manual.readthedocs.io/en/develop/python_scripting/functions.html
 	
+from Source.Common.Utils import *
+import numpy as np
 
+@require_visit
 def Annotation_Setup(config):
-    """Set the annotation settings. 
+	"""Set the annotation settings. 
 
-    Args:
-        config (_type_): _description_
-    """
+	Args:
+		config (_type_): _description_
+	"""
 
+	#initialize verbosity printing
+	verbPrint = VerbosityPrint(config["Header"].getint("verbosity",0))
 
-    # annotation settings, such as the information printed on the plot (user, database name, time, etc.)
-	AnnotationAtts = AnnotationAttributes()
+	# annotation settings, such as the information printed on the plot (user, database name, time, etc.)
+	AnnotationAtts = visit.AnnotationAttributes()
 
-    ## Grab annotation settings from config file, with defaults
+	## Grab annotation settings from config file, with defaults
 	axes3dvisible = config["AnnotationConfig"].getint('axes3Dvisible', 1)
 	verbPrint("Axes3d visible: ", str(axes3dvisible))
 	userinfoflag = config["AnnotationConfig"].getint('userInfoFlag', 0)
@@ -51,12 +56,17 @@ def Annotation_Setup(config):
 	AnnotationAtts.foregroundColor = foregroundcolor
 	AnnotationAtts.axes3D.bboxFlag = bboxflag
 	AnnotationAtts.axes3D.triadFlag = triadflag
-	SetAnnotationAttributes(AnnotationAtts)
+	visit.SetAnnotationAttributes(AnnotationAtts)
 
+@require_visit
 def Pseudocolor_Setup(config, variableToPlot, setplotbounds, plotbounds):
-    # add pseudocolour plot
-	AddPlot("Pseudocolor", variableToPlot, 1, 1)
-	PseudocolorAtts = PseudocolorAttributes() #Get the pseudocolor plot attributes instance
+
+	#initialize verbosity printing
+	verbPrint = VerbosityPrint(config["Header"].getint("verbosity",0))
+
+	# add pseudocolour plot
+	visit.AddPlot("Pseudocolor", variableToPlot, 1, 1)
+	PseudocolorAtts = visit.PseudocolorAttributes() #Get the pseudocolor plot attributes instance
 	plotscaling = config["PlotConfig"].get("plotscaling", fallback = "Linear").lower() #Determine how we want the plot ticks to be scaled.
 	if plotscaling == "linear":
 		PseudocolorAtts.scaling = PseudocolorAtts.Linear
@@ -69,7 +79,7 @@ def Pseudocolor_Setup(config, variableToPlot, setplotbounds, plotbounds):
 		PseudocolorAtts.scaling = PseudocolorAtts.Linear
 
 	PseudocolorAtts.skewFactor = 1
-    # limitsMode =  OriginalData, CurrentPlot
+	# limitsMode =  OriginalData, CurrentPlot
 	PseudocolorAtts.limitsMode = PseudocolorAtts.OriginalData
 	verbPrint("Setting plot bounds: ", setplotbounds)
 	verbPrint("Plot Bounds lower: ", plotbounds[0], " upper: ", plotbounds[1])
@@ -79,10 +89,10 @@ def Pseudocolor_Setup(config, variableToPlot, setplotbounds, plotbounds):
 	PseudocolorAtts.max = plotbounds[1] #Set the maximum value
 	PseudocolorAtts.colorTableName = config["PlotConfig"].get("colortable", fallback = "viridis") #The type of color data.
 	PseudocolorAtts.invertColorTable = config["PlotConfig"].getint("invert_color_table", fallback = 0) #Invert the color scale
-    # opacityType = ColorTable, FullyOpaque, Constant, Ramp, VariableRange
+	# opacityType = ColorTable, FullyOpaque, Constant, Ramp, VariableRange
 	PseudocolorAtts.opacityType = PseudocolorAtts.FullyOpaque 
 	PseudocolorAtts.smoothingLevel = 0
-    # centering = Natural, Nodal, Zonal
+	# centering = Natural, Nodal, Zonal
 	centering = config["PlotConfig"].get("centering", fallback = "Natural")
 	if centering == "Natural":
 		PseudocolorAtts.centering = PseudocolorAtts.Natural
@@ -92,20 +102,25 @@ def Pseudocolor_Setup(config, variableToPlot, setplotbounds, plotbounds):
 		PseudocolorAtts.centering = PseudocolorAtts.Zonal
 
 	#Set the options we just created above to the pseudocolor plot
-	SetPlotOptions(PseudocolorAtts)
+	visit.SetPlotOptions(PseudocolorAtts)
 
+@require_visit
 def Volume_Setup(config, variableToPlot):
-	AddPlot("Volume", variableToPlot,1,1)
-	VolumeAtts = VolumeAttributes()
-	plotscaling = config["VolumeConfig"].get("plotscaling", fallback = "Linear").title()
+
+	#initialize verbosity printing
+	verbPrint = VerbosityPrint(config["Header"].getint("verbosity",0))
+
+	visit.AddPlot("Volume", variableToPlot,1,1)
+	VolumeAtts = visit.VolumeAttributes()
+	plotscaling = config["PlotConfig"].get("plotscaling", fallback = "Linear").title()
 	verbPrint("plot scaling: ",  plotscaling)
 
 	#Set the attributes for the volume plot
 	VolumeAtts.scaling = getattr(VolumeAtts, plotscaling) #Get the plot scaling attribute
-	VolumeAtts.lightingFlag = config["VolumeConfig"].getboolean('lightingFlag', 1)
-	VolumeAtts.legendFlag =   config["VolumeConfig"].getboolean('legendFlag', 1)
-	VolumeAtts.opacityAttenuation = config["VolumeConfig"].getint('opacityAttenuation', 1)
-	opacitymode = config["VolumeConfig"].get("opacityMode", fallback = "freeform").title()
+	VolumeAtts.lightingFlag = config["PlotConfig"].getboolean('lightingFlag', 1)
+	VolumeAtts.legendFlag =   config["PlotConfig"].getboolean('legendFlag', 1)
+	VolumeAtts.opacityAttenuation = config["PlotConfig"].getint('opacityAttenuation', 1)
+	opacitymode = config["PlotConfig"].get("opacityMode", fallback = "freeform").title()
 	verbPrint("opacityMode: ",  opacitymode)
 	VolumeAtts.opacityMode  = getattr(VolumeAtts, opacitymode+"Mode") #get the opacity mode attribute
 	
@@ -113,25 +128,25 @@ def Volume_Setup(config, variableToPlot):
 	## set domain of width 256 and height 256-1
 	domain = np.linspace(0,255,256) 
 	#create the opacity using the piecewise function
-	low = 255*config["VolumeConfig"].getfloat("ramp_min", 0)
-	high = 255*config["VolumeConfig"].getfloat("ramp_max", 1)
+	low = 255*config["PlotConfig"].getfloat("ramp_min", 0)
+	high = 255*config["PlotConfig"].getfloat("ramp_max", 1)
 	# add opacity ramp to the volume plot
 	opacityramp =  tuple(np.piecewise(domain, [domain<low, ((domain>=low) & (domain<=high)), domain>high], [0, lambda x: 255*(x - low)/(high-low), 255]))
 	verbPrint("opacity ramp: ",  opacityramp)
 	VolumeAtts.freeformOpacity = opacityramp #set the tuple as the opacity ramp
 
 	#Determine the max and min values of the variable to use for coloring and opacity
-	VolumeAtts.useColorVarMin = config["VolumeConfig"].getboolean('useColorVarMin', 0)
-	VolumeAtts.colorVarMin = config["VolumeConfig"].getfloat('colorVarMin', 0)
-	VolumeAtts.useColorVarMax = config["VolumeConfig"].getboolean('useColorVarMax', 0)
-	VolumeAtts.colorVarMax = config["VolumeConfig"].getfloat('colorVarMax', 0)
-	VolumeAtts.useOpacityVarMin = config["VolumeConfig"].getboolean('useOpacityVarMin', 0)
-	VolumeAtts.opacityVarMin = config["VolumeConfig"].getfloat('opacityVarMin', 0)
-	VolumeAtts.useOpacityVarMax = config["VolumeConfig"].getboolean('useOpacityVarMax', 0)
-	VolumeAtts.opacityVarMax = config["VolumeConfig"].getfloat('opacityVarMax', 0)
+	VolumeAtts.useColorVarMin = config["PlotConfig"].getboolean('useColorVarMin', 0)
+	VolumeAtts.colorVarMin = config["PlotConfig"].getfloat('colorVarMin', 0)
+	VolumeAtts.useColorVarMax = config["PlotConfig"].getboolean('useColorVarMax', 0)
+	VolumeAtts.colorVarMax = config["PlotConfig"].getfloat('colorVarMax', 0)
+	VolumeAtts.useOpacityVarMin = config["PlotConfig"].getboolean('useOpacityVarMin', 0)
+	VolumeAtts.opacityVarMin = config["PlotConfig"].getfloat('opacityVarMin', 0)
+	VolumeAtts.useOpacityVarMax = config["PlotConfig"].getboolean('useOpacityVarMax', 0)
+	VolumeAtts.opacityVarMax = config["PlotConfig"].getfloat('opacityVarMax', 0)
 
 	#Specify the type of rendering engine to use
-	rendertype = config["VolumeConfig"].get("rendererType", fallback = "default").title()
+	rendertype = config["PlotConfig"].get("rendererType", fallback = "default").title()
 	if rendertype == "Raycasting": rendertype = "RayCasting" 
 	if rendertype == "Raycastingintegration": rendertype = "RayCastingIntegration"
 	if rendertype == "Raycastingslivr": rendertype = "RayCastingSLIVR" 
@@ -140,20 +155,25 @@ def Volume_Setup(config, variableToPlot):
 	VolumeAtts.rendererType = getattr(VolumeAtts, rendertype) #get the rendering type attribute
 
 	#Determine the sampling rate of the data to use for the plot
-	sampling = config["VolumeConfig"].get("sampling", fallback = "rasterization").title()
+	sampling = config["PlotConfig"].get("sampling", fallback = "rasterization").title()
 	verbPrint("Sampling: ", sampling)
 	VolumeAtts.sampling = getattr(VolumeAtts, sampling) #get the sampling attribute
-	lowgradientlightingreduc = config["VolumeConfig"].get("lowGradientLightingReduction", fallback = "Lower").title()
+	lowgradientlightingreduc = config["PlotConfig"].get("lowGradientLightingReduction", fallback = "Lower").title()
 	verbPrint("Low gradient lighting reduction: ", lowgradientlightingreduc)
 	VolumeAtts.lowGradientLightingReduction = getattr(VolumeAtts, lowgradientlightingreduc) #get the low gradient lighting reduction attribute
-	VolumeAtts.samplesPerRay = config["VolumeConfig"].getint('samplesPerRay', 1)
+	VolumeAtts.samplesPerRay = config["PlotConfig"].getint('samplesPerRay', 1)
 	#set the above attributes to the plot options
-	SetPlotOptions(VolumeAtts)
+	visit.SetPlotOptions(VolumeAtts)
 
+@require_visit
 def SliceAttribute_Setup(config):
+
+	#initialize verbosity printing
+	verbPrint = VerbosityPrint(config["Header"].getint("verbosity",0))
+
 	# slice the pseudocolour plot
-	AddOperator("Slice", 1)
-	SliceAtts = SliceAttributes()
+	visit.AddOperator("Slice", 1)
+	SliceAtts = visit.SliceAttributes()
 
 	origintype = config["SliceConfig"].get("origin_type", fallback = "Intercept") #Set how we want to slice the plot. Point, Intercept, Percent, Zone, Node
 	verbPrint("Origin type: ", origintype)
@@ -171,7 +191,7 @@ def SliceAttribute_Setup(config):
 	originpoint = tuple(np.float64(config["SliceConfig"]["origin"].split()))
 	verbPrint("Slice plane origin: ", originpoint)
 	SliceAtts.originPoint = originpoint
-     # axisType = XAxis, YAxis, ZAxis, Arbitrary, ThetaPhi
+	# axisType = XAxis, YAxis, ZAxis, Arbitrary, ThetaPhi
 	axistype = config["SliceConfig"].get("axistype", fallback = "ZAxis").lower()
 	if axistype == "zaxis":
 		SliceAtts.axisType = SliceAtts.ZAxis
@@ -190,21 +210,31 @@ def SliceAttribute_Setup(config):
 	SliceAtts.normal = slicenormalvec #The slice plane's normal vector
 	SliceAtts.project2d = 1 #Do we project the plot to 2D or keep the sliced surface in a 3D plot?
 	SliceAtts.flip = 0
-	SetOperatorOptions(SliceAtts, 1)
+	visit.SetOperatorOptions(SliceAtts, 1)
 
+@require_visit
 def Mesh_Setup(config):
-	AddPlot("Mesh", "Mesh",1,1)
+
+	#initialize verbosity printing
+	verbPrint = VerbosityPrint(config["Header"].getint("verbosity",0))
+
+	visit.AddPlot("Mesh", "Mesh",1,1)
 	
 	#Mesh attributes
-	MeshAtts = MeshAttributes()
+	MeshAtts = visit.MeshAttributes()
 	MeshAtts.opacity = config["MeshConfig"].getfloat("meshopacity",1.0)
 	meshcolor = tuple(np.int64(config["MeshConfig"]["meshcolor"].split()))
 	verbPrint("Mesh color: ", meshcolor)
 	MeshAtts.meshColor = meshcolor
-	SetPlotOptions(MeshAtts)
+	visit.SetPlotOptions(MeshAtts)
 
+@require_visit
 def View_2D_Setup(config):
-	View2DAtts = View2DAttributes()
+
+	#initialize verbosity printing
+	verbPrint = VerbosityPrint(config["Header"].getint("verbosity",0))
+
+	View2DAtts = visit.View2DAttributes()
 	windowcoords = (
 		config["ViewConfig"].getfloat("plot_u_min"),
 		config["ViewConfig"].getfloat("plot_u_max"),
@@ -238,10 +268,15 @@ def View_2D_Setup(config):
 		View2DAtts.yScale = View2DAtts.SKEW
 
 	View2DAtts.windowValid = 1
-	SetView2D(View2DAtts)	
+	visit.SetView2D(View2DAtts)	
 
+@require_visit
 def View_3D_Setup(config):
-	View3DAtts = View3DAttributes()
+
+	#initialize verbosity printing
+	verbPrint = VerbosityPrint(config["Header"].getint("verbosity",0))
+
+	View3DAtts = visit.View3DAttributes()
 	viewnormal = tuple(np.float64(config["ViewConfig"].get("viewNormal", "0 0 1").split()))
 	focus = tuple(np.float64(config["ViewConfig"].get("focus", "0 0 0").split()))
 	viewup = tuple(np.float64(config["ViewConfig"].get("viewUp", "0 1 0").split()))
@@ -262,15 +297,20 @@ def View_3D_Setup(config):
 	View3DAtts.axis3DScales = tuple(np.float64(config["ViewConfig"].get("axis3DScales", "1 1 1").split()))
 	View3DAtts.shear = tuple(np.float64(config["ViewConfig"].get("shear", "0 0 0").split()))
 	View3DAtts.windowValid = config["ViewConfig"].getboolean("windowValid", 1)
-	SetView3D(View3DAtts)
+	visit.SetView3D(View3DAtts)
 
+@require_visit
 def Save_Current_Window(config, variableToPlot):
-	SaveWindowAtts = SaveWindowAttributes()
+
+	#initialize verbosity printing
+	verbPrint = VerbosityPrint(config["Header"].getint("verbosity",0))
+
+	SaveWindowAtts = visit.SaveWindowAttributes()
 	SaveWindowAtts.outputToCurrentDirectory = 0
 	SaveWindowAtts.outputDirectory = config["Output"]["output_plot_path"]
 	SaveWindowAtts.fileName = str(variableToPlot)
 	SaveWindowAtts.family = 1
-  
+	
 	# Set the file format
 	outformat = config["Output"].get("fileform", fallback = "PNG").upper()
 	if outformat == "png":
@@ -311,7 +351,7 @@ def Save_Current_Window(config, variableToPlot):
 	SaveWindowAtts.resConstraint = SaveWindowAtts.NoConstraint 
 	
 	#set the window attributes just defined
-	SetSaveWindowAttributes(SaveWindowAtts)
+	visit.SetSaveWindowAttributes(SaveWindowAtts)
 
 	#finally, save the window
-	SaveWindow()
+	visit.SaveWindow()

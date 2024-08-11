@@ -7,7 +7,18 @@ import os, configparser, sys
 import numpy as np
 import pandas as pd
 
-from 1D import *
+from Source.OneD import *
+from Source.Common.Utils import get_config
+
+## Load config file
+config = get_config(sys.argv) #includes error checking
+
+#if the plot and movie paths dont exist, create them
+create_output_dirs(config)
+
+#Instantiate printer function that accepts a verbosity level
+verbPrint = VerbosityPrint(config["Header"].getint("verbosity",0))
+verbPrint("Verbosity: ", verbPrint.verbosity)
 
 
 def main():
@@ -21,22 +32,9 @@ def main():
         SystemError: Number of linestyles does not match number of plot variables
     """
 
-    #Setup the config file parser
-    config = configparser.ConfigParser()
-    config.read(sys.argv[1])
-
     #Extract basic file information
-    plotpath = config["Output"]["output_plot_path"]
-    datapath = config["Header"]["data_path"]
-    filename = config["Header"]["data_filename"]
-
-    #If the plot path doesnt exist, create it
-    if not os.path.exists(plotpath):
-        os.mkdir(plotpath)
-
-    #Instantiate printer function that accepts a verbosity level
-    verbPrint = VerbosityPrint(config["Header"].getint("verbosity",0))
-    verbPrint("Verbosity: ", verbPrint.verbosity)
+    datapath = config["Header"].get("data_path", fallback = "./data")
+    filename = config["Header"].get("data_filename", fallback = "Integrals.dat")
 
     # get the filename that contains the data
     data_filename_abs = os.path.join(datapath, filename)
@@ -75,11 +73,13 @@ def main():
         xlims = None
 
     #setup the style of the pyplot plot
-    setup_plots()
+    setup_pyplot(config)
     
     #generate all the plots and save to disk
-    make_plots(data_obj, plot_variables, xlims, linestyles)
+    make_plots(config, data_obj, plot_variables, xlims, linestyles)
     
 
 if __name__ == "__main__":
     main()
+elif __visit_script_file__ == __visit_source_file__:
+    raise RuntimeError("This file should not be run with VisIt, only Python!")

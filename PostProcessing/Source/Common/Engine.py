@@ -11,12 +11,11 @@
 
 
 def setup_engine(config):
-    """Launch the engine for generating the plots. Uses job scheduling on high performance computing clusters. Uses the local machine if 'useparallel' is false.
+	"""Launch the engine for generating the plots. Uses job scheduling on high performance computing clusters. Uses the local machine if 'useparallel' is false.
 
-    Args:
-        config (configparser.ConfigParser): instance of a ConfigParser class that holds the users parameters
-    """
-
+	Args:
+		config (configparser.ConfigParser): instance of a ConfigParser class that holds the users parameters
+	"""
 	useparallel = config["EngineConfig"].getboolean("use_parallel", 0)
 	
 	#if useparallel is disabled, default engine is launched
