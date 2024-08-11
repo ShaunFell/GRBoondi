@@ -6,7 +6,7 @@ from Source.Common.PlotSetup import *
 from Source.Common.Utils import require_visit
 
 @require_visit
-def generate_3dslice_plot(config, variableToPlot, plotbounds = [0,1], setplotbounds = False):
+def generate_3dvolume_plot(config, variableToPlot, plotbounds = [0,1], setplotbounds = False):
 	"""Generates a single volume plot for a given variable
 
 	Args:

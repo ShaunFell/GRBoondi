@@ -7,8 +7,8 @@ from Source.TwoD import *
 from Source.ThreeD import *
 
 @require_visit
-def make_slice_plots(config, variableToPlot, hdf5files, plot_type = '2d', setplotbounds = False, plotbounds = [0,1]) :
-	""" This function iterates over all hdf5 files and generates the plots. 
+def make_visit_plot(config, variableToPlot, hdf5files, plot_type = '2d', setplotbounds = False, plotbounds = [0,1]) :
+	""" This function iterates over all hdf5 files and generates the plots according to the plot_type
 
 	Args:
 		config (configparser.ConfigParser): instance of a ConfigParser class that holds the users parameters
@@ -31,7 +31,7 @@ def make_slice_plots(config, variableToPlot, hdf5files, plot_type = '2d', setplo
 	Open_Database(config)
 
 	# suppress all messages except warnings and errors
-	visit.SuppressMessages(2) # https://visit-sphinx-github-user-manual.readthedocs.io/en/develop/python_scripting/functions.html#suppressmessages		
+	visit.SuppressMessages(config["Header"].getint("verbosity",0)) # https://visit-sphinx-github-user-manual.readthedocs.io/en/develop/python_scripting/functions.html#suppressmessages		
 
 	# setup verbosity printing	
 	verbPrint = VerbosityPrint(config["Header"].getint("verbosity",0))
@@ -53,7 +53,7 @@ def make_slice_plots(config, variableToPlot, hdf5files, plot_type = '2d', setplo
 		if not timeslider_status:
 			raise RuntimeError("TimeSlider could not advance!")
 
-	# create the plot based on plot type
+	# create the plot object based on plot type
 	plot_func_selector(plot_type)(config, variableToPlot, plotbounds, setplotbounds) #includes error handling
 
 	
@@ -77,15 +77,7 @@ def make_slice_plots(config, variableToPlot, hdf5files, plot_type = '2d', setplo
 			raise RuntimeError("TimeSlider could not advance!")
 
 		#save the window to file
-		SaveWindowAtts = visit.SaveWindowAttributes()
-		SaveWindowAtts.outputToCurrentDirectory = 0
-		SaveWindowAtts.outputDirectory = config["Output"]["output_plot_path"]
-		SaveWindowAtts.fileName = str(variableToPlot) + ('%04d' % i)
-		SaveWindowAtts.family = 0 # needs to be enforced again
-		visit.SetSaveWindowAttributes(SaveWindowAtts)	
-		windowsave_status = visit.SaveWindow()
-		if not windowsave_status:
-			raise RuntimeError("Window could not be saved!")
+		Save_Current_Window(config, variableToPlot)
 
 	# clean up and close window
 	plotdelete_status = visit.DeleteAllPlots()

@@ -45,6 +45,35 @@ def require_python(fn):
     return wrapper
 
 
+def get_hdf5_file_list(config):
+    """Find all the hdf5 files and return them as list of absolute path strings
+
+    Args:
+        config (configparser.ConfigParser): instance of a ConfigParser class that holds the users parameters
+
+    Raises:
+        FileNotFoundError: Error raised if hdf5 path isn't found
+        FileNotFoundError: Error raised if no plot files were found
+
+    Returns:
+        list: list of plot file names
+    """
+    hdf5_path = config["Header"]["hdf5_path"]
+    filenames = config["header"]["plot_header"] + "*.hdf5"
+
+    if not os.path.exists(hdf5_path):
+        raise FileNotFoundError("HDF5 path not found: " + hdf5_path)
+
+    #get list of file using regex 
+   	hdf5files = glob.glob(os.path.join(hdf5_path, filenames))
+    hdf5files.sort() # sort the files by number
+
+    #check if files exist
+    if len(hdf5files) == 0:
+        raise FileNotFoundError("No HDF5 files found in " + config["Header"]["hdf5_path"])
+
+    return hdf5files
+
 def get_config(arg_list):
     """safely get config object from command line arguments
 
@@ -110,9 +139,9 @@ def plot_func_selector(type):
     if type == '2d':
         return Source.TwoD.generate_2dslice_plot
     elif type == '3d':
-        return Source.ThreeD.generate_3dslice_plot
+        return Source.ThreeD.generate_3dvolume_plot
     else:
-        raise ValueError("Invalid plot type")
+        raise ValueError("Invalid plot type. Must be either '2d' or '3d'")
 
 def PlotFiles(config):
     """	Find all the plot files and return them as list of absolute path strings
@@ -310,4 +339,3 @@ class VerbosityPrint:
     def __call__(self, *objects):
         if self.verbosity:
             print(*objects)
-

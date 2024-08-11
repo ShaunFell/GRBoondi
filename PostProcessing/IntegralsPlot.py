@@ -26,7 +26,9 @@ def main():
     Main function to plot the data
 
     Raises:
-        SystemError: Data file not found
+        IOError: Data path not found
+        IOError: Data file not found
+        RuntimeError: No plot variables specified
         SystemError: No plot variables specified
         SystemError: Number of x limits does not match number of plot variables
         SystemError: Number of linestyles does not match number of plot variables
@@ -40,6 +42,10 @@ def main():
     data_filename_abs = os.path.join(datapath, filename)
     verbPrint("Data file: {0}".format(data_filename_abs))
 
+    #check if data directory exists
+    if not os.path.exists(datapath):
+        raise IOError("Data path not found: {0}".format(datapath))
+
     # check if file exists, if not raise SystemError
     if not os.path.exists(data_filename_abs):
         raise IOError("Data file not found: {0}".format(data_filename_abs))
@@ -48,11 +54,10 @@ def main():
     data_obj = get_data_dataframe(data_filename_abs)
 
     #get the plot variables
-    plot_variables = config["VariableData"].get("plot_variables", "").split()    
-    
-    #check the plot variables are non-empty
-    if not plot_variables:
-        raise SystemError("No plot variables specified.")
+    plot_variables = config["VariableData"].get("plot_variables", "").split()
+    if len(plot_variables) == 0:
+        raise RuntimeError("No plot variables specified.")  
+ 
     
     verbPrint("Plotting variables: {0}".format(plot_variables))
 
