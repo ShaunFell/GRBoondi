@@ -143,9 +143,11 @@ def TwoDTest():
 
     # Execute the tests
     print("Executing 2-D plot test...")
-    subprocess_failure_status = subprocess.call(["visit", "-nowin", "-cli", "-s", "../../PostProcessing/VisitPlot.py", "2DPlotParams.ini"])
+    subprocess_cmd = ["visit", "-nowin", "-cli", "-s", "../../PostProcessing/VisitPlot.py", "2DPlotParams.ini"]
+    subprocess_failure_status = subprocess.call(subprocess_cmd)
     if subprocess_failure_status:
         print("subprocess status code: ", subprocess_failure_status)
+        print("subprocess command: {0}".format(subprocess_cmd))
         raise RuntimeError("2-D plot test failed to execute!")
 
     return not subprocess_failure_status
@@ -168,9 +170,11 @@ def ThreeDTest():
 
     # Execute the tests
     print("Executing 3-D plot test...")
-    subprocess_failure_status = subprocess.call(["visit", "-nowin", "-cli", "-s", "../../PostProcessing/VisitPlot.py", "3DPlotParams.ini"])
+    subprocess_cmd = ["visit", "-nowin", "-cli", "-s", "../../PostProcessing/VisitPlot.py", "3DPlotParams.ini"]
+    subprocess_failure_status = subprocess.call(subprocess_cmd)
     if subprocess_failure_status:
         print("subprocess status code: ", subprocess_failure_status)
+        print("subprocess command: {0}".format(subprocess_cmd))
         raise RuntimeError("3-D plot test failed to execute!")
 
     return not subprocess_failure_status
