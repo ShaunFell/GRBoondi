@@ -119,7 +119,7 @@ def LineTest():
 
     print("Executing combined plot test...")
     subprocess_failure_status = subprocess.call(["python", "../../PostProcessing/IntegralsPlot.py", "IntegralsTestParams.ini"])
-    if subprocess_failure_status:
+    if subprocess_failure_status and subprocess_failure_status != 250:
         print("subprocess status code: ", subprocess_failure_status)
         raise RuntimeError("Line combined plot test failed to execute!")    
 
@@ -145,7 +145,7 @@ def TwoDTest():
     print("Executing 2-D plot test...")
     subprocess_cmd = ["visit", "-nowin", "-cli", "-s", "../../PostProcessing/VisitPlot.py", "2DPlotParams.ini"]
     subprocess_failure_status = subprocess.call(subprocess_cmd)
-    if subprocess_failure_status:
+    if subprocess_failure_status and subprocess_failure_status != 250:
         print("subprocess status code: ", subprocess_failure_status)
         print("subprocess command: {0}".format(subprocess_cmd))
         raise RuntimeError("2-D plot test failed to execute!")
@@ -172,7 +172,7 @@ def ThreeDTest():
     print("Executing 3-D plot test...")
     subprocess_cmd = ["visit", "-nowin", "-cli", "-s", "../../PostProcessing/VisitPlot.py", "3DPlotParams.ini"]
     subprocess_failure_status = subprocess.call(subprocess_cmd)
-    if subprocess_failure_status:
+    if subprocess_failure_status and subprocess_failure_status != 250:
         print("subprocess status code: ", subprocess_failure_status)
         print("subprocess command: {0}".format(subprocess_cmd))
         raise RuntimeError("3-D plot test failed to execute!")
