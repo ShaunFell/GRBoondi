@@ -320,7 +320,7 @@ def make_movie(config, plotvariable):
         print ("Making a movie...")
         framerate = config["Output"].getint("movie_framerate", fallback = 5)
         verbosity = config["Output"].get("verbosity", fallback = "0")
-        absolute_input_files = os.path.join(config["Output"]["output_plot_path"], plotvariable+"%04d.mp4")
+        absolute_input_files = os.path.join(config["Output"]["output_plot_path"], plotvariable+"%04d.png")
         options = ' -vcodec libx264 -crf 25 -pix_fmt yuv420p '
         absolute_output_file = os.path.join(config["Output"]["output_movie_path"], plotvariable+".mp4")
 
