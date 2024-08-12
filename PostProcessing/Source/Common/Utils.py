@@ -182,10 +182,8 @@ def MultipleDatabase(config):
     """
 
     if len(PlotFiles(config))>1:
-        print("Opening multiple plot files")
         return True
     else:
-        print("Opening single plot file")
         return False
 
 @require_visit
