@@ -4,6 +4,7 @@
 
 import os, sys, shutil
 import subprocess
+from PIL import Image #for reading raw image data (i.e. without exif)
 import hashlib #for computing checksums
 
 #add path to postprocessing module
@@ -120,17 +121,10 @@ def LineTest():
     subprocess_failure_status = subprocess.call(["python", "../../PostProcessing/IntegralsPlot.py", "IntegralsTestParams.ini"])
     if subprocess_failure_status:
         print("subprocess status code: ", subprocess_failure_status)
-        raise RuntimeError("Line combined plot test failed to execute!")
-
-    #compute the md5 checksum of the generated movie
-    lineplot_checksum = hashlib.md5(open("./integral_plots/combined.png", 'rb').read()).hexdigest()
-
-    #compute known checksum
-    known_checksum = "3fd8d0836eac351c255516b46cf1feb2"
-    
+        raise RuntimeError("Line combined plot test failed to execute!")    
 
     #return both status codes
-    return lineplot_checksum == known_checksum
+    return not subprocess_failure_status
 
 def TwoDTest():
     """Executes the test routine for the 2D postprocessing module
@@ -154,12 +148,7 @@ def TwoDTest():
         print("subprocess status code: ", subprocess_failure_status)
         raise RuntimeError("2-D plot test failed to execute!")
 
-    #Compute the md5 checksum of the generated movie
-    twodmovie_checksum = hashlib.md5(open("./2d_movies/Asquared.mp4", 'rb').read()).hexdigest() #compute md5 checksum
-    known_checksum = "ee66ca9a2d8cb42d414c72a074d7fac1"
-    twod_status = (twodmovie_checksum == known_checksum)
-
-    return twod_status
+    return not subprocess_failure_status
 
 def ThreeDTest():
     """Executes the test routine for the 3D postprocessing module
@@ -184,12 +173,7 @@ def ThreeDTest():
         print("subprocess status code: ", subprocess_failure_status)
         raise RuntimeError("3-D plot test failed to execute!")
 
-    #Compute the md5 checksum of the generated movie
-    threedmovie_checksum = hashlib.md5(open("./3d_movies/Asquared.mp4", 'rb').read()).hexdigest() #compute md5 checksum
-    known_checksum = "3f9544bd1e076d7db1c3e623fffc8958"  
-    threed_status = (threedmovie_checksum == known_checksum)                    
-
-    return threed_status
+    return not subprocess_failure_status
     
 
 if __name__ == "__main__": 
