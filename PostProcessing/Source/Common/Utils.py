@@ -312,7 +312,7 @@ def save_pyplot_fig(config, varname):
     matplotlib.pyplot.savefig(os.path.join(path,  save_filename), format = save_format, dpi = save_dpi)
 
 
-def make_movie(config):
+def make_movie(config, plotvariable):
 
     make_movie = config["Output"].getint("make_movie", fallback = 0)
 
@@ -320,9 +320,9 @@ def make_movie(config):
         print ("Making a movie...")
         framerate = config["Output"].getint("movie_framerate", fallback = 5)
         verbosity = config["Output"].get("verbosity", fallback = "0")
-        absolute_input_files = os.path.join(config["Output"]["output_plot_path"], plotvar+"%04d.mp4")
+        absolute_input_files = os.path.join(config["Output"]["output_plot_path"], plotvariable+"%04d.mp4")
         options = ' -vcodec libx264 -crf 25 -pix_fmt yuv420p '
-        absolute_output_file = os.path.join(config["Output"]["output_movie_path"], plotvar+".mp4")
+        absolute_output_file = os.path.join(config["Output"]["output_movie_path"], plotvariable+".mp4")
 
         ffmpeg_cmd = 'ffmpeg -r ' + str(framerate) + ' -y -v ' + str(verbosity) + ' -s 1920x1080 -i ' + absolute_input_files + options + absolute_output_file
         ffmpeg_system_status = os.system(ffmpeg_cmd)
