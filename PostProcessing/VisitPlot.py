@@ -7,7 +7,7 @@
 import glob, os, sys, configparser
 import numpy as np
 from Source.Common.Utils import VerbosityPrint, MultipleDatabase, Close_Database, get_config
-from Source.Common.Utils import create_output_dirs, get_hdf5_file_list
+from Source.Common.Utils import create_output_dirs, get_hdf5_file_list, make_movie
 from Source.Common.Engine import *
 from Source.Common.Plotter import make_visit_plot
 
@@ -66,14 +66,7 @@ def main():
 		make_visit_plot(config, plotvar, hdf5files, plot_type = plottype, setplotbounds = setplotbounds, plotbounds = plotbounds)
 
 		#make a movie if asked
-		if MultipleDatabase(config) & config["Output"].getint("make_movie", fallback = 0):
-			print ("Making a movie...")
-			ffmpeg_cmd = 'ffmpeg -r ' + str(config["Output"].get("movie_framerate", fallback = "5")) + ' -v ' + str(config["Output"].get("verbosity", fallback = "0")) + ' -s 1920x1080 -i ' + config["Output"]["output_plot_path"] +"/"+ plotvar + '%04d.png -vcodec libx264 -crf 25 -pix_fmt yuv420p ' + config["Output"]["output_movie_path"] +"/"+ plotvar+ '.mp4'
-			ffmpeg_system_status = os.system(ffmpeg_cmd)
-			
-			#Check ffmpeg status to ensure command executed successfully
-			if not ffmpeg_system_status == 0:
-				raise 	OSError("ffmpeg failed. Could not make the movie. cmd: {0}".format(ffmpeg_cmd))
+		make_movie(config)
 
 		print("I've finished!")
 	
