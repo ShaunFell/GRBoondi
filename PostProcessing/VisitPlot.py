@@ -66,7 +66,7 @@ def main():
 		make_visit_plot(config, plotvar, hdf5files, plot_type = plottype, setplotbounds = setplotbounds, plotbounds = plotbounds)
 
 		#make a movie if asked
-		make_movie(config)
+		make_movie(config, plotvar)
 
 		print("I've finished!")
 	
