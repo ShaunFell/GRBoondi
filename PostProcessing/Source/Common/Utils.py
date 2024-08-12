@@ -251,7 +251,7 @@ def get_data_dataframe(filepath):
     header = header[1:].strip().split()
     
     #import the data to a pandas dataframe and return it. Includes error checking
-    return pandas.read_csv(filepath, delim_whitespace=True, names=header, engine="python", header=0, index_col=False)
+    return pandas.read_csv(filepath, sep='\s+', names=header, engine="python", header=0, index_col=False)
 
 @require_python
 def setup_pyplot(config):
