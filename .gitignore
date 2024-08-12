@@ -34,13 +34,13 @@ GRBoondi.code-workspace
 
 PostProcessing/movies/*
 PostProcessing/plots/*
-Tests/PostProcessing_test/2d_movies
-Tests/PostProcessing_test/3d_movies
-Tests/PostProcessing_test/2d_plots
-Tests/PostProcessing_test/3d_plots
-Tests/PostProcessing_test/integral_plots
-Tests/PostProcessing_test/movies
-Tests/PostProcessing_test/testdata
+Tests/PostProcessing_test/2d_movies/*
+Tests/PostProcessing_test/3d_movies/*
+Tests/PostProcessing_test/2d_plots/*
+Tests/PostProcessing_test/3d_plots/*
+Tests/PostProcessing_test/integral_plots/*
+Tests/PostProcessing_test/movies/*
+Tests/PostProcessing_test/testdata/*
 
 
 
