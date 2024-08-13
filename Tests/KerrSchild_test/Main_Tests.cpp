@@ -391,13 +391,13 @@ template <class background_t> int test2()
     {
         std::cout << "The minimum convergence factor was "
                   << min_convergence_factor << std::endl;
-        std::cout << "Fixed Background test ........ passed" << std::endl;
+        std::cout << "KerrSchild test ........ passed" << std::endl;
     }
     else
     {
         std::cout << "The minimum convergence factor was "
                   << min_convergence_factor << std::endl;
-        std::cout << "Fixed Background test ........ failed!!!" << std::endl;
+        std::cout << "KerrSchild test ........ failed!!!" << std::endl;
     }
 
     return failed;
