@@ -172,7 +172,7 @@ def Volume_Setup(config, variableToPlot):
 	VolumeAtts.opacityVarMax = config["PlotConfig"].getfloat('opacityVarMax', 0)
 
 	#Specify the type of rendering engine to use
-	rendertype = config["PlotConfig"].get("rendererType", fallback = "serial").title()
+	rendertype = config["PlotConfig"].get("rendererType", fallback = "default").title()
 	if rendertype == "Raycasting": rendertype = "RayCasting" 
 	if rendertype == "Raycastingintegration": rendertype = "RayCastingIntegration"
 	if rendertype == "Raycastingslivr": rendertype = "RayCastingSLIVR" 
