@@ -19,7 +19,6 @@ def make_visit_plot(config, variableToPlot, hdf5files, plot_type = '2d', setplot
 		plotbounds (list, optional): list of two values that specify the minimum and maximum value of the plot variable. Defaults to [0,1].
 
 	Raises:
-		IOError: Database could not be opened
 		RuntimeError: TimeSlider could not advance
 		RuntimeError: Window could not be saved
 		SystemError: Plot could not be cleared from memory
@@ -83,8 +82,3 @@ def make_visit_plot(config, variableToPlot, hdf5files, plot_type = '2d', setplot
 	plotdelete_status = visit.DeleteAllPlots()
 	if not plotdelete_status:
 		raise SystemError("Plot could not be deleted!")
-
-
-
-
-

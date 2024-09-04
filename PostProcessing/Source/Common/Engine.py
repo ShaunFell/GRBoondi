@@ -53,4 +53,3 @@ def setup_engine(config):
 		if not openengine_status:
 			print("Job submission failed. Exiting...")
 			sys.exit(1)
-

@@ -29,9 +29,8 @@ def main():
         IOError: Data path not found
         IOError: Data file not found
         RuntimeError: No plot variables specified
-        SystemError: No plot variables specified
-        SystemError: Number of x limits does not match number of plot variables
-        SystemError: Number of linestyles does not match number of plot variables
+        RuntimeError: Number of linestyles does not match number of plot variables.
+        RuntimeError: Number of xlims does not match number of plot variables.
     """
 
     #Extract basic file information
@@ -55,7 +54,7 @@ def main():
 
     #get the plot variables
     plot_variables = config["VariableData"].get("plot_variables", "").split()
-    if len(plot_variables) == 0:
+    if not plot_variables:
         raise RuntimeError("No plot variables specified.")  
  
     
@@ -66,7 +65,7 @@ def main():
     if linestyles == "":
         linestyles = None
 
-    if not len(linestyles) == len(plot_variables) and linestyles != None:
+    if len(linestyles) != len(plot_variables) and linestyles is not None:
         raise RuntimeError("Number of linestyles does not match number of plot variables.")
 
     # get the x limits
@@ -88,4 +87,3 @@ if __name__ == "__main__":
     main()
 elif __visit_script_file__ == __visit_source_file__:
     raise RuntimeError("This file should not be run with VisIt, only Python!")
-    

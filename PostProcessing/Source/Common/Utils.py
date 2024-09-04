@@ -213,6 +213,17 @@ def Open_Database(config):
 
 @require_visit
 def Close_Database(config):
+    """Close a VisIt database object
+
+    Args:
+		config (configparser.ConfigParser): instance of a ConfigParser class that holds the users parameters
+
+    Raises:
+        IOError: Could not close database!
+
+    Returns:
+        int: status code of closing database
+    """
     
     if MultipleDatabase(config):
         filename_prefix = os.path.join(config["Header"]["hdf5_path"], config["Header"]["plot_header"])
@@ -311,6 +322,15 @@ def save_pyplot_fig(config, varname):
 
 
 def make_movie(config, plotvariable):
+    """Generates movie using ffmpeg from a series of images
+
+    Args:
+		config (configparser.ConfigParser): instance of a ConfigParser class that holds the users parameters
+        plotvariable (str): name of the variable to be plotted
+
+    Raises:
+        OSError: ffmpeg failed. Could not make the movie. 
+    """
 
     make_movie = config["Output"].getint("make_movie", fallback = 0)
 

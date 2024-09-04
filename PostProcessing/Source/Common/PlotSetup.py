@@ -15,6 +15,9 @@ def Annotation_Setup(config):
 
 	Args:
 		config (configparser.ConfigParser): instance of a ConfigParser class that holds the users parameters
+
+	Raises:
+		RuntimeError: Could not set Annotation attributes. Aborting.
 	"""
 
 	#initialize verbosity printing
@@ -73,6 +76,9 @@ def Pseudocolor_Setup(config, variableToPlot, setplotbounds, plotbounds):
 		variableToPlot (str): name of the variable to be plotted
 		setplotbounds (bool): flag to specify whether bounds for the plotting variable should be specified
 		plotbounds (list): list of two values that specify the minimum and maximum value of the plot variable
+
+	Raises:
+		RuntimeError: Could not set Pseudocolor attributes. Aborting.
 	"""
 
 	#initialize verbosity printing
@@ -130,6 +136,9 @@ def Volume_Setup(config, variableToPlot):
 	Args:
 		config (configparser.ConfigParser): instance of a ConfigParser class that holds the users parameters
 		variableToPlot (str): name of the variable to be plotted
+
+	Raises:
+		RuntimeError: Could not set Volume attributes. Aborting.
 	"""
 
 	#initialize verbosity printing
@@ -205,6 +214,9 @@ def SliceAttribute_Setup(config):
 
 	Args:
 		config (configparser.ConfigParser): instance of a ConfigParser class that holds the users parameters
+
+	Raises:
+		RuntimeError: Could not set slice attributes. Aborting.
 	"""
 
 	#initialize verbosity printing
@@ -264,6 +276,9 @@ def Mesh_Setup(config):
 
 	Args:
 		config (configparser.ConfigParser): instance of a ConfigParser class that holds the users parameters
+
+	Raises:
+		RuntimeError: Could not set mesh attributes. Aborting.
 	"""
 
 	#initialize verbosity printing
@@ -292,6 +307,9 @@ def View_2D_Setup(config):
 
 	Args:
 		config (configparser.ConfigParser): instance of a ConfigParser class that holds the users parameters
+
+	Raises:
+		RuntimeError: Failed to set 2D view.
 	"""
 
 	#initialize verbosity printing
@@ -338,7 +356,7 @@ def View_2D_Setup(config):
 	#set the above view attributes
 	status = visit.SetView2D(View2DAtts)	
 
-	if not status:	
+	if not status:
 		raise RuntimeError("Failed to set 2D view")
 
 	return status
@@ -349,6 +367,9 @@ def View_3D_Setup(config):
 
 	Args:
 		config (configparser.ConfigParser): instance of a ConfigParser class that holds the users parameters
+
+	Raises:
+		RuntimeError: Failed to set 3D view.
 	"""
 
 	#initialize verbosity printing
@@ -382,7 +403,7 @@ def View_3D_Setup(config):
 	#set the above view attributes
 	status = visit.SetView3D(View3DAtts)
 	
-	if not status:	
+	if not status:
 		raise RuntimeError("Failed to set 3D view")
 
 	return status
@@ -451,4 +472,3 @@ def Save_Current_Window(config, variableToPlot):
 	status = visit.SaveWindow()
 
 	return status
-	

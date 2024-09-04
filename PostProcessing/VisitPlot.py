@@ -31,7 +31,7 @@ def main():
 	"""main function to run VisIt plot routines
 
 	Raises:
-		OSError: ffmpeg failed. Could not make the movie.
+		RuntimeError: No plot variables specified!
 	"""
 
 	# get list of all hdf5 plot files
@@ -40,8 +40,8 @@ def main():
 
 	# get list of plot variables
 	plot_variables = config["VariableData"].get("plot_variables", "").split()
-	if len(plot_variables) == 0:
-		raise SystemError("No plot variables specified!")
+	if not plot_variables:
+		raise RuntimeError("No plot variables specified!")
 	
 	verbPrint("Number of plot variables: ", len(plot_variables))
 	verbPrint("Variables to be plotted: ", config["VariableData"].get("plot_variables", ""))

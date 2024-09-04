@@ -82,4 +82,3 @@ def make_plots(config, data_obj, plot_variables, plotbounds = None,  linestyles 
         plt.legend()
         plt.ylabel("") #remove ylabel for combined plot
         save_pyplot_fig(config, "combined")
-        
