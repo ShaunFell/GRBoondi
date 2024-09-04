@@ -691,13 +691,13 @@ int test2(bool debug_plots_on = false)
     {
         std::cout << "The minimum convergence factor was "
                   << min_convergence_factor << std::endl;
-        std::cout << "Fixed Background test ........ passed" << std::endl;
+        std::cout << "Kerr-de Sitter test ........ passed" << std::endl;
     }
     else
     {
         std::cout << "The minimum convergence factor was "
                   << min_convergence_factor << std::endl;
-        std::cout << "Fixed Background test ........ failed!!!" << std::endl;
+        std::cout << "Kerr-de Sitter test ........ failed!!!" << std::endl;
     }
 
     return failed;
