@@ -451,3 +451,4 @@ def Save_Current_Window(config, variableToPlot):
 	status = visit.SaveWindow()
 
 	return status
+	

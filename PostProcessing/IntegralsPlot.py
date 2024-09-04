@@ -88,3 +88,4 @@ if __name__ == "__main__":
     main()
 elif __visit_script_file__ == __visit_source_file__:
     raise RuntimeError("This file should not be run with VisIt, only Python!")
+    
