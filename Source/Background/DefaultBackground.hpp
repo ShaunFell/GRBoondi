@@ -22,9 +22,9 @@ class DefaultBackground
     };
 
   public:
-    DefaultBackground(){};
+    DefaultBackground() {};
 
-    DefaultBackground(params_t a_params, double dx){};
+    DefaultBackground(params_t a_params, double dx) {};
 
     template <class data_t> using MetricVars = ADMFixedBGVars::Vars<data_t>;
 

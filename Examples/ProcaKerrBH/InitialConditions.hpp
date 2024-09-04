@@ -45,7 +45,7 @@ class Initial_Proca_Conditions
                              ProcaField::params_t a_matter_params,
                              KerrParams a_Kerr_params, KerrSchild a_background)
         : m_dx{a_dx}, m_params{a_params}, m_matter_params{a_matter_params},
-          m_Kerr_params{a_Kerr_params}, m_background(a_background){};
+          m_Kerr_params{a_Kerr_params}, m_background(a_background) {};
 
     template <class data_t> void compute(Cell<data_t> current_cell) const
     {

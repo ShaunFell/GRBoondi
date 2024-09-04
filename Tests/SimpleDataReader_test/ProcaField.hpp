@@ -41,7 +41,7 @@ class ProcaField : public BaseProcaField<KerrSchild, ProcaField>
 
     ProcaField(KerrSchild a_background, params_t a_params)
         : BaseProcaField<KerrSchild, ProcaField>(a_background),
-          m_background(a_background), m_params(a_params){};
+          m_background(a_background), m_params(a_params) {};
 
     template <class data_t>
     void compute_emtensor_modification(

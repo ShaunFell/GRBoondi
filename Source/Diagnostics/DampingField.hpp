@@ -30,7 +30,7 @@ class DampingFieldDiagnostic
                                                    // variables
 
   public:
-    DampingFieldDiagnostic(){}; // explicit default constructor
+    DampingFieldDiagnostic() {}; // explicit default constructor
 
     template <class data_t> void compute(Cell<data_t> current_cell) const
     {
