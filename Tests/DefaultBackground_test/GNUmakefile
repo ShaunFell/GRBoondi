@@ -18,6 +18,8 @@ src_dirs := $(GRCHOMBO_SOURCE)/utils \
             $(GRCHOMBO_SOURCE)/BoxUtils  \
             $(GRCHOMBO_SOURCE)/AMRInterpolator  \
             $(GRCHOMBO_SOURCE)/CCZ4  \
+            $(GRDZHADZHA_SOURCE)/Background \ 
+            $(GRDZHADZHA_SOURCE)/Matter \
             $(GRBoondi_SOURCE)/Background  \
             $(GRBoondi_SOURCE)/Matter \
 			$(GRBoondi_SOURCE)/Diagnostics \
