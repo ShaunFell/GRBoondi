@@ -18,10 +18,10 @@ class ProcaField : public BaseProcaField<KerrdeSitter, ProcaField>
 
   protected:
     template <class data_t>
-    using MatterVars = typename ADMProcaVars::MatterVars<data_t>;
+    using MatterVars = typename ADMProcaVars::Vars<data_t>;
 
     template <class data_t>
-    using MatterVarsD2 = typename ADMProcaVars::Diff2MatterVars<data_t>;
+    using MatterVarsD2 = typename ADMProcaVars::Diff2Vars<data_t>;
 
     template <class data_t>
     using MetricVars = typename ADMFixedBGVars::template Vars<data_t>;

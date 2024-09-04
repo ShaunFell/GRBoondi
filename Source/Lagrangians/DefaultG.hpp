@@ -27,7 +27,7 @@ class DefaultG
   protected:
     params_t m_params;
 
-    template <class data_t> using MatterVars = ADMProcaVars::MatterVars<data_t>;
+    template <class data_t> using MatterVars = ADMProcaVars::Vars<data_t>;
 
     template <class data_t>
     using MetricVars = typename ADMFixedBGVars::template Vars<data_t>;

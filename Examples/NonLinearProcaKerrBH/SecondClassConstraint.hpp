@@ -18,7 +18,7 @@ template <class background_t> class SecondClassConstraint
 
     // typename the matter variables
     template <class data_t>
-    using MatterVars = typename ADMProcaVars::MatterVars<data_t>;
+    using MatterVars = typename ADMProcaVars::Vars<data_t>;
 
     // typename the metric variables
     template <class data_t>

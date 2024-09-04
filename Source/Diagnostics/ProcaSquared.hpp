@@ -25,7 +25,7 @@ template <class background_t> class ProcaSquared
     // Use the variable definition in ADMVars
     template <class data_t> using MetricVars = ADMFixedBGVars::Vars<data_t>;
 
-    template <class data_t> using MatterVars = ADMProcaVars::MatterVars<data_t>;
+    template <class data_t> using MatterVars = ADMProcaVars::Vars<data_t>;
 
   public:
     ProcaSquared(double a_dx, const std::array<double, CH_SPACEDIM> a_center,

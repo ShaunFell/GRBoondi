@@ -46,7 +46,7 @@ template <class G2 = DefaultG> class L2
     G2 m_g2_function;
     params_t m_params;
 
-    template <class data_t> using MatterVars = ADMProcaVars::MatterVars<data_t>;
+    template <class data_t> using Vars = ADMProcaVars::Vars<data_t>;
 
     template <class data_t>
     using MetricVars = typename ADMFixedBGVars::template Vars<data_t>;

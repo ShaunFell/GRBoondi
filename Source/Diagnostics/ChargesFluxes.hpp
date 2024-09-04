@@ -30,10 +30,10 @@ template <class matter_t, class background_t> class ChargesFluxes
     // Use the variable definition in ADMFixedBGVars
     template <class data_t> using MetricVars = ADMFixedBGVars::Vars<data_t>;
 
-    template <class data_t> using MatterVars = ADMProcaVars::MatterVars<data_t>;
+    template <class data_t> using MatterVars = ADMProcaVars::Vars<data_t>;
 
     template <class data_t>
-    using MatterDiff2Vars = ADMProcaVars::Diff2MatterVars<data_t>;
+    using MatterDiff2Vars = ADMProcaVars::Diff2Vars<data_t>;
 
     const matter_t m_matter;
     const double m_dx;

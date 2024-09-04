@@ -21,7 +21,7 @@
 template <class matter_t, class background_t> class ExcisionTest
 {
     // Use matter_t class
-    using Vars = typename matter_t::template MatterVars<double>;
+    using Vars = typename matter_t::template Vars<double>;
 
   protected:
     const double m_dx;                              //!< The grid spacing

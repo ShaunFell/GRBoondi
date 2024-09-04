@@ -28,7 +28,7 @@ class Initial_EM_Conditions
     const double m_dx;
 
     template <class data_t>
-    using MatterVars = typename ADMProcaVars::MatterVars<data_t>;
+    using MatterVars = typename ADMProcaVars::Vars<data_t>;
 
   public:
     Initial_EM_Conditions(const double a_dx, params_t a_params,

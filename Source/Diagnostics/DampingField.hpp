@@ -26,7 +26,7 @@ class DampingFieldDiagnostic
   protected:
     template <class data_t>
     using MatterVars =
-        typename ADMProcaVars::MatterVars<data_t>; // type alias the matter
+        typename ADMProcaVars::Vars<data_t>; // type alias the matter
                                                    // variables
 
   public:

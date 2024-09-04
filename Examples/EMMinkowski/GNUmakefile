@@ -19,7 +19,7 @@ src_dirs := $(GRCHOMBO_SOURCE)/utils \
             $(GRCHOMBO_SOURCE)/TaggingCriteria  \
             $(GRCHOMBO_SOURCE)/GRChomboCore  \
             $(GRCHOMBO_SOURCE)/AMRInterpolator  \
-            $(GRDZHADZHA_SOURCE)/Background \ 
+            $(GRDZHADZHA_SOURCE)/Background \
             $(GRDZHADZHA_SOURCE)/Matter \
             $(GRBoondi_SOURCE)/Background  \
             $(GRBoondi_SOURCE)/Matter \

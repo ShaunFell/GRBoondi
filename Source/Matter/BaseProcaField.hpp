@@ -43,10 +43,10 @@ template <class background_t, class modification_t> class BaseProcaField
 
     template <class data_t> using MetricVars = ADMFixedBGVars::Vars<data_t>;
 
-    template <class data_t> using MatterVars = ADMProcaVars::MatterVars<data_t>;
+    template <class data_t> using MatterVars = ADMProcaVars::Vars<data_t>;
 
     template <class data_t>
-    using Diff2MatterVars = ADMProcaVars::Diff2MatterVars<data_t>;
+    using Diff2MatterVars = ADMProcaVars::Diff2Vars<data_t>;
 
     template <class data_t, template <typename> class vars_t,
               template <typename> class diff2_vars_t>
