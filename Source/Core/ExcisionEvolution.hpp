@@ -57,7 +57,7 @@ template <class matter_t, class background_t> class ExcisionEvolution
             current_cell.store_vars(vars);
         } // else do nothing
 
-        // Excise Z field right at horizon since it can derive errors 
+        // Excise Z field right at horizon since it can derive errors
         bool is_excised_Z = m_background.check_if_excised(coords, 1.0);
         if (is_excised_Z)
         {

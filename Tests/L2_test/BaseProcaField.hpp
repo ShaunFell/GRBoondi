@@ -27,8 +27,7 @@ template <class background_t, class modification_t> class BaseProcaField
 
     template <class data_t> using Vars = ADMProcaVars::Vars<data_t>;
 
-    template <class data_t>
-    using Diff2Vars = ADMProcaVars::Diff2Vars<data_t>;
+    template <class data_t> using Diff2Vars = ADMProcaVars::Diff2Vars<data_t>;
 
     /* NOTE:
     We use the method of 'Curiously Recurring Template Pattern' to allow

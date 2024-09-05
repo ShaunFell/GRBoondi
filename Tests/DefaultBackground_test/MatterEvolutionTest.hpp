@@ -32,8 +32,7 @@ template <class matter_t, class background_t> class MatterEvolution
     template <class data_t> using Vars = ADMProcaVars::Vars<data_t>;
 
     //  Need d2 of certain matter vars
-    template <class data_t>
-    using Diff2Vars = ADMProcaVars::Diff2Vars<data_t>;
+    template <class data_t> using Diff2Vars = ADMProcaVars::Diff2Vars<data_t>;
 
     // This is used for the non evolved ADM vars
     template <class data_t> using MetricVars = ADMFixedBGVars::Vars<data_t>;
@@ -61,8 +60,8 @@ template <class matter_t, class background_t> class MatterEvolution
         // compute derivs for matter grid vars
         const auto d1 = m_deriv.template diff1<Vars>(current_cell);
         const auto d2 = m_deriv.template diff2<Diff2Vars>(current_cell);
-        const auto advec = m_deriv.template advection<Vars>(
-            current_cell, metric_vars.shift);
+        const auto advec =
+            m_deriv.template advection<Vars>(current_cell, metric_vars.shift);
 
         // the RHS
         Vars<data_t> matter_rhs;

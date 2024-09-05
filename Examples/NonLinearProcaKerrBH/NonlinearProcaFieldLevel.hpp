@@ -13,8 +13,8 @@
 #include "CustomTaggingCriterion.hpp"
 #include "SecondClassConstraint.hpp"
 
-// Inherits from BaseProcaFieldLevel with background = KerrSchildNew and matter =
-// ProcaField
+// Inherits from BaseProcaFieldLevel with background = KerrSchildNew and matter
+// = ProcaField
 class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchildNew, ProcaField>
 {
   public:
@@ -158,8 +158,8 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchildNew, ProcaField>
         ProcaField proca_field(kerr_schild, m_p.matter_params);
 
         // Initialize the constraint class, to be computed on the grid
-        SecondClassConstraint<KerrSchildNew> constraint(m_dx, m_p.center,
-                                                     kerr_schild, proca_field);
+        SecondClassConstraint<KerrSchildNew> constraint(
+            m_dx, m_p.center, kerr_schild, proca_field);
 
         // Loop over the box cells and compute the constraint on the grid
         BoxLoops::loop(constraint, m_state_diagnostics, m_state_diagnostics,

@@ -66,8 +66,7 @@ class MatterCCZ4RHS : public CCZ4RHS<gauge_t, deriv_t>
     };
 
     template <class data_t>
-    struct Diff2Vars : public CCZ4Diff2Vars<data_t>,
-                       public Diff2Vars<data_t>
+    struct Diff2Vars : public CCZ4Diff2Vars<data_t>, public Diff2Vars<data_t>
     {
         /// Defines the mapping between members of Vars and Chombo grid
         /// variables (enum in User_Variables)

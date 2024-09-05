@@ -47,8 +47,7 @@ template <class background_t, class modification_t> class BaseProcaFieldTest
 
     template <class data_t> using Vars = ADMProcaVars::Vars<data_t>;
 
-    template <class data_t>
-    using Diff2Vars = ADMProcaVars::Diff2Vars<data_t>;
+    template <class data_t> using Diff2Vars = ADMProcaVars::Diff2Vars<data_t>;
 
     // we set G=0, so this doenst really matter, need it just for using
     // MatterCCZ4

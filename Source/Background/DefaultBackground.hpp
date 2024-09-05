@@ -25,10 +25,11 @@ class DefaultBackground
     const double m_dx;
 
   public:
-    DefaultBackground(params_t a_params, double dx): m_params{a_params}, m_dx{dx} {};
+    DefaultBackground(params_t a_params, double dx)
+        : m_params{a_params}, m_dx{dx} {};
 
     template <class data_t> using MetricVars = ADMFixedBGVars::Vars<data_t>;
-    
+
     template <class data_t>
     void compute_metric_background(MetricVars<data_t> &vars,
                                    const Coordinates<data_t> &coords) const

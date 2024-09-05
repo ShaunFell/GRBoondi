@@ -18,16 +18,16 @@ Please refer to LICENSE in GRBoondi's root directory
 
 #include "KerrSchild.hpp"
 
+class KerrSchildNew : public KerrSchild
+{
 
-class KerrSchildNew : public KerrSchild {
-  
   public:
+    using KerrSchild::KerrSchild; // inherit constructor
 
-    using KerrSchild::KerrSchild; //inherit constructor
-
-    //overload the excision method to take in a 'buffer' parameter,
-    // specifying the fractional distance from the horizon to excise
-    bool check_if_excised(const Coordinates<double>& coords, const double buffer) const
+    // overload the excision method to take in a 'buffer' parameter,
+    //  specifying the fractional distance from the horizon to excise
+    bool check_if_excised(const Coordinates<double> &coords,
+                          const double buffer) const
     {
         // black hole params - mass M and spin a
         const double M = m_params.mass;
@@ -53,13 +53,12 @@ class KerrSchildNew : public KerrSchild {
 
         bool is_excised = false;
         // value less than 1 indicates we are within the horizon
-        if (outer_horizon < buffer || inner_horizon < 1/buffer)
+        if (outer_horizon < buffer || inner_horizon < 1 / buffer)
         {
             is_excised = true;
         }
         return is_excised;
     }
-
 };
 
-#endif //KERRSCHILDNEW_HPP_ 
+#endif // KERRSCHILDNEW_HPP_

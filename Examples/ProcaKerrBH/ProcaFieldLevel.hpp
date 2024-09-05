@@ -13,8 +13,8 @@ Example of defining a level class that sets initial conditions
 #include "ProcaField.hpp"
 #include "UserVariables.hpp"
 
-// Inherits from BaseProcaFieldLevel with background = KerrSchildNew and matter =
-// BaseProcaField
+// Inherits from BaseProcaFieldLevel with background = KerrSchildNew and matter
+// = BaseProcaField
 class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchildNew, ProcaField>
 {
   public:
@@ -38,7 +38,7 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchildNew, ProcaField>
 
         // Excise within horizon
         ExcisionEvolution<ProcaField, KerrSchildNew> excisor(m_dx, m_p.center,
-                                                          0.95, kerr_schild);
+                                                             0.95, kerr_schild);
 
         // Loop over box cells and excise cells within horizon
         BoxLoops::loop(excisor, m_state_new, m_state_new, SKIP_GHOST_CELLS,

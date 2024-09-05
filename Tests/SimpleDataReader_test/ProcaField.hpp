@@ -17,8 +17,7 @@ class ProcaField : public BaseProcaField<KerrSchildNew, ProcaField>
 {
 
   protected:
-    template <class data_t>
-    using Vars = typename ADMProcaVars::Vars<data_t>;
+    template <class data_t> using Vars = typename ADMProcaVars::Vars<data_t>;
 
     template <class data_t>
     using VarsD2 = typename ADMProcaVars::Diff2Vars<data_t>;
@@ -55,7 +54,7 @@ class ProcaField : public BaseProcaField<KerrSchildNew, ProcaField>
 
     template <class data_t, template <typename> class rhs_vars_t>
     void matter_rhs_modification(
-        rhs_vars_t<data_t> &total_rhs,         // RHS terms for all vars
+        rhs_vars_t<data_t> &total_rhs,   // RHS terms for all vars
         const Vars<data_t> &matter_vars, // the value fo the variables
         const MetricVars<data_t> &metric_vars,
         const Vars<Tensor<1, data_t>> &d1,   // value of 1st derivs

@@ -78,8 +78,8 @@ template <class matter_t, class background_t> class MatterEvolution
         // compute derivs for matter grid vars
         const auto d1 = m_deriv.template diff1<Vars>(current_cell);
         const auto d2 = m_deriv.template diff2<MatterDiff2Vars>(current_cell);
-        const auto advec = m_deriv.template advection<Vars>(
-            current_cell, metric_vars.shift);
+        const auto advec =
+            m_deriv.template advection<Vars>(current_cell, metric_vars.shift);
 
         // the RHS
         Vars<data_t> matter_rhs;
