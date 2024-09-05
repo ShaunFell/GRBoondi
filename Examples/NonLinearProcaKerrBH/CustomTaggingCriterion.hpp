@@ -24,7 +24,7 @@ class CustomTaggingCriterion
                            bool activate_gnn_tagging)
         : m_dx(dx), m_L(a_L), m_init_ratio(a_ratio), m_center(a_center),
           m_level(a_level), m_activate_gnn_tagging(activate_gnn_tagging),
-          m_threshold(a_threshold) {};
+          m_threshold(a_threshold){};
 
     template <class data_t>
     data_t FixedGridTagging(Cell<data_t> current_cell) const

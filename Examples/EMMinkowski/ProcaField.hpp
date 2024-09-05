@@ -32,7 +32,7 @@ class ProcaField : public BaseProcaField<DefaultBackground, ProcaField>
 
     ProcaField(DefaultBackground a_background, params_t a_params)
         : BaseProcaField<DefaultBackground, ProcaField>(a_background),
-          m_background(a_background) {};
+          m_background(a_background){};
 
     template <class data_t>
     void compute_emtensor_modification(
