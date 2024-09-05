@@ -15,23 +15,17 @@ implementation file for ProcaField.hpp
 #ifndef BASEPROCAFIELD_IMPL_H_INCLUDED
 #define BASEPROCAFIELD_IMPL_H_INCLUDED
 
+//interface method for GRDzhadzha
 template <class background_t, class modification_t>
-template <class data_t, template <typename> class vars_t,
-          template <typename> class diff2_vars_t>
-emtensor_t<data_t>
-BaseProcaField<background_t, modification_t>::compute_emtensor(
-    const vars_t<data_t> &matter_vars, // the value fo the variables
+template <class data_t, template <typename> class vars_t>
+emtensor_t<data_t> BaseProcaField<background_t, modification_t>::compute_emtensor(
+    const vars_t<data_t> &matter_vars,
     const MetricVars<data_t> &metric_vars,
-    const vars_t<Tensor<1, data_t>> &d1,       // value of 1st derivs
-    const diff2_vars_t<Tensor<2, data_t>> &d2, // 2nd derivs
-    const vars_t<data_t> &advec // value of the beta^i d_i(var) terms
-) const
-{
+    const vars_t<Tensor<1,data_t>> &d1,
+    const Tensor<2,data_t> &gamma_UU,
+    const Tensor<3,data_t> &chris_ULL
+) const {
     emtensor_t<data_t> out;
-
-    auto gamma_UU{TensorAlgebra::compute_inverse_sym(metric_vars.gamma)};
-    auto chris_ULL{
-        TensorAlgebra::compute_christoffel(metric_vars.d1_gamma, gamma_UU).ULL};
 
     // D_i A_j  3-covariant derivative of spatial covector
     Tensor<2, data_t> DA;
@@ -97,12 +91,34 @@ BaseProcaField<background_t, modification_t>::compute_emtensor(
     out.S = 0.0;
     FOR2(i, j) { out.S += out.Sij[i][j] * gamma_UU[i][j]; };
 
-    // add modifications ala CRTP
-    static_cast<const modification_t *>(this)->compute_emtensor_modification(
-        out, matter_vars, metric_vars, d1, d2, advec);
-
     return out;
 };
+
+template <class background_t, class modification_t>
+template <class data_t, template <typename> class vars_t,
+          template <typename> class diff2_vars_t>
+emtensor_t<data_t>
+BaseProcaField<background_t, modification_t>::compute_emtensor(
+    const vars_t<data_t> &matter_vars, // the value fo the variables
+    const MetricVars<data_t> &metric_vars,
+    const vars_t<Tensor<1, data_t>> &d1,       // value of 1st derivs
+    const diff2_vars_t<Tensor<2, data_t>> &d2, // contravariant spatial metric
+    const vars_t<data_t> &advec // value of the beta^i d_i(var) terms
+) const {
+
+    auto gamma_UU{TensorAlgebra::compute_inverse_sym(metric_vars.gamma)};
+    auto chris_ULL{
+        TensorAlgebra::compute_christoffel(metric_vars.d1_gamma, gamma_UU).ULL};
+
+    emtensor_t<data_t> EM_Tensor { compute_emtensor(matter_vars, metric_vars, d1, gamma_UU, chris_ULL) };
+
+    // add modifications ala CRTP
+    static_cast<const modification_t *>(this)->compute_emtensor_modification(
+        EM_Tensor, matter_vars, metric_vars, d1, d2, advec);
+
+    return EM_Tensor; //return full EM tensor   
+}
+
 
 template <class background_t, class modification_t>
 template <class data_t, template <typename> class vars_t,

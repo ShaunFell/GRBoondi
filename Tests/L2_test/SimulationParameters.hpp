@@ -1,7 +1,7 @@
 #ifndef SIMULATIONPARAMETERS_HPP_
 #define SIMULATIONPARAMETERS_HPP_
 
-#include "KerrSchild.hpp"
+#include "KerrSchildNew.hpp"
 #include "L2_simp.hpp"
 #include "ProcaField.hpp"
 #include "ProcaSimulationParameters.hpp"
@@ -57,7 +57,7 @@ class SimulationParameters : public ProcaSimulationParameters
     }
 
     // parameters of kerr bh
-    KerrSchild::params_t background_params;
+    KerrSchildNew::params_t background_params;
 
     // initial conditions parameters
     //        Initial_Proca_Conditions::params_t initial_conditions_params;

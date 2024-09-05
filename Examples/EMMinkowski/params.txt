@@ -7,11 +7,11 @@
 verbosity = 1
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRBoondi/testing/TEST_EMFIELD_MAXMINS"
+output_path = "/mnt/DataDrive/Data_Store/GRBoondi/EMMinkowski"
 
 #filename prefixes for checkpoint files and plot files
-chk_prefix = "GeneralizedProca_"
-plot_prefix = "GeneralizedProcap_"
+chk_prefix = "EMMinkowski_"
+plot_prefix = "EMMinkowskip_"
 
 #file to restart the simulation from
 #restart_file = GeneralizedProca_000003.3d.hdf5
@@ -20,7 +20,7 @@ plot_prefix = "GeneralizedProcap_"
 checkpoint_interval = 100
 # set to 0 to turn off plot files (except at t=0 and t=stop_time)
 # set to -1 to never ever print plotfiles
-plot_interval = 20
+plot_interval = 1
 
 #plot variable names must match those in the DiagnosticVariables::DiagnosticVariables namespace
 num_plot_vars = 4
@@ -53,10 +53,10 @@ activate_tagging_diagnostic = 0
 ##################################################
 
 #max level is the number of additional refinement levels. So max_level=4 --> 5 total levels
-max_level = 4
+max_level = 3
 
 #Since we use fixed grid tagging, we dont ever need to regrid
-regrid_interval = 0 0 0 0
+regrid_interval = 0 0 0
 
 ################################################## Initial Data parameters
 ##################################################
@@ -76,7 +76,7 @@ z_damping = 1.0
 ##################################################
 
 N_full = 32
-L_full = 64
+L_full = 32
 
 # Max and min box sizes
 max_box_size = 32
@@ -169,9 +169,9 @@ diagnostic_excision_vars = rho rhoE rhoJ rhoLinMom sourceLinMom
 ################################################## Extraction
 ##################################################
 
-activate_extraction = 1 # extraction of surface quantities
+activate_extraction = 0 # extraction of surface quantities
 activate_integration = 1 # integration of densities
-activate_minmax = 1 # extraction of minimum and maximum values
+activate_minmax = 0 # extraction of minimum and maximum values
 
 num_extraction_radii = 2
 extraction_radii = 1.6 30

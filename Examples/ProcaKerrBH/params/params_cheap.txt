@@ -6,7 +6,7 @@
 verbosity = 1
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/test_NewExcision"
+output_path = "/mnt/DataDrive/Data_Store/GRBoondi/ProcaKerrBH"
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -20,7 +20,7 @@ run_initial_posttimestep = 1
 checkpoint_interval = 100
 # set to 0 to turn off plot files (except at t=0 and t=stop_time)
 # set to -1 to never ever print plotfiles
-plot_interval = 20
+plot_interval = 1
 
 #plot variable names must match those in the DiagnosticVariables::DiagnosticVariables namespace
 num_plot_vars = 7
@@ -84,12 +84,14 @@ bh_evolution = 0
 ################################################## Grid parameters
 ##################################################
 
-N_full = 128
+N_full = 32
 L_full = 32
 
 # Max and min box sizes
 max_box_size = 32
 min_box_size = 32
+
+block_factor = 8
 
 #for fixed grid tagging
 tag_buffer_size = 0
@@ -175,7 +177,7 @@ diagnostic_excision_vars = rho rhoE rhoJ rhoLinMom sourceLinMom
 ################################################## Extraction
 ##################################################
 
-activate_extraction = 1 # extraction of fluxes
+activate_extraction = 0 # extraction of fluxes
 activate_integration = 1 # integration of densities
 
 num_extraction_radii = 2

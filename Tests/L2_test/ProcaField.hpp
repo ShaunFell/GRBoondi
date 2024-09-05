@@ -8,12 +8,12 @@ This class adds the simplest L2 lagrangian to the base equations of motion
 #include "ADMProcaVars.hpp"
 #include "BaseProcaField.hpp"
 #include "DefaultG.hpp"
-#include "KerrSchild.hpp"
+#include "KerrSchildNew.hpp"
 #include "L2_simp.hpp"
 
 // Note: base class BaseProcaField uses CRTP, so pass ProcaField itself as
 // template argument
-class ProcaField : public BaseProcaField<KerrSchild, ProcaField>
+class ProcaField : public BaseProcaField<KerrSchildNew, ProcaField>
 {
 
   public:
@@ -21,7 +21,7 @@ class ProcaField : public BaseProcaField<KerrSchild, ProcaField>
     using Vars = typename ADMProcaVars::Vars<data_t>;
 
     template <class data_t>
-    using VarsD2 = typename ADMProcaVars::Diff2Vars<data_t>;
+    using Diff2Vars = typename ADMProcaVars::Diff2Vars<data_t>;
 
     template <class data_t>
     using MetricVars = typename ADMFixedBGVars::template Vars<data_t>;
@@ -36,13 +36,13 @@ class ProcaField : public BaseProcaField<KerrSchild, ProcaField>
         double vector_damping;
     };
 
-    KerrSchild m_background;
+    KerrSchildNew m_background;
     params_t m_params;
     L2_t m_L2;
     DefaultG m_G2;
 
-    ProcaField(KerrSchild a_background, params_t a_params)
-        : BaseProcaField<KerrSchild, ProcaField>(a_background),
+    ProcaField(KerrSchildNew a_background, params_t a_params)
+        : BaseProcaField<KerrSchildNew, ProcaField>(a_background),
           m_background(a_background), m_params(a_params)
     {
         // set up the L2 lagrangian
@@ -63,7 +63,7 @@ class ProcaField : public BaseProcaField<KerrSchild, ProcaField>
             &base_emtensor, // pass by reference to allow modifications
         const Vars<data_t> &vars, const MetricVars<data_t> &metric_vars,
         const Vars<Tensor<1, data_t>> &d1,
-        const VarsD2<Tensor<2, data_t>> &d2, // 2nd derivs
+        const Diff2Vars<Tensor<2, data_t>> &d2, // 2nd derivs
         const Vars<data_t> &advec // value of the beta^i d_i(var) terms
     ) const
     {
@@ -78,7 +78,7 @@ class ProcaField : public BaseProcaField<KerrSchild, ProcaField>
         const Vars<data_t> &matter_vars, // the value fo the variables
         const MetricVars<data_t> &metric_vars,
         const Vars<Tensor<1, data_t>> &d1,   // value of 1st derivs
-        const VarsD2<Tensor<2, data_t>> &d2, // 2nd derivs
+        const Diff2Vars<Tensor<2, data_t>> &d2, // 2nd derivs
         const Vars<data_t> &advec // value of the beta^i d_i(var) terms
     ) const
     {
@@ -125,6 +125,7 @@ class ProcaField : public BaseProcaField<KerrSchild, ProcaField>
         // Add damping term to scalar field evolution
         total_rhs.phi += -metric_vars.lapse * matter_vars.Z * m_params.mass *
                          m_params.mass / (2 * gnn);
+
     }
 };
 

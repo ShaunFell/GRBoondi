@@ -9,7 +9,7 @@ This example sets the initial data to be a uniform magnetic field
 #include "ADMProcaVars.hpp"
 #include "BaseProcaField.hpp"
 #include "Cell.hpp"
-#include "KerrSchild.hpp" //background class
+#include "KerrSchildNew.hpp" //background class
 #include "L2_simp.hpp"
 #include "ProcaField.hpp" //for proca parameters
 #include "Tensor.hpp"
@@ -31,19 +31,19 @@ class Initial_Proca_Conditions
     template <class data_t>
     using MetricVars = typename ADMFixedBGVars::Vars<data_t>;
 
-    using KerrParams = KerrSchild::params_t;
+    using KerrParams = KerrSchildNew::params_t;
 
     const params_t m_params;                    // initial amplitude
     const ProcaField::params_t m_matter_params; // Proca mass and coupling
     const KerrParams m_Kerr_params;             // black hole parameters
 
-    KerrSchild m_background;
+    KerrSchildNew m_background;
     double m_dx;
 
   public:
     Initial_Proca_Conditions(double a_dx, params_t a_params,
                              ProcaField::params_t a_matter_params,
-                             KerrParams a_Kerr_params, KerrSchild a_background)
+                             KerrParams a_Kerr_params, KerrSchildNew a_background)
         : m_dx{a_dx}, m_params{a_params}, m_matter_params{a_matter_params},
           m_Kerr_params{a_Kerr_params}, m_background(a_background){};
 

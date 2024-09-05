@@ -5,7 +5,7 @@
 #include "BoxLoops.hpp"
 #include "ExcisionEvolution.hpp"
 #include "InitialConditions.hpp"
-#include "KerrSchild.hpp"
+#include "KerrSchildNew.hpp"
 #include "ProcaField.hpp"
 #include "UserVariables.hpp"
 
@@ -13,9 +13,9 @@
 #include "CustomTaggingCriterion.hpp"
 #include "SecondClassConstraint.hpp"
 
-// Inherits from BaseProcaFieldLevel with background = KerrSchild and matter =
+// Inherits from BaseProcaFieldLevel with background = KerrSchildNew and matter =
 // ProcaField
-class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
+class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchildNew, ProcaField>
 {
   public:
     // inherit constructor from base class (note: BaseProcaFieldLevel itself
@@ -26,7 +26,7 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
     virtual void initialData() override
     {
 
-        KerrSchild kerr_schild(m_p.background_params, m_dx);
+        KerrSchildNew kerr_schild(m_p.background_params, m_dx);
 
         // Initialize the initial conditions class
         Initial_Proca_Conditions initial_conditions(
@@ -38,7 +38,7 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
                        INCLUDE_GHOST_CELLS);
 
         // Excise within horizon
-        ExcisionEvolution<ProcaField, KerrSchild> excisor(
+        ExcisionEvolution<ProcaField, KerrSchildNew> excisor(
             m_dx, m_p.center, m_p.evolution_excision_width, kerr_schild);
 
         // Loop over box cells and excise cells within horizon
@@ -114,7 +114,7 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
 
             // Check for naked singularities!
             // Note: This error check is already present in the constructor for
-            // the KerrSchild class.
+            // the KerrSchildNew class.
             //           We check it here and use a different error message
             //           related to the black hole evolution code above
             if ((m_p.background_params.spin > m_p.background_params.mass) ||
@@ -152,13 +152,13 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
     virtual void additionalPrePlotLevel() override
     {
         // Initialize the background class
-        KerrSchild kerr_schild(m_p.background_params, m_dx);
+        KerrSchildNew kerr_schild(m_p.background_params, m_dx);
 
         // Initialize the Proca field class
         ProcaField proca_field(kerr_schild, m_p.matter_params);
 
         // Initialize the constraint class, to be computed on the grid
-        SecondClassConstraint<KerrSchild> constraint(m_dx, m_p.center,
+        SecondClassConstraint<KerrSchildNew> constraint(m_dx, m_p.center,
                                                      kerr_schild, proca_field);
 
         // Loop over the box cells and compute the constraint on the grid
@@ -179,13 +179,13 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
             // We dont need any derivatives, so no need to populate ghost cells
 
             // Initialize the background class
-            KerrSchild kerr_schild(m_p.background_params, m_dx);
+            KerrSchildNew kerr_schild(m_p.background_params, m_dx);
 
             // Initialize the Proca field class
             ProcaField proca_field(kerr_schild, m_p.matter_params);
 
             // Initialize the constraint class, to be computed on the grid
-            SecondClassConstraint<KerrSchild> constraint(
+            SecondClassConstraint<KerrSchildNew> constraint(
                 m_dx, m_p.center, kerr_schild, proca_field);
 
             // Loop over the box cells and compute the constraint on the grid
@@ -195,7 +195,7 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
             const std::vector<int> vars_to_excise =
                 DiagnosticVariables::convert_pairs_to_enum(
                     m_p.diagnostic_excision_vars);
-            ExcisionDiagnostics<ProcaField, KerrSchild> excisor(
+            ExcisionDiagnostics<ProcaField, KerrSchildNew> excisor(
                 kerr_schild, m_dx, m_p.center, m_p.diagnostic_inner_boundary,
                 m_p.diagnostic_outer_boundary, vars_to_excise);
 

@@ -9,13 +9,13 @@ Example of defining a level class that sets initial conditions
 #include "BoxLoops.hpp"
 #include "ExcisionEvolution.hpp"
 #include "InitialConditions.hpp"
-#include "KerrSchild.hpp"
+#include "KerrSchildNew.hpp"
 #include "ProcaField.hpp"
 #include "UserVariables.hpp"
 
-// Inherits from BaseProcaFieldLevel with background = KerrSchild and matter =
+// Inherits from BaseProcaFieldLevel with background = KerrSchildNew and matter =
 // BaseProcaField
-class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
+class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchildNew, ProcaField>
 {
   public:
     // inherit constructor from base class
@@ -25,7 +25,7 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
     virtual void initialData() override
     {
 
-        KerrSchild kerr_schild(m_p.background_params, m_dx);
+        KerrSchildNew kerr_schild(m_p.background_params, m_dx);
 
         // Initialize the initial conditions class
         Initial_Proca_Conditions initial_conditions(
@@ -37,7 +37,7 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
                        INCLUDE_GHOST_CELLS);
 
         // Excise within horizon
-        ExcisionEvolution<ProcaField, KerrSchild> excisor(m_dx, m_p.center,
+        ExcisionEvolution<ProcaField, KerrSchildNew> excisor(m_dx, m_p.center,
                                                           0.95, kerr_schild);
 
         // Loop over box cells and excise cells within horizon
@@ -113,7 +113,7 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
 
             // Check for naked singularities!
             // Note: This error check is already present in the constructor for
-            // the KerrSchild class.
+            // the KerrSchildNew class.
             //           We check it here and use a different error message
             //           related to the black hole evolution code above
             if ((m_p.background_params.spin > m_p.background_params.mass) ||

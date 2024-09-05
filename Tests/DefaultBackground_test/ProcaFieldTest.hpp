@@ -17,12 +17,12 @@ class ProcaFieldTest
     : public BaseProcaFieldTest<DefaultBackground, ProcaFieldTest>
 {
 
-  protected:
+  public:
     template <class data_t>
     using Vars = typename ADMProcaVars::Vars<data_t>;
 
     template <class data_t>
-    using VarsD2 = typename ADMProcaVars::Diff2Vars<data_t>;
+    using Diff2Vars = typename ADMProcaVars::Diff2Vars<data_t>;
 
     template <class data_t>
     using MetricVars = typename ADMFixedBGVars::template Vars<data_t>;
@@ -64,7 +64,7 @@ class ProcaFieldTest
             &base_emtensor, // pass by reference to allow modifications
         const Vars<data_t> &vars, const MetricVars<data_t> &metric_vars,
         const Vars<Tensor<1, data_t>> &d1,
-        const VarsD2<Tensor<2, data_t>> &d2, // 2nd derivs
+        const Diff2Vars<Tensor<2, data_t>> &d2, // 2nd derivs
         const Vars<data_t> &advec // value of the beta^i d_i(var) terms
     ) const
     {
@@ -79,7 +79,7 @@ class ProcaFieldTest
         const Vars<data_t> &matter_vars, // the value fo the variables
         const MetricVars<data_t> &metric_vars,
         const Vars<Tensor<1, data_t>> &d1,   // value of 1st derivs
-        const VarsD2<Tensor<2, data_t>> &d2, // 2nd derivs
+        const Diff2Vars<Tensor<2, data_t>> &d2, // 2nd derivs
         const Vars<data_t> &advec // value of the beta^i d_i(var) terms
     ) const
     {

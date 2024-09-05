@@ -21,21 +21,14 @@ class DefaultBackground
         std::array<double, CH_SPACEDIM> center; //!< The center of the BH
     };
 
-  public:
-    DefaultBackground(){};
+    const params_t m_params;
+    const double m_dx;
 
-    DefaultBackground(params_t a_params, double dx){};
+  public:
+    DefaultBackground(params_t a_params, double dx): m_params{a_params}, m_dx{dx} {};
 
     template <class data_t> using MetricVars = ADMFixedBGVars::Vars<data_t>;
-
-    template <class data_t> void compute(Cell<data_t> current_cell) const
-    {
-        // Set spacetime background to Minkowski in Cartesian coordinates
-        MetricVars<data_t> vars;
-        compute_metric_background(vars);
-        current_cell.store_vars(vars);
-    }
-
+    
     template <class data_t>
     void compute_metric_background(MetricVars<data_t> &vars,
                                    const Coordinates<data_t> &coords) const

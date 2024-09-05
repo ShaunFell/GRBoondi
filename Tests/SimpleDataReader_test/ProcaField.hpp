@@ -8,12 +8,12 @@ This class adds the simplest L2 lagrangian to the base equations of motion
 #include "ADMProcaVars.hpp"
 #include "BaseProcaField.hpp"
 #include "DefaultG.hpp"
-#include "KerrSchild.hpp"
+#include "KerrSchildNew.hpp"
 #include "L2_simp.hpp"
 
 // Note: base class BaseProcaField uses CRTP, so pass ProcaField itself as
 // template argument
-class ProcaField : public BaseProcaField<KerrSchild, ProcaField>
+class ProcaField : public BaseProcaField<KerrSchildNew, ProcaField>
 {
 
   protected:
@@ -36,11 +36,11 @@ class ProcaField : public BaseProcaField<KerrSchild, ProcaField>
         double vector_damping;
     };
 
-    KerrSchild m_background;
+    KerrSchildNew m_background;
     params_t m_params;
 
-    ProcaField(KerrSchild a_background, params_t a_params)
-        : BaseProcaField<KerrSchild, ProcaField>(a_background),
+    ProcaField(KerrSchildNew a_background, params_t a_params)
+        : BaseProcaField<KerrSchildNew, ProcaField>(a_background),
           m_background(a_background), m_params(a_params){};
 
     template <class data_t>

@@ -6,7 +6,7 @@
 
 // background includes
 #include "ADMFixedBGVars.hpp"
-#include "KerrSchild.hpp"
+#include "KerrSchildNew.hpp"
 #include "MatterEvolution.hpp"
 #include "UserVariables.hpp" //This files needs NUM_VARS - total number of components
 
@@ -88,8 +88,8 @@ int test1()
     FArrayBox my_rhs_FAB(box, NUM_VARS);
 
     // set everything to zero
-    /*     BoxLoops::loop(SetValue(0.0), fixedbg_FAB, fixedbg_FAB);
-        BoxLoops::loop(SetValue(0.0), deriv_fixedbg_FAB, deriv_fixedbg_FAB); */
+    BoxLoops::loop(SetValue(0.0), ref_FAB, ref_FAB);
+    BoxLoops::loop(SetValue(0.0), my_FAB, my_FAB);
     BoxLoops::loop(SetValue(0.0), ref_rhs_FAB, ref_rhs_FAB);
     BoxLoops::loop(SetValue(0.0), my_rhs_FAB, my_rhs_FAB);
 
@@ -104,10 +104,10 @@ int test1()
               << " Center: " << center << std::endl;
 
     // create the background
-    //  Use a KerrSchild background since many of the metric derivatives are
+    //  Use a KerrSchildNew background since many of the metric derivatives are
     //  non-zero, testing all terms in the EOM's
-    KerrSchild::params_t kerr_params{1.0, center_vector, 0.5};
-    KerrSchild kerr_init(kerr_params, dx);
+    KerrSchildNew::params_t kerr_params{1.0, center_vector, 0.5};
+    KerrSchildNew kerr_init(kerr_params, dx);
 
     // setup the reference class
     Potential::params_t potparams{1.0, 0.0};
@@ -125,12 +125,12 @@ int test1()
     // Now compute the RHS
 
     // GRBoondi evolution
-    MatterEvolution<ProcaField, KerrSchild> my_matter(
+    MatterEvolution<ProcaField, KerrSchildNew> my_matter(
         my_proca_field, kerr_init, 0.0, dx,
         center_vector); // set Kreiss-Oliger to zero
 
     // reference evolution
-    MatterEvolution<FixedBGProcaField<Potential>, KerrSchild> ref_matter(
+    MatterEvolution<FixedBGProcaField<Potential>, KerrSchildNew> ref_matter(
         test_proca_field, kerr_init, 0.0, dx,
         center_vector); // set Kreiss-Oliger to zero
 

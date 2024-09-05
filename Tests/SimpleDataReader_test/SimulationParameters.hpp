@@ -1,7 +1,7 @@
 #ifndef SIMULATIONPARAMETERS_HPP_
 #define SIMULATIONPARAMETERS_HPP_
 
-#include "KerrSchild.hpp"
+#include "KerrSchildNew.hpp"
 #include "L2_simp.hpp"
 #include "ProcaField.hpp"
 #include "ProcaSimulationParameters.hpp"

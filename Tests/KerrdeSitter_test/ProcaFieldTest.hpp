@@ -16,7 +16,7 @@ This class adds the simplest L2 lagrangian to the base equations of motion
 class ProcaFieldTest : public BaseProcaFieldTest<KerrdeSitter, ProcaFieldTest>
 {
 
-  protected:
+  public:
     template <class data_t>
     using Vars = typename ADMProcaVars::Vars<data_t>;
 
