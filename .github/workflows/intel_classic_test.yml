@@ -25,6 +25,7 @@ jobs:
     env:
       CHOMBO_HOME: ${{ github.workspace }}/Chombo/lib
       GRCHOMBO_SOURCE: ${{ github.workspace }}/GRChombo/Source
+      GRDZHADZHA_SOURCE: ${{ github.workspace }}/GRDzhadzha/Source
       OMP_NUM_THREADS: 1
       BUILD_ARGS: MPI=${{ matrix.mpi}} OPT=${{ matrix.opt }} DEBUG=${{ matrix.debug }}
 
@@ -43,6 +44,13 @@ jobs:
           repository: GRTLCollaboration/GRChombo
           token: ${{ secrets.CI_SECRET || github.token }}
           path: GRChombo
+      
+      - name: Checkout GRDzhadzha from GRTLCollaboration
+        uses: actions/checkout@master
+        with:
+          repository: GRTLCollaboration/GRDzhadzha
+          token: ${{ secrets.CI_SECRET || github.token }}
+          path: GRDzhadzha
 
       - name: Checkout GRBoondi
         uses: actions/checkout@master
