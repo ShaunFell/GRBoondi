@@ -1,0 +1,8 @@
+#!/bin/bash -i
+
+python main.py
+visit -nowin -cli -s main.py
+
+if [ $? -eq 127 ]; then
+        echo "visit command not found. Set the 'visit' variable in your bash profile"
+fi
