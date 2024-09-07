@@ -74,7 +74,6 @@ def main():
 	os.remove("./visitlog.py")
 	Close_Database(config) #includes error handling
 
-	print("All Done!")
 	sys.exit(0)
 
 if __visit_script_file__ == __visit_source_file__:
