@@ -69,7 +69,7 @@ def get_hdf5_file_list(config):
     hdf5files.sort() # sort the files by number
 
     #check if files exist
-    if len(hdf5files) == 0:
+    if not hdf5files:
         raise FileNotFoundError("No HDF5 files found in " + config["Header"]["hdf5_path"])
 
     return hdf5files
@@ -163,10 +163,11 @@ def PlotFiles(config):
     files = glob.glob(filename_prefix+ "*.3d.hdf5")
 
     #filter the file list to ensure regex-captured files are actual plot files
-    plot_files = [x for x in files if config["Header"]["plot_header"] in x]
+    filter_func = lambda x: config["Header"]["plot_header"] in x
+    plot_files = list(filter(filter_func, files))
 
     #ensure plot files exist in provided directory
-    if len(plot_files) == 0:
+    if not plot_files:
         raise FileNotFoundError("No Plot Files Found!")
 
     return plot_files
@@ -346,7 +347,7 @@ def make_movie(config, plotvariable):
         ffmpeg_system_status = os.system(ffmpeg_cmd)
         
         #Check ffmpeg status to ensure command executed successfully
-        if not ffmpeg_system_status == 0:
+        if ffmpeg_system_status != 0: #if return code is not 0, then ffmpeg failed
             raise 	OSError("ffmpeg failed. Could not make the movie. cmd: {0}".format(ffmpeg_cmd))
 
 
