@@ -8,9 +8,10 @@ verbosity = 1
 # location / naming of output files
 output_path = "/mnt/DataDrive/Data_Store/GRBoondi/ProcaKerrBH"
 
+
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
-plot_prefix = "GeneralizedProcap_"
+plot_prefix = "test_dataset"
 
 #file to restart the simulation from
 #restart_file = GeneralizedProca_002200.3d.hdf5
@@ -23,9 +24,8 @@ checkpoint_interval = 100
 plot_interval = 1
 
 #plot variable names must match those in the DiagnosticVariables::DiagnosticVariables namespace
-num_plot_vars = 7
-plot_vars = Z Asquared rho rhoE gnn EMtrace EMsquared
-
+num_plot_vars = 1
+plot_vars = Asquared
 # subpaths - specific directories for hdf5, pout, extraction data
 # (these are created at runtime)
 hdf5_subpath = "hdf5"
@@ -88,8 +88,8 @@ N_full = 32
 L_full = 32
 
 # Max and min box sizes
-max_box_size = 32
-min_box_size = 32
+max_box_size = 16
+min_box_size = 16
 
 block_factor = 8
 
@@ -171,7 +171,7 @@ evolution_excision_width = 0.855
 diagnostic_inner_boundary = 1.6
 diagnostic_outer_boundary = 46
 
-num_diagnostic_excision_vars = 5
+num_diagnostic_excision_vars = 0
 diagnostic_excision_vars = rho rhoE rhoJ rhoLinMom sourceLinMom
 
 ################################################## Extraction
@@ -189,8 +189,8 @@ num_points_theta = 37
 extraction_vars = Edot Jdot
 num_extraction_vars = 2
 
-integration_vars = rhoE rhoJ EMsquared
-num_integration_vars = 3
+integration_vars = rhoE rho
+num_integration_vars = 2
 
 write_extraction = 0
 extraction_subpath = "extraction"
