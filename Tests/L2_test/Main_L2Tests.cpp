@@ -6,7 +6,7 @@
 
 // background includes
 #include "ADMFixedBGVars.hpp"
-#include "KerrSchildNew.hpp"
+#include "KerrSchild.hpp"
 #include "MatterEvolution.hpp"
 #include "UserVariables.hpp" //This files needs NUM_VARS - total number of components
 
@@ -104,10 +104,10 @@ int test1()
               << " Center: " << center << std::endl;
 
     // create the background
-    //  Use a KerrSchildNew background since many of the metric derivatives are
+    //  Use a KerrSchild background since many of the metric derivatives are
     //  non-zero, testing all terms in the EOM's
-    KerrSchildNew::params_t kerr_params{1.0, center_vector, 0.5};
-    KerrSchildNew kerr_init(kerr_params, dx);
+    KerrSchild::params_t kerr_params{1.0, center_vector, 0.5};
+    KerrSchild kerr_init(kerr_params, dx);
 
     // setup the reference class
     Potential::params_t potparams{1.0, 0.0};
@@ -125,12 +125,12 @@ int test1()
     // Now compute the RHS
 
     // GRBoondi evolution
-    MatterEvolution<ProcaField, KerrSchildNew> my_matter(
+    MatterEvolution<ProcaField, KerrSchild> my_matter(
         my_proca_field, kerr_init, 0.0, dx,
         center_vector); // set Kreiss-Oliger to zero
 
     // reference evolution
-    MatterEvolution<FixedBGProcaField<Potential>, KerrSchildNew> ref_matter(
+    MatterEvolution<FixedBGProcaField<Potential>, KerrSchild> ref_matter(
         test_proca_field, kerr_init, 0.0, dx,
         center_vector); // set Kreiss-Oliger to zero
 
