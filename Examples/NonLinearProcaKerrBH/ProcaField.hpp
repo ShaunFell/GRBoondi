@@ -16,12 +16,11 @@ This class adds the simplest L2 lagrangian to the base equations of motion
 class ProcaField : public BaseProcaField<KerrSchild, ProcaField>
 {
 
-  protected:
-    template <class data_t>
-    using MatterVars = typename ADMProcaVars::MatterVars<data_t>;
+  public:
+    template <class data_t> using Vars = typename ADMProcaVars::Vars<data_t>;
 
     template <class data_t>
-    using MatterVarsD2 = typename ADMProcaVars::Diff2MatterVars<data_t>;
+    using Diff2Vars = typename ADMProcaVars::Diff2Vars<data_t>;
 
     template <class data_t>
     using MetricVars = typename ADMFixedBGVars::template Vars<data_t>;
@@ -63,10 +62,10 @@ class ProcaField : public BaseProcaField<KerrSchild, ProcaField>
     void compute_emtensor_modification(
         emtensor_t<data_t>
             &base_emtensor, // pass by reference to allow modifications
-        const MatterVars<data_t> &vars, const MetricVars<data_t> &metric_vars,
-        const MatterVars<Tensor<1, data_t>> &d1,
-        const MatterVarsD2<Tensor<2, data_t>> &d2, // 2nd derivs
-        const MatterVars<data_t> &advec // value of the beta^i d_i(var) terms
+        const Vars<data_t> &vars, const MetricVars<data_t> &metric_vars,
+        const Vars<Tensor<1, data_t>> &d1,
+        const Diff2Vars<Tensor<2, data_t>> &d2, // 2nd derivs
+        const Vars<data_t> &advec // value of the beta^i d_i(var) terms
     ) const
     {
         m_L2.compute_emtensor_modification(base_emtensor, vars, metric_vars, d1,
@@ -75,12 +74,12 @@ class ProcaField : public BaseProcaField<KerrSchild, ProcaField>
 
     template <class data_t, template <typename> class rhs_vars_t>
     void matter_rhs_modification(
-        rhs_vars_t<data_t> &total_rhs,         // RHS terms for all vars
-        const MatterVars<data_t> &matter_vars, // the value fo the variables
+        rhs_vars_t<data_t> &total_rhs,   // RHS terms for all vars
+        const Vars<data_t> &matter_vars, // the value fo the variables
         const MetricVars<data_t> &metric_vars,
-        const MatterVars<Tensor<1, data_t>> &d1,   // value of 1st derivs
-        const MatterVarsD2<Tensor<2, data_t>> &d2, // 2nd derivs
-        const MatterVars<data_t> &advec // value of the beta^i d_i(var) terms
+        const Vars<Tensor<1, data_t>> &d1,      // value of 1st derivs
+        const Diff2Vars<Tensor<2, data_t>> &d2, // 2nd derivs
+        const Vars<data_t> &advec // value of the beta^i d_i(var) terms
     ) const
     {
         // add modifications coming from L2 lagrangian

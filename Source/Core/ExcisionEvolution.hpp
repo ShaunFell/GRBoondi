@@ -21,7 +21,7 @@
 template <class matter_t, class background_t> class ExcisionEvolution
 {
     // Use matter_t class
-    using Vars = typename ADMProcaVars::MatterVars<double>;
+    using Vars = typename ADMProcaVars::Vars<double>;
 
   protected:
     const double m_dx;                              //!< The grid spacing

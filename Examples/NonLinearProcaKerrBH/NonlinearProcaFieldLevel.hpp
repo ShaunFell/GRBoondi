@@ -13,8 +13,8 @@
 #include "CustomTaggingCriterion.hpp"
 #include "SecondClassConstraint.hpp"
 
-// Inherits from BaseProcaFieldLevel with background = KerrSchild and matter =
-// ProcaField
+// Inherits from BaseProcaFieldLevel with background = KerrSchild and matter
+// = ProcaField
 class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
 {
   public:

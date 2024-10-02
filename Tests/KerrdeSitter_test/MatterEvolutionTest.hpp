@@ -30,11 +30,11 @@ template <class matter_t, class background_t> class MatterEvolution
 {
   public:
     //! Inherit the variable definitions from the Matter vars
-    template <class data_t> using MatterVars = ADMProcaVars::MatterVars<data_t>;
+    template <class data_t> using Vars = ADMProcaVars::Vars<data_t>;
 
     //  Need d2 of certain matter vars
     template <class data_t>
-    using MatterDiff2Vars = ADMProcaVars::Diff2MatterVars<data_t>;
+    using MatterDiff2Vars = ADMProcaVars::Diff2Vars<data_t>;
 
     // This is used for the non evolved ADM vars
     template <class data_t> using MetricVars = ADMFixedBGVars::Vars<data_t>;
@@ -68,7 +68,7 @@ template <class matter_t, class background_t> class MatterEvolution
     template <class data_t> void compute(Cell<data_t> current_cell) const
     {
         // copy matter data from chombo gridpoint into local variable
-        const auto matter_vars = current_cell.template load_vars<MatterVars>();
+        const auto matter_vars = current_cell.template load_vars<Vars>();
 
         // compute the background metric vars
         MetricVars<data_t> metric_vars;
@@ -76,13 +76,13 @@ template <class matter_t, class background_t> class MatterEvolution
         m_background.compute_metric_background(metric_vars, coords);
 
         // compute derivs for matter grid vars
-        const auto d1 = m_deriv.template diff1<MatterVars>(current_cell);
+        const auto d1 = m_deriv.template diff1<Vars>(current_cell);
         const auto d2 = m_deriv.template diff2<MatterDiff2Vars>(current_cell);
-        const auto advec = m_deriv.template advection<MatterVars>(
-            current_cell, metric_vars.shift);
+        const auto advec =
+            m_deriv.template advection<Vars>(current_cell, metric_vars.shift);
 
         // the RHS
-        MatterVars<data_t> matter_rhs;
+        Vars<data_t> matter_rhs;
         VarsTools::assign(matter_rhs, 0.); // All components set to zero
 
         // add evolution of matter fields and dissipation

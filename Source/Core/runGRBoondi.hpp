@@ -20,7 +20,7 @@ Please refer to LICENSE in GRBoondi's root directory
 
 // defaults
 #include "BaseProcaField.hpp"
-#include "DefaultBackground.hpp"
+#include "Minkowski.hpp"
 
 // Problem specific includes. These must be defined in the problems root
 // directory. E.g. EMKerrBH defines these

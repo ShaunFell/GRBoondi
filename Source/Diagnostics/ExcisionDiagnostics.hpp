@@ -32,7 +32,7 @@ template <class matter_t, class background_t> class ExcisionDiagnostics
     double m_inner_boundary;
     double m_outer_boundary;
 
-    using Vars = typename ADMProcaVars::MatterVars<double>;
+    using Vars = typename ADMProcaVars::Vars<double>;
 
   public:
     // constructor

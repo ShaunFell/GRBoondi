@@ -18,6 +18,7 @@ RealCleanExampleDirs := $(ExampleDirs:%=realclean-%)
 # Note that you need to set:
 # CHOMBO_HOME := Please set the CHOMBO_HOME locally (e.g. export CHOMBO_HOME=... in bash)
 # GRCHOMBO_SOURCE := Also set locally (e.g. export GRCHOMBO_SOURCE=path/to/GRChombo/Source in bash)     
+# GRDZHADZHA_SOURCE := Set locally 
 export GRBoondi_SOURCE = $(shell pwd)/Source
 
 ECHO?=@ # set this to null on the command line to increase verbosity
@@ -62,6 +63,7 @@ $(RealCleanExampleDirs):
 vars:
 	@echo GRBoondi_SOURCE = $(GRBoondi_SOURCE)
 	@echo GRCHOMBO_SOURCE = $(GRCHOMBO_SOURCE)
+	@echo GRDZHADZHA_SOURCE = $(GRDZHADZHA_SOURCE)
 	@echo CHOMBO_HOME = $(CHOMBO_HOME)
 	@echo "TestDirs=" $(TestDirs)
 	@echo "RunTestDirs=" $(RunTestDirs)

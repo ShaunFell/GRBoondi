@@ -7,18 +7,18 @@ This class adds the simplest L2 lagrangian to the base equations of motion
 #include "ADMFixedBGVars.hpp"
 #include "ADMProcaVars.hpp"
 #include "BaseProcaField.hpp"
-#include "DefaultBackground.hpp"
+#include "Minkowski.hpp"
 
 // Note: base class BaseProcaField uses CRTP, so pass ProcaField itself as
 // template argument
-class ProcaField : public BaseProcaField<DefaultBackground, ProcaField>
+class ProcaField : public BaseProcaField<Minkowski, ProcaField>
 {
   protected:
     template <class data_t>
-    using MatterVars = typename ADMProcaVars::MatterVars<data_t>;
+    using MatterVars = typename ADMProcaVars::Vars<data_t>;
 
     template <class data_t>
-    using MatterVarsD2 = typename ADMProcaVars::Diff2MatterVars<data_t>;
+    using MatterVarsD2 = typename ADMProcaVars::Diff2Vars<data_t>;
 
     template <class data_t>
     using MetricVars = typename ADMFixedBGVars::template Vars<data_t>;
@@ -28,10 +28,10 @@ class ProcaField : public BaseProcaField<DefaultBackground, ProcaField>
     {
     };
 
-    DefaultBackground m_background;
+    Minkowski m_background;
 
-    ProcaField(DefaultBackground a_background, params_t a_params)
-        : BaseProcaField<DefaultBackground, ProcaField>(a_background),
+    ProcaField(Minkowski a_background, params_t a_params)
+        : BaseProcaField<Minkowski, ProcaField>(a_background),
           m_background(a_background){};
 
     template <class data_t>

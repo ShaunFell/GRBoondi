@@ -26,7 +26,7 @@ class Initial_Proca_Conditions
 
   protected:
     template <class data_t>
-    using MatterVars = typename ADMProcaVars::MatterVars<data_t>;
+    using MatterVars = typename ADMProcaVars::Vars<data_t>;
 
     template <class data_t>
     using MetricVars = typename ADMFixedBGVars::Vars<data_t>;

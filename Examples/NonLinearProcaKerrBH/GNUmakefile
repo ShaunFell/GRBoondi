@@ -18,12 +18,14 @@ src_dirs := $(GRCHOMBO_SOURCE)/utils \
             $(GRCHOMBO_SOURCE)/BoxUtils  \
             $(GRCHOMBO_SOURCE)/TaggingCriteria  \
             $(GRCHOMBO_SOURCE)/GRChomboCore  \
-            $(GRCHOMBO_SOURCE)/AMRInterpolator  \
+            $(GRCHOMBO_SOURCE)/AMRInterpolator   \
             $(GRBoondi_SOURCE)/Background  \
-            $(GRBoondi_SOURCE)/Matter \
+            $(GRBoondi_SOURCE)/ProcaFields \
 			$(GRBoondi_SOURCE)/Diagnostics \
 			$(GRBoondi_SOURCE)/Core \
             $(GRBoondi_SOURCE)/Lagrangians \
-            $(GRBoondi_SOURCE)/utils
+            $(GRBoondi_SOURCE)/utils \
+            $(GRDZHADZHA_SOURCE)/Background \
+            $(GRDZHADZHA_SOURCE)/Matter
 
 include $(CHOMBO_HOME)/mk/Make.test

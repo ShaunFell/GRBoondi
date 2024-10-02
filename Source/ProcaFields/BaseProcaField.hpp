@@ -21,8 +21,8 @@ classes. e.g. see ProcaKerrBH Example
 
 #include "ADMFixedBGVars.hpp"         //For metric variables
 #include "ADMProcaVars.hpp"           //For matter variables
-#include "DefaultBackground.hpp"      //Minkowski background as default
 #include "FourthOrderDerivatives.hpp" //For calculating derivatives
+#include "Minkowski.hpp"              //Minkowski background as default
 #include "Tensor.hpp"                 //For performing tensorial operations
 #include "TensorAlgebra.hpp"
 #include "UserVariables.hpp" //For user-defined variables (e.g. see EMKerrBH)
@@ -43,10 +43,9 @@ template <class background_t, class modification_t> class BaseProcaField
 
     template <class data_t> using MetricVars = ADMFixedBGVars::Vars<data_t>;
 
-    template <class data_t> using MatterVars = ADMProcaVars::MatterVars<data_t>;
+    template <class data_t> using Vars = ADMProcaVars::Vars<data_t>;
 
-    template <class data_t>
-    using Diff2MatterVars = ADMProcaVars::Diff2MatterVars<data_t>;
+    template <class data_t> using Diff2Vars = ADMProcaVars::Diff2Vars<data_t>;
 
     template <class data_t, template <typename> class vars_t,
               template <typename> class diff2_vars_t>
@@ -69,6 +68,16 @@ template <class background_t, class modification_t> class BaseProcaField
                const diff2_vars_t<Tensor<2, data_t>> &d2, // 2nd derivs
                const vars_t<data_t> &advec // value of the beta^i d_i(var) terms
     ) const;
+
+    // Interface methods for GRDzhadzha
+
+    template <class data_t, template <typename> class vars_t>
+    emtensor_t<data_t>
+    compute_emtensor(const vars_t<data_t> &matter_vars,
+                     const MetricVars<data_t> &metric_vars,
+                     const vars_t<Tensor<1, data_t>> &d1,
+                     const Tensor<2, data_t> &gamma_UU,
+                     const Tensor<3, data_t> &chris_phys_ULL) const;
 };
 
 #include "BaseProcaField.impl.hpp"
