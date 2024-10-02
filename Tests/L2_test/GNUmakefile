@@ -22,7 +22,7 @@ src_dirs := $(GRCHOMBO_SOURCE)/utils \
             $(GRBoondi_SOURCE)/Background  \
 			$(GRBoondi_SOURCE)/Diagnostics \
 			$(GRBoondi_SOURCE)/Core \
-            $(GRBoondi_SOURCE)/Matter \
+            $(GRBoondi_SOURCE)/ProcaFields \
             $(GRBoondi_SOURCE)/Lagrangians \
             $(GRBoondi_SOURCE)/utils \
             $(GRDZHADZHA_SOURCE)/Background \

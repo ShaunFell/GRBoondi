@@ -18,14 +18,14 @@ src_dirs := $(GRCHOMBO_SOURCE)/utils \
             $(GRCHOMBO_SOURCE)/BoxUtils \
             $(GRCHOMBO_SOURCE)/CCZ4 \
             $(GRCHOMBO_SOURCE)/AMRInterpolator \
-            $(GRDZHADZHA_SOURCE)/Background \
-            $(GRDZHADZHA_SOURCE)/Matter \
             $(GRBoondi_SOURCE)/Background \
-            $(GRBoondi_SOURCE)/Matter \
+            $(GRBoondi_SOURCE)/ProcaFields \
             $(GRBoondi_SOURCE)/Diagnostics \
             $(GRBoondi_SOURCE)/Core \
             $(GRBoondi_SOURCE)/Lagrangians \
             $(GRBoondi_SOURCE)/utils \
+            $(GRDZHADZHA_SOURCE)/Background \
+            $(GRDZHADZHA_SOURCE)/Matter 
 
 
 include $(CHOMBO_HOME)/mk/Make.test
