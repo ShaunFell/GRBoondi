@@ -1,8 +1,8 @@
 #ifndef SIMULATIONPARAMETERS_HPP_
 #define SIMULATIONPARAMETERS_HPP_
 
-#include "Minkowski.hpp"
 #include "InitialConditions.hpp"
+#include "Minkowski.hpp"
 #include "ProcaField.hpp"
 #include "ProcaSimulationParameters.hpp"
 

@@ -38,7 +38,7 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
 
         // Excise within horizon
         ExcisionEvolution<ProcaField, KerrSchild> excisor(m_dx, m_p.center,
-                                                             1.05, kerr_schild);
+                                                          1.05, kerr_schild);
 
         // Loop over box cells and excise cells within horizon
         BoxLoops::loop(excisor, m_state_new, m_state_new, SKIP_GHOST_CELLS,

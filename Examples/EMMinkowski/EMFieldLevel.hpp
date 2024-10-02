@@ -7,9 +7,9 @@ Example of defining a level class that sets simple initial conditions
 
 #include "BaseProcaFieldLevel.hpp"
 #include "BoxLoops.hpp"
-#include "Minkowski.hpp"
 #include "ExcisionEvolution.hpp"
 #include "InitialConditions.hpp"
+#include "Minkowski.hpp"
 #include "ProcaField.hpp"
 #include "UserVariables.hpp"
 
@@ -35,8 +35,7 @@ class EMFieldLevel : public BaseProcaFieldLevel<Minkowski, ProcaField>
 
         // Excise within horizon
         Minkowski kerr_schild(m_p.background_params, m_dx);
-        ExcisionEvolution<BaseProcaField<Minkowski, ProcaField>,
-                          Minkowski>
+        ExcisionEvolution<BaseProcaField<Minkowski, ProcaField>, Minkowski>
             excisor(m_dx, m_p.center, m_p.evolution_excision_width,
                     kerr_schild);
 

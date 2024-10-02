@@ -7,14 +7,13 @@ This class adds the simplest L2 lagrangian to the base equations of motion
 #include "ADMFixedBGVars.hpp"
 #include "ADMProcaVars.hpp"
 #include "BaseProcaField.hpp"
-#include "Minkowski.hpp"
 #include "DefaultG.hpp"
 #include "L2_simp.hpp"
+#include "Minkowski.hpp"
 
 // Note: base class BaseProcaField uses CRTP, so pass ProcaField itself as
 // template argument
-class ProcaFieldTest
-    : public BaseProcaFieldTest<Minkowski, ProcaFieldTest>
+class ProcaFieldTest : public BaseProcaFieldTest<Minkowski, ProcaFieldTest>
 {
 
   public:

@@ -158,8 +158,8 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
         ProcaField proca_field(kerr_schild, m_p.matter_params);
 
         // Initialize the constraint class, to be computed on the grid
-        SecondClassConstraint<KerrSchild> constraint(
-            m_dx, m_p.center, kerr_schild, proca_field);
+        SecondClassConstraint<KerrSchild> constraint(m_dx, m_p.center,
+                                                     kerr_schild, proca_field);
 
         // Loop over the box cells and compute the constraint on the grid
         BoxLoops::loop(constraint, m_state_diagnostics, m_state_diagnostics,

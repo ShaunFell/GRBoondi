@@ -41,8 +41,8 @@ for more details
 // background includes
 #include "ADMFixedBGVars.hpp"
 #include "BaseProcaFieldTest.hpp"
-#include "Minkowski.hpp"
 #include "MatterEvolution.hpp"
+#include "Minkowski.hpp"
 
 #include "BaseProcaField.hpp"
 #include "ProcaField.hpp"
@@ -145,8 +145,8 @@ int test2()
 
         std::cout << "Computing fixed background..." << std::endl;
         // assign background variables to grid
-        BoxLoops::loop(AssignFixedBGtoBSSNVars<Minkowski>(
-                           background_init, dx, center_vector),
+        BoxLoops::loop(AssignFixedBGtoBSSNVars<Minkowski>(background_init, dx,
+                                                          center_vector),
                        fixedbg_FAB, fixedbg_FAB);
         GammaCalculator gamamcalc(dx);
         BoxLoops::loop(gamamcalc, fixedbg_FAB, deriv_fixedbg_FAB);
@@ -203,9 +203,8 @@ int test2()
         std::cout << "Excising..." << std::endl;
 
         // excise the center where values are always large
-        ExcisionTest<BaseProcaField<Minkowski, ProcaField>,
-                     Minkowski>
-            excision(dx, center_vector, background_init);
+        ExcisionTest<BaseProcaField<Minkowski, ProcaField>, Minkowski> excision(
+            dx, center_vector, background_init);
         BoxLoops::loop(excision, rhs_FAB, rhs_FAB, disable_simd());
 
         if (debug_plots_on)

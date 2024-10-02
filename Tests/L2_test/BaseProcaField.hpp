@@ -3,8 +3,8 @@
 
 #include "ADMFixedBGVars.hpp"         //For metric variables
 #include "ADMProcaVars.hpp"           //For matter variables
-#include "Minkowski.hpp"      //Minkowski background as default
 #include "FourthOrderDerivatives.hpp" //For calculating derivatives
+#include "Minkowski.hpp"              //Minkowski background as default
 #include "Tensor.hpp"                 //For performing tensorial operations
 #include "TensorAlgebra.hpp"
 #include "UserVariables.hpp" //For user-defined variables (e.g. see EMKerrBH)

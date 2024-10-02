@@ -25,8 +25,7 @@ class Minkowski
     const double m_dx;
 
   public:
-    Minkowski(params_t a_params, double dx)
-        : m_params{a_params}, m_dx{dx} {};
+    Minkowski(params_t a_params, double dx) : m_params{a_params}, m_dx{dx} {};
 
     template <class data_t> using MetricVars = ADMFixedBGVars::Vars<data_t>;
 
