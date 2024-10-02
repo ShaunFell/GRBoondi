@@ -33,8 +33,8 @@ class DefaultG
     using MetricVars = typename ADMFixedBGVars::template Vars<data_t>;
 
   public:
-    DefaultG() {}; // Default constructor for default initialization in matter
-                   // class
+    DefaultG(){}; // Default constructor for default initialization in matter
+                  // class
 
     DefaultG(params_t a_params) : m_params{a_params} {};
 

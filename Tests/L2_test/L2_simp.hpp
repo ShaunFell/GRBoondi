@@ -52,7 +52,7 @@ template <class G2 = DefaultG> class L2
     using MetricVars = typename ADMFixedBGVars::template Vars<data_t>;
 
   public:
-    L2() {}; // Default constructor for default initialization in matter class
+    L2(){}; // Default constructor for default initialization in matter class
 
     L2(G2 a_G2_function, params_t a_params)
         : m_g2_function(a_G2_function), m_params{a_params} {};

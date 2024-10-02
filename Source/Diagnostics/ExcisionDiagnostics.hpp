@@ -42,8 +42,8 @@ template <class matter_t, class background_t> class ExcisionDiagnostics
                         std::vector<int> a_vars_to_excise)
         : m_background{a_background}, m_dx{a_dx}, m_center{a_center},
           m_inner_boundary{a_inner_boundary},
-          m_outer_boundary{a_outer_boundary},
-          m_vars_to_excise{a_vars_to_excise} {};
+          m_outer_boundary{a_outer_boundary}, m_vars_to_excise{
+                                                  a_vars_to_excise} {};
 
     void compute(const Cell<double> current_cell) const
     {
