@@ -9,7 +9,7 @@ This example sets the initial data to be a uniform magnetic field
 #include "ADMProcaVars.hpp"
 #include "BaseProcaField.hpp"
 #include "Cell.hpp"
-#include "DefaultBackground.hpp" //background class
+#include "Minkowski.hpp" //background class
 #include "Tensor.hpp"
 #include "TensorAlgebra.hpp"
 
@@ -24,15 +24,15 @@ class Initial_EM_Conditions
 
   protected:
     const params_t m_params;
-    const DefaultBackground::params_t m_Kerr_params;
+    const Minkowski::params_t m_Kerr_params;
     const double m_dx;
 
     template <class data_t>
-    using MatterVars = typename ADMProcaVars::MatterVars<data_t>;
+    using MatterVars = typename ADMProcaVars::Vars<data_t>;
 
   public:
     Initial_EM_Conditions(const double a_dx, params_t a_params,
-                          const DefaultBackground::params_t a_Kerr_params)
+                          const Minkowski::params_t a_Kerr_params)
         : m_params{a_params}, m_dx{a_dx}, m_Kerr_params{a_Kerr_params} {};
 
     template <class data_t> void compute(Cell<data_t> current_cell) const

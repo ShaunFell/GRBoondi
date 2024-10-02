@@ -18,7 +18,7 @@
 class DumbExcisionEvolution
 {
     // Use matter_t class
-    using Vars = typename ADMProcaVars::MatterVars<double>;
+    using Vars = typename ADMProcaVars::Vars<double>;
 
   protected:
     const double m_dx;                              //!< The grid spacing

@@ -20,8 +20,8 @@ classes. e.g. see ProcaKerrBH Example
 #include "ADMFixedBGVars.hpp" //For metric variables
 #include "ADMProcaVars.hpp"   //For matter variables
 #include "CCZ4RHS.hpp"
-#include "DefaultBackground.hpp"      //Minkowski background as default
 #include "FourthOrderDerivatives.hpp" //For calculating derivatives
+#include "Minkowski.hpp"              //Minkowski background as default
 #include "Tensor.hpp"                 //For performing tensorial operations
 #include "TensorAlgebra.hpp"
 #include "UserVariables.hpp" //For user-defined variables (e.g. see EMKerrBH)
@@ -45,10 +45,9 @@ template <class background_t, class modification_t> class BaseProcaFieldTest
     BaseProcaFieldTest(background_t a_background)
         : m_background{a_background} {};
 
-    template <class data_t> using Vars = ADMProcaVars::MatterVars<data_t>;
+    template <class data_t> using Vars = ADMProcaVars::Vars<data_t>;
 
-    template <class data_t>
-    using Diff2Vars = ADMProcaVars::Diff2MatterVars<data_t>;
+    template <class data_t> using Diff2Vars = ADMProcaVars::Diff2Vars<data_t>;
 
     // we set G=0, so this doenst really matter, need it just for using
     // MatterCCZ4

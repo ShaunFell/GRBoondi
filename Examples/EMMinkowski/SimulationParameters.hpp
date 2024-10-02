@@ -1,8 +1,8 @@
 #ifndef SIMULATIONPARAMETERS_HPP_
 #define SIMULATIONPARAMETERS_HPP_
 
-#include "DefaultBackground.hpp"
 #include "InitialConditions.hpp"
+#include "Minkowski.hpp"
 #include "ProcaField.hpp"
 #include "ProcaSimulationParameters.hpp"
 
@@ -25,7 +25,7 @@ class SimulationParameters : public ProcaSimulationParameters
     }
 
     // parameters of kerr bh
-    DefaultBackground::params_t background_params;
+    Minkowski::params_t background_params;
 
     // initial conditions parameters
     Initial_EM_Conditions::params_t initial_conditions_params;

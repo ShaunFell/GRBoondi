@@ -40,10 +40,10 @@ class MatterCCZ4RHS : public CCZ4RHS<gauge_t, deriv_t>
     using params_t = CCZ4_params_t<typename gauge_t::params_t>;
 
     template <class data_t>
-    using MatterVars = typename matter_t::template Vars<data_t>;
+    using Vars = typename matter_t::template Vars<data_t>;
 
     template <class data_t>
-    using MatterDiff2Vars = typename matter_t::template Diff2Vars<data_t>;
+    using Diff2Vars = typename matter_t::template Diff2Vars<data_t>;
 
     template <class data_t>
     using CCZ4Vars = typename CCZ4::template Vars<data_t>;
@@ -53,7 +53,7 @@ class MatterCCZ4RHS : public CCZ4RHS<gauge_t, deriv_t>
 
     // Inherit the variable definitions from CCZ4RHS + matter_t
     template <class data_t>
-    struct Vars : public CCZ4Vars<data_t>, public MatterVars<data_t>
+    struct Vars : public CCZ4Vars<data_t>, public Vars<data_t>
     {
         /// Defines the mapping between members of Vars and Chombo grid
         /// variables (enum in User_Variables)
@@ -61,13 +61,12 @@ class MatterCCZ4RHS : public CCZ4RHS<gauge_t, deriv_t>
         void enum_mapping(mapping_function_t mapping_function)
         {
             CCZ4Vars<data_t>::enum_mapping(mapping_function);
-            MatterVars<data_t>::enum_mapping(mapping_function);
+            Vars<data_t>::enum_mapping(mapping_function);
         }
     };
 
     template <class data_t>
-    struct Diff2Vars : public CCZ4Diff2Vars<data_t>,
-                       public MatterDiff2Vars<data_t>
+    struct Diff2Vars : public CCZ4Diff2Vars<data_t>, public Diff2Vars<data_t>
     {
         /// Defines the mapping between members of Vars and Chombo grid
         /// variables (enum in User_Variables)
@@ -75,7 +74,7 @@ class MatterCCZ4RHS : public CCZ4RHS<gauge_t, deriv_t>
         void enum_mapping(mapping_function_t mapping_function)
         {
             CCZ4Diff2Vars<data_t>::enum_mapping(mapping_function);
-            MatterDiff2Vars<data_t>::enum_mapping(mapping_function);
+            Diff2Vars<data_t>::enum_mapping(mapping_function);
         }
     };
 

@@ -7,7 +7,7 @@
 
 namespace ADMProcaVars
 {
-template <class data_t> struct MatterVars
+template <class data_t> struct Vars
 {
     data_t phi;             // scalar part of Proca field
     data_t Z;               // auxilliary damping scalar
@@ -27,10 +27,10 @@ template <class data_t> struct MatterVars
         define_enum_mapping(mapping_function, GRInterval<c_Evec1, c_Evec3>(),
                             Evec);
     }
-}; // end of struct MatterVars
+}; // end of struct Vars
 
 // structure holding the matter field variables that require 2nd derivatives
-template <class data_t> struct Diff2MatterVars
+template <class data_t> struct Diff2Vars
 {
     Tensor<1, data_t> Avec;
 
@@ -43,7 +43,7 @@ template <class data_t> struct Diff2MatterVars
         define_enum_mapping(mapping_function, GRInterval<c_Avec1, c_Avec3>(),
                             Avec);
     }
-}; // end of struct Diff2MatterVars
+}; // end of struct Diff2Vars
 }; // namespace ADMProcaVars
 
 #endif // ADMPROCAVARS_HPP_

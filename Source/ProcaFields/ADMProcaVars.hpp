@@ -12,7 +12,7 @@ Please refer to LICENSE in GRBoondi's root directory
 
 namespace ADMProcaVars
 {
-template <class data_t> struct MatterVars
+template <class data_t> struct Vars
 {
     data_t phi;             // scalar part of Proca field
     data_t Z;               // auxilliary damping scalar
@@ -35,7 +35,7 @@ template <class data_t> struct MatterVars
 }; // end of struct MatterVars
 
 // structure holding the matter field variables that require 2nd derivatives
-template <class data_t> struct Diff2MatterVars
+template <class data_t> struct Diff2Vars
 {
     Tensor<1, data_t> Avec;
 

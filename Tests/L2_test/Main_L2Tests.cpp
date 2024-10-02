@@ -88,8 +88,8 @@ int test1()
     FArrayBox my_rhs_FAB(box, NUM_VARS);
 
     // set everything to zero
-    /*     BoxLoops::loop(SetValue(0.0), fixedbg_FAB, fixedbg_FAB);
-        BoxLoops::loop(SetValue(0.0), deriv_fixedbg_FAB, deriv_fixedbg_FAB); */
+    BoxLoops::loop(SetValue(0.0), ref_FAB, ref_FAB);
+    BoxLoops::loop(SetValue(0.0), my_FAB, my_FAB);
     BoxLoops::loop(SetValue(0.0), ref_rhs_FAB, ref_rhs_FAB);
     BoxLoops::loop(SetValue(0.0), my_rhs_FAB, my_rhs_FAB);
 

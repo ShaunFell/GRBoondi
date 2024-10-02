@@ -3,8 +3,8 @@
 
 #include "ADMFixedBGVars.hpp"         //For metric variables
 #include "ADMProcaVars.hpp"           //For matter variables
-#include "DefaultBackground.hpp"      //Minkowski background as default
 #include "FourthOrderDerivatives.hpp" //For calculating derivatives
+#include "Minkowski.hpp"              //Minkowski background as default
 #include "Tensor.hpp"                 //For performing tensorial operations
 #include "TensorAlgebra.hpp"
 #include "UserVariables.hpp" //For user-defined variables (e.g. see EMKerrBH)
@@ -25,10 +25,9 @@ template <class background_t, class modification_t> class BaseProcaField
 
     template <class data_t> using MetricVars = ADMFixedBGVars::Vars<data_t>;
 
-    template <class data_t> using MatterVars = ADMProcaVars::MatterVars<data_t>;
+    template <class data_t> using Vars = ADMProcaVars::Vars<data_t>;
 
-    template <class data_t>
-    using Diff2MatterVars = ADMProcaVars::Diff2MatterVars<data_t>;
+    template <class data_t> using Diff2Vars = ADMProcaVars::Diff2Vars<data_t>;
 
     /* NOTE:
     We use the method of 'Curiously Recurring Template Pattern' to allow

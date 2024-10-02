@@ -6,7 +6,8 @@
 verbosity = 1
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRBoondi/testing/test_data/"
+output_path = "/mnt/DataDrive/Data_Store/GRBoondi/ProcaKerrBH"
+
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -89,6 +90,8 @@ L_full = 32
 # Max and min box sizes
 max_box_size = 16
 min_box_size = 16
+
+block_factor = 8
 
 #for fixed grid tagging
 tag_buffer_size = 0
@@ -174,7 +177,7 @@ diagnostic_excision_vars = rho rhoE rhoJ rhoLinMom sourceLinMom
 ################################################## Extraction
 ##################################################
 
-activate_extraction = 1 # extraction of fluxes
+activate_extraction = 0 # extraction of fluxes
 activate_integration = 1 # integration of densities
 
 num_extraction_radii = 2
