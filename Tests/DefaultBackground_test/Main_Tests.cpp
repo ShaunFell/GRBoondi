@@ -41,7 +41,7 @@ for more details
 // background includes
 #include "ADMFixedBGVars.hpp"
 #include "BaseProcaFieldTest.hpp"
-#include "DefaultBackground.hpp"
+#include "Minkowski.hpp"
 #include "MatterEvolution.hpp"
 
 #include "BaseProcaField.hpp"
@@ -135,17 +135,17 @@ int test2()
         BackgroundParams.center = center_vector;
 
         // create background
-        typename DefaultBackground::params_t bg_params;
+        typename Minkowski::params_t bg_params;
         bg_params.center = center_vector;
         std::cout << "Center: " << bg_params.center[0] << " "
                   << bg_params.center[1] << " " << bg_params.center[2]
                   << std::endl;
         std::cout << "dx: " << dx << std::endl;
-        DefaultBackground background_init(bg_params, dx);
+        Minkowski background_init(bg_params, dx);
 
         std::cout << "Computing fixed background..." << std::endl;
         // assign background variables to grid
-        BoxLoops::loop(AssignFixedBGtoBSSNVars<DefaultBackground>(
+        BoxLoops::loop(AssignFixedBGtoBSSNVars<Minkowski>(
                            background_init, dx, center_vector),
                        fixedbg_FAB, fixedbg_FAB);
         GammaCalculator gamamcalc(dx);
@@ -191,7 +191,7 @@ int test2()
         ProcaField analytic_matter(background_init, proca_params);
 
         // compute RHS using analytic expressions
-        MatterEvolution<ProcaField, DefaultBackground> my_an_evolution(
+        MatterEvolution<ProcaField, Minkowski> my_an_evolution(
             analytic_matter, background_init, sigma, dx, center_vector);
         BoxLoops::loop(my_an_evolution, fixedbg_FAB, fixedbg_rhs_FAB);
 
@@ -203,8 +203,8 @@ int test2()
         std::cout << "Excising..." << std::endl;
 
         // excise the center where values are always large
-        ExcisionTest<BaseProcaField<DefaultBackground, ProcaField>,
-                     DefaultBackground>
+        ExcisionTest<BaseProcaField<Minkowski, ProcaField>,
+                     Minkowski>
             excision(dx, center_vector, background_init);
         BoxLoops::loop(excision, rhs_FAB, rhs_FAB, disable_simd());
 

@@ -9,13 +9,13 @@ Example of defining a level class that sets initial conditions
 #include "BoxLoops.hpp"
 #include "ExcisionEvolution.hpp"
 #include "InitialConditions.hpp"
-#include "KerrSchildNew.hpp"
+#include "KerrSchild.hpp"
 #include "ProcaField.hpp"
 #include "UserVariables.hpp"
 
-// Inherits from BaseProcaFieldLevel with background = KerrSchildNew and matter
+// Inherits from BaseProcaFieldLevel with background = KerrSchild and matter
 // = BaseProcaField
-class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchildNew, ProcaField>
+class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchild, ProcaField>
 {
   public:
     // inherit constructor from base class
@@ -25,7 +25,7 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchildNew, ProcaField>
     virtual void initialData() override
     {
 
-        KerrSchildNew kerr_schild(m_p.background_params, m_dx);
+        KerrSchild kerr_schild(m_p.background_params, m_dx);
 
         // Initialize the initial conditions class
         Initial_Proca_Conditions initial_conditions(
@@ -37,8 +37,8 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchildNew, ProcaField>
                        INCLUDE_GHOST_CELLS);
 
         // Excise within horizon
-        ExcisionEvolution<ProcaField, KerrSchildNew> excisor(m_dx, m_p.center,
-                                                             0.95, kerr_schild);
+        ExcisionEvolution<ProcaField, KerrSchild> excisor(m_dx, m_p.center,
+                                                             1.05, kerr_schild);
 
         // Loop over box cells and excise cells within horizon
         BoxLoops::loop(excisor, m_state_new, m_state_new, SKIP_GHOST_CELLS,
@@ -113,7 +113,7 @@ class ProcaFieldLevel : public BaseProcaFieldLevel<KerrSchildNew, ProcaField>
 
             // Check for naked singularities!
             // Note: This error check is already present in the constructor for
-            // the KerrSchildNew class.
+            // the KerrSchild class.
             //           We check it here and use a different error message
             //           related to the black hole evolution code above
             if ((m_p.background_params.spin > m_p.background_params.mass) ||

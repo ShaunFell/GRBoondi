@@ -4,15 +4,15 @@ Copyright 2024, Shaun Fell
 Please refer to LICENSE in GRBoondi's root directory
 */
 
-#ifndef DEFAULTBACKGROUND_HPP_
-#define DEFAULTBACKGROUND_HPP_
+#ifndef Minkowski_HPP_
+#define Minkowski_HPP_
 
 #include "ADMFixedBGVars.hpp"
 #include "Cell.hpp"
 
 // Class which computes a Minkowski background
 
-class DefaultBackground
+class Minkowski
 {
   public:
     //! Struct for the params of the  BH
@@ -25,7 +25,7 @@ class DefaultBackground
     const double m_dx;
 
   public:
-    DefaultBackground(params_t a_params, double dx)
+    Minkowski(params_t a_params, double dx)
         : m_params{a_params}, m_dx{dx} {};
 
     template <class data_t> using MetricVars = ADMFixedBGVars::Vars<data_t>;
@@ -68,4 +68,4 @@ class DefaultBackground
     }
 };
 
-#endif /* DEFAULTBACKGROUND_HPP_ */
+#endif /* Minkowski_HPP_ */

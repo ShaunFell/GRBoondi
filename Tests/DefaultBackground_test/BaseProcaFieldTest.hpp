@@ -20,7 +20,7 @@ classes. e.g. see ProcaKerrBH Example
 #include "ADMFixedBGVars.hpp" //For metric variables
 #include "ADMProcaVars.hpp"   //For matter variables
 #include "CCZ4RHS.hpp"
-#include "DefaultBackground.hpp"      //Minkowski background as default
+#include "Minkowski.hpp"      //Minkowski background as default
 #include "FourthOrderDerivatives.hpp" //For calculating derivatives
 #include "Tensor.hpp"                 //For performing tensorial operations
 #include "TensorAlgebra.hpp"
