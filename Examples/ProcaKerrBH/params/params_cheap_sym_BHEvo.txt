@@ -7,7 +7,7 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRBoondi/testing/TEST"
+output_path=""
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
@@ -18,13 +18,13 @@ plot_prefix = "GeneralizedProcap_"
 run_initial_posttimestep = 1
 
 # HDF5files are written every dt = L/N*dt_multiplier*checkpoint_interval
-checkpoint_interval = 200
+checkpoint_interval = 10000
 # set to 0 to turn off plot files (except at t=0 and t=stop_time)
 # set to -1 to never ever print plotfiles
-plot_interval = 20
+plot_interval = -1
 
 #plot variable names must match those in the DiagnosticVariables::DiagnosticVariables namespace
-num_plot_vars = 7
+num_plot_vars = 0
 plot_vars = Z Asquared rho rhoE gnn EMtrace EMsquared
 
 # subpaths - specific directories for hdf5, pout, extraction data
@@ -52,10 +52,10 @@ activate_tagging_diagnostic = 0
 ##################################################
 
 #max level is the number of additional refinement levels. So max_level=4 --> 5 total levels
-max_level = 3
+max_level = 4
 
 #Since we use fixed grid tagging, we dont ever need to regrid
-regrid_interval = 0 0 0
+regrid_interval = 0 0 0 0
 
 ################################################## Initial Data parameters
 ##################################################
@@ -86,12 +86,12 @@ bh_evolution = 1
 ################################################## Grid parameters
 ##################################################
 
-N_full = 128
-L_full = 32
+N_full = 64
+L_full = 64
 
 # Max and min box sizes
-max_box_size = 32
-min_box_size = 32
+max_box_size = 16
+min_box_size = 16
 
 #for fixed grid tagging
 tag_buffer_size = 0
@@ -177,8 +177,8 @@ diagnostic_excision_vars = rho rhoE rhoJ rhoLinMom sourceLinMom
 ################################################## Extraction
 ##################################################
 
-activate_extraction = 1 # extraction of fluxes
-activate_integration = 1 # integration of densities
+activate_extraction = 0 # extraction of fluxes
+activate_integration = 0 # integration of densities
 
 num_extraction_radii = 2
 extraction_radii = 1.6 14
