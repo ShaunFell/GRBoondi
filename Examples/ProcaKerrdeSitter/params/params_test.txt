@@ -7,7 +7,7 @@ restart_file=GeneralizedProca_005071.3d.hdf5
 verbosity = 0
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRBoondi/testing/re_dev_highres_GRMilijun_ProcaKdS_test_23530396"
+output_path=""
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"

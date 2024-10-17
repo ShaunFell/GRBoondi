@@ -7,7 +7,7 @@
 verbosity = 0
 
 # location / naming of output files
-output_path = "/mnt/DataDrive/Data_Store/GRBoondi/NonlinearProca"
+output_path=""
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
