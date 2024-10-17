@@ -7,7 +7,7 @@
 verbosity = 1
 
 # location / naming of output files
-output_path = "/mnt/DataDrive/Data_Store/GRBoondi/EMMinkowski"
+output_path = ""
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "EMMinkowski_"
