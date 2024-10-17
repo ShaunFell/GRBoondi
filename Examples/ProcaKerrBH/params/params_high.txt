@@ -7,7 +7,7 @@
 verbosity = 1
 
 # location / naming of output files
-output_path = "/pfs/work7/workspace/scratch/hd_pb293-WS_GRChombo/testing/GRBoondi_ProcaKerrBH_23297200"
+output_path=""
 
 #filename prefixes for checkpoint files and plot files
 chk_prefix = "GeneralizedProca_"
