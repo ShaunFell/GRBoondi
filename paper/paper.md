@@ -15,6 +15,7 @@ authors:
   orcid: 0000-0002-8059-0359
   affiliation: 1
 - name: Lavinia Heisenberg
+  orcid: 0000-0002-5766-8242
   affiliation: 1
 affiliations:
 - name: Institute for Theoretical Physics, Universitaet Heidelberg, Philosophenweg 12, 69120 Heidelberg, Germany
