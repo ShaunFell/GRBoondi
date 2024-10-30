@@ -44,15 +44,11 @@ In practice, any NR software library can be used to evolve generalized Proca the
 
 This extensive list underscores the abundance of NR libraries at one's disposal. However, none of them provide a tailored unified interface for studying the vast landscape of gravity theories, like generalized Proca. Using any of the numerous frameworks requires significant work in order to evolve even a single generalized Proca theory. GRBoondi tackles this problem by providing a collection of specialized tools for computing the generalized Proca equations, relying on existing tools which allows for rapid updating and debugging. On top of this, GRBoondi offers catered plotting routines for viewing data, leveraging the highly parallelizable VisIt [@visit_dav] analysis tool. In addition, since the metric variables and their derivatives are computed exactly at each grid point, the adaptability of the AMR grid can be focused solely on the matter variables. 
 
-While backreaction is neglected in GRBoondi, the error incured by this approximation is estimated by computing the norm of the energy-momentum tensor. This estimation takes into account the relativistic nature of the matter field and gauges the error in the evolution at the level of the Einstein equations. 
-
-Since GRBoondi is very similar to the GRChombo code, simulations performed with GRBoondi can easily be ported to GRChombo, should full NR simulations be required. This is particularly useful if the backreaction is found to be significant at some point in the simulation. The data from a GRBoondi simulation can be used as initial data for a GRChombo simulation, potentially yielding much better initial data for the full NR simulation.
-
 # Key features of GRBoondi
 
 - **Ease of use**: A central pillar of GRBoondi is its ease of use, relative to other NR software. Many of the basic boiler-plate code and complexities are kept within the source code, allowing the user to have only a basic understanding of the code in order to start researching their problem.
 
-- **Arbitrary choice of background spacetime**: The main parts of GRBoondi are extremely modular, allowing for any arbitrary background to be plugged in, even a numerically computed one. This allows for massive versatility in the source code. Users can swap in and out backgrounds with ease. GRBoondi comes pre-equipped with four background classes ready for use, along with testing suites to verify convergence of each class. These include (starred backgrounds are inherited from GRDzhadzha and are immediately usable in GRBoondi):
+- **Arbitrary choice of background spacetime**: The main parts of GRBoondi are extremely modular --- users can swap in and out backgrounds with ease. GRBoondi comes pre-equipped with four background classes ready for use, along with testing suites to verify convergence of each class. These include (starred backgrounds are inherited from GRDzhadzha and are immediately usable in GRBoondi):
   - Minkowski Space
   - Kerr-de Sitter black hole
   - *Boosted Schwarzschild black hole
@@ -64,7 +60,7 @@ Since GRBoondi is very similar to the GRChombo code, simulations performed with 
 
 - **Tailored post-processing tools**: GRBoondi comes equipped with custom-built post-processing scripts, leveraging VisIt's Python interface. Any of the diagnostic quantities computed during the evolution can be plotted using these tools. It also contains a simple integral plotter, for quickly visualizing the various integrals computed during a simulation, leveraging Python's Matplotlib package [@Hunter:2007]
 
-Additional features of GRBoondi are enumerated on the Github Wiki[^1].
+Additional features of GRBoondi are elucidated on the Github Wiki[^1].
 
 ![Some examples of the usage of GRBoondi. The left image is the energy density of a Proca cloud superradiantly excited around a rapidly spinning black hole, superimposed with streamlines of the spatial Proca vector field. The right image is a plot in the xz-plane of the square of the Proca 4-vector in the same background. The spin axis of the black hole is orientated along the z-axis. Superimposed on both images is a slice of the computational grid, clearly showing the refinement hierarchy.](Figures/Combined.png)
 
