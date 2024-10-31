@@ -1,7 +1,7 @@
 ---
 title: 'GRBoondi: A code for evolving Generalized Proca theories on arbitrary backgrounds'
 tags:
-  - c++
+  - C++
   - MPI
   - Open MP
   - vector intrinsics
@@ -26,57 +26,50 @@ bibliography: paper.bib
 
 # Summary
 
-Proca theories are a simple massive extension of the typical electromagnetic field. Such a simple modification of the underlying theory can have tremendous phenomenological implications, particularly in the case of early-universe high-energy physics, structure formation, and various dark matter models. On the theoretical side, they arise naturally in certain string theories and axionic interactions. Phenomenologically, Proca fields can be produced in the early universe from quantum fluctuations. This leads the Proca field to be an excellent candidate for the dark matter particle. Naturally, generalizations of the Proca field can lead to even richer astrophyical implications, providing possible solutions to many challenges across a wide range of astrophysical phenomena.
+Proca theories are a simple massive extension of the typical electromagnetic field. Such a simple modification of the underlying theory can have tremendous phenomenological implications, particularly in the case of early-universe high-energy physics, structure formation, and various dark matter models. On the theoretical side, they arise naturally in certain string theories and axionic interactions. Phenomenologically, Proca fields can be produced in the early universe from quantum fluctuations. This leads the Proca field to be an excellent candidate for the dark matter particle. Naturally, generalizations of the Proca field can lead to even richer astrophysical implications, providing possible solutions to many challenges across a wide range of astrophysical phenomena.
 
-## Generalized Proca 
+## Generalized Proca
 
 Generalized Proca theories [@Heisenberg_2019;@Heisenberg_2014] provide a rich landscape to search for solutions to deep, fundamental questions, such as the nature of dark energy and dark matter. Moreover, strong gravity regimes, like those surrounding dense, compact astrophysical entities, offer novel avenues to explore fundamental fields. To effectively probe these domains, precise models are imperative for sifting through vast quantities of data. Crafting concrete models for the entirety of generalized Proca theories represents a formidable endeavor, typically relying on numerical methods. These numerical methods are usually written to be case dependent, especially for a particular background. This makes it difficult to generalize the computational code to account for higher-order couplings or different types of backgrounds. The difficulty is especially amplified when considering the full landscape of generalized Proca theories and beyond [@Heisenberg:2016eld]. Already at the level of the Lagrangian, the equations are immense,
 $$
 	\mathcal{L}_{\text{g.P.}} = \sqrt{-g} \left(-\frac{1}{4}F_{\mu \nu}F^{\mu \nu} + \displaystyle\sum_{n=2}^{6} \alpha_n \mathcal{L}_n \right) \;,
 $$
-where each sub-Lagranian $\mathcal{L}_n$ contains terms of different orders in the derivatives of the Proca field [@Heisenberg_2019;@Heisenberg_2014]. Even including solely $\mathcal{L}_2$, the equations of motion can be extremely cumbersome. Solving these equations of motion analytically very quickly becomes intractable.
+where each sub-Lagrangian $\mathcal{L}_n$ contains terms of different orders in the derivatives of the Proca field [@Heisenberg_2019;@Heisenberg_2014]. Even including solely $\mathcal{L}_2$, the equations of motion can be extremely cumbersome. Solving these equations of motion analytically very quickly becomes intractable.
 
-GRBoondi provides a unified interface for computing the evolution of any generalized Proca model on an arbitrary background. Given a specific background with known expressions for the metric variables and initial data for the Proca field, GRBoondi numerically computes the time evolution of the Proca field, given user-specified generalized Proca equations of motion. While the simultaneous evolution of the metric and matter fields offers the most comprehensive depiction of their temporal progression, there are instances where the density of the Proca field is negligible in comparison to the background curvature. In such cases, fixed background evolution routines serve as an excellent approximation to the complete mutual evolution. A core feature of GRBoondi is that it simplifies many of the boiler-plate code required to begin a simulation from scratch. The only additions a user needs to input are the initial conditions, the modifications to the equations of motion (EOM), and the background functions. GRBoondi will automatically compute various diagnostic quantities and plot files. Moreover, GRBoondi is incredibly modular and modifications to any of the in-built functions is effortless.
+GRBoondi provides a unified interface for computing the evolution of any generalized Proca model on an arbitrary background. Given a specific background with known expressions for the metric variables and initial data for the Proca field, GRBoondi numerically computes the time evolution of the Proca field, given user-specified generalized Proca equations of motion. While the simultaneous evolution of the metric and matter fields offers the most comprehensive depiction of their temporal progression, there are instances where the density of the Proca field is negligible in comparison to the background curvature. In such cases, fixed background evolution routines serve as an excellent approximation to the complete mutual evolution. A core feature of GRBoondi is that it simplifies much of the boilerplate code required to begin a simulation from scratch. The only additions a user needs to input are the initial conditions, the modifications to the equations of motion (EOM), and the background functions. GRBoondi will automatically compute various diagnostic quantities and plot files. Moreover, GRBoondi is incredibly modular and modifications to any of the in-built functions is effortless.
 
 # Statement of need
 
-In practice, any NR software library can be used to evolve generalized Proca theories. Prominent examples of NR codes encompass the extensive Einstein toolkit [@EinsteinToolkit:2023_11] and its related Cactus framework [@Goodale:2002a], Kranc [@Kranc:web], LEAN [@Sperhake:2006cy], and Canuda [@Canuda:zenodo]. Other libraries worth mentioning are the non-public BAM [@Bruegmann:2006ulg], AMSS-NCKU [@Galaviz:2010mx], PAMR [@East:2011aa] and HAD [@Neilsen:2007ua]. The non-exhaustive list can be expanded with SPeC [@Pfeiffer:2002wt], which is a pseudo-spectral code that uses generalized harmonic coordinates. Similarly, SpECTRE [@deppe_nils_2021_4734670;@Kidder:2016hev;@Cao:2018vhw] uses the Galerkin methods. NRPy [@Ruchlin:2017com] is a Python library that aims for use on non-high performance computing clusters. There are also cosmological simulation codes like CosmoGRaPH [@Mertens:2015ttp] and GRAMSES [@Barrera-Hinojosa:2019mzo]. Simflowny [@Palenzuela:2018sly] is a magneto-hydrodynamic simulation software. GRAthena++ [@Daszuta:2021ecf] uses the oct-tree AMR for maximum scaling. ExaGRyPE is a numerical relativity program leveraging the ExaHyPRE PDE solver [@zhang2024exagrypenumericalgeneralrelativity]. GRDzhadzha [@Aurrekoetxea2024] is another fixed background code, based off the GRChombo [@Andrade2021] framework, which GRBoondi utilizes.
+In practice, any NR software library can be used to evolve generalized Proca theories. Prominent examples of NR codes encompass the extensive Einstein Toolkit [@EinsteinToolkit:2023_11] and its related Cactus framework [@Goodale:2002a], Kranc [@Kranc:web], LEAN [@Sperhake:2006cy], and Canuda [@Canuda:zenodo]. Other libraries worth mentioning are the non-public BAM [@Bruegmann:2006ulg], AMSS-NCKU [@Galaviz:2010mx], PAMR [@East:2011aa] and HAD [@Neilsen:2007ua]. The non-exhaustive list can be expanded with SPeC [@Pfeiffer:2002wt], which is a pseudo-spectral code that uses generalized harmonic coordinates. Similarly, SpECTRE [@deppe_nils_2021_4734670;@Kidder:2016hev;@Cao:2018vhw] uses the Galerkin methods. NRPy [@Ruchlin:2017com] is a Python library that aims for use on non-high performance computing clusters. There are also cosmological simulation codes like CosmoGRaPH [@Mertens:2015ttp] and GRAMSES [@Barrera-Hinojosa:2019mzo]. Simflowny [@Palenzuela:2018sly] is a magneto-hydrodynamic simulation software. GRAthena++ [@Daszuta:2021ecf] uses the oct-tree AMR for maximum scaling. ExaGRyPE is a numerical relativity program leveraging the ExaHyPRE PDE solver [@zhang2024exagrypenumericalgeneralrelativity]. GRDzhadzha [@Aurrekoetxea2024] is another fixed background code, based off the GRChombo [@Andrade2021] framework, which GRBoondi utilizes.
 
-This extensive list underscores the abundance of NR libraries at one's disposal. However, none of them provide a tailored unified interface for studying the vast landscape of gravity theories, like generalized Proca. Using any of the numerous frameworks requires significant work in order to evolve even a single generalized Proca theory. GRBoondi tackles this problem by providing a collection of specialized tools for computing the generalized Proca equations, relying on existing tools which allows for rapid updating and debugging. On top of this, GRBoondi offers catered plotting routines for viewing data, leveraging the highly parallelizable VisIt [@visit_dav] analysis tool. In addition, since the metric variables and their derivatives are computed exactly at each grid point, the adaptability of the AMR grid can be focused solely on the matter variables. 
+This extensive list underscores the abundance of NR libraries at one's disposal. However, none of them provide a tailored unified interface for studying the vast landscape of gravity theories, like generalized Proca. Using any of the numerous frameworks requires significant work in order to evolve even a single generalized Proca theory. GRBoondi tackles this problem by providing a collection of specialized tools for computing the generalized Proca equations, relying on existing tools which allows for rapid updating and debugging. On top of this, GRBoondi offers catered plotting routines for viewing data, leveraging the highly parallelizable VisIt [@visit_dav] analysis tool. In addition, since the metric variables and their derivatives are computed exactly at each grid point, the adaptability of the AMR grid can be focused solely on the matter variables.
 
 # Key features of GRBoondi
 
-- **Ease of use**: A central pillar of GRBoondi is its ease of use, relative to other NR software. Many of the basic boiler-plate code and complexities are kept within the source code, allowing the user to have only a basic understanding of the code in order to start researching their problem.
+- **Ease of use**: A central pillar of GRBoondi is its ease of use, relative to other NR software. Many of the basic boilerplate code and complexities are kept within the source code, allowing the user to have only a basic understanding of the code in order to start researching their problem.
 
 - **Arbitrary choice of background spacetime**: The main parts of GRBoondi are extremely modular --- users can swap in and out backgrounds with ease. GRBoondi comes pre-equipped with four background classes ready for use, along with testing suites to verify convergence of each class. These include (starred backgrounds are inherited from GRDzhadzha and are immediately usable in GRBoondi):
-  - Minkowski Space
+  - Minkowski space
   - Kerr-de Sitter black hole
   - *Boosted Schwarzschild black hole
   - *Kerr black hole
 
-- **Arbitrary modifications to base Proca**: GRBoondi uses specific coding idioms that allow arbitrary modifications to the hard-coded equations of motion. This allows for numerical simulations of any generalized Proca theory. The base model is the standard electromagnetic model, subject to the usual Proca constraint. Any generalized Proca theory can be added on top of this by simply adding the additional pieces from the generalized Proca Lagrangian. Examples of simulating standard Proca and a simple non-linear model [@coates2022intrinsic;@Clough_2022;@_nl_t_rk_2023] are included in the codes repository.
+- **Arbitrary modifications to base Proca**: GRBoondi uses specific coding idioms that allow arbitrary modifications to the hard-coded equations of motion. This allows for numerical simulations of any generalized Proca theory. The base model is the standard electromagnetic model, subject to the usual Proca constraint. Any generalized Proca theory can be added on top of this by simply adding the additional pieces from the generalized Proca Lagrangian. Examples of simulating standard Proca and a simple non-linear model [@Coates_2022;@Clough_2022;@_nl_t_rk_2023] are included in the code repository.
 
 - **Diagnostics**: GRBoondi comes equipped with a large number of diagnostic quantities that can be calculated during the course of a simulation and additional tools for users to calculate their own quantities.
 
 - **Tailored post-processing tools**: GRBoondi comes equipped with custom-built post-processing scripts, leveraging VisIt's Python interface. Any of the diagnostic quantities computed during the evolution can be plotted using these tools. It also contains a simple integral plotter, for quickly visualizing the various integrals computed during a simulation, leveraging Python's Matplotlib package [@Hunter:2007]
 
-Additional features of GRBoondi are elucidated on the Github Wiki[^1].
+Additional features of GRBoondi are elucidated on the [GitHub Wiki](https://github.com/ShaunFell/GRBoondi/wiki).
 
 ![Some examples of the usage of GRBoondi. The left image is the energy density of a Proca cloud superradiantly excited around a rapidly spinning black hole, superimposed with streamlines of the spatial Proca vector field. The right image is a plot in the xz-plane of the square of the Proca 4-vector in the same background. The spin axis of the black hole is orientated along the z-axis. Superimposed on both images is a slice of the computational grid, clearly showing the refinement hierarchy.](Figures/Combined.png)
-
-[^1]: https://github.com/ShaunFell/GRBoondi/wiki
 
 # Acknowledgements
 LH is supported by funding from the European Research Council (ERC) under the European Unions Horizon 2020 research and innovation programme grant agreement No 801781. LH further acknowledges
 support from the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) under Germany’s Excellence Strategy EXC 2181/1 - 390900948 (the Heidelberg STRUCTURES Excellence Cluster).
 
-SF is indebted to Katy Clough for her stimulating discussions and extensive input to the code. Katy was an invaluable source of aid for the nuances of NR simulations and some of the finer details of GRChombo. 
+SF is indebted to Katy Clough for her stimulating discussions and extensive input to the code. Katy was an invaluable source of aid for the nuances of NR simulations and some of the finer details of GRChombo.
 
 The simulations performed as part of this release were carried out on the Baden-Württemberg high-performance computing cluster. The authors acknowledge support by the state of Baden-Württemberg through bwHPC.
 
-
-
 # References
-
-
-
